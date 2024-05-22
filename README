@@ -2,3 +2,11 @@
 
 TODO:
 1. Currently all header files that require SDL libs source them through `render.h` -> `main.h`. Delete this superfluous step and directly source the SDL libs through main.h. For the affected header files this will require adding includes for the standard libs that are also in render.h (as of now just iostream and vector).
+
+2. Separate classes from `render.h` to their own header files.
+
+3. Test whether the SDL_Rect movable; from main.cpp works, when the game compiles...
+
+4. There is now an additional `double delta` timer in main.cpp, is it necessary with cap_framerate(), or can they be combined?
+
+5. Separate the SDL_Render stuff and comments into a new branch
