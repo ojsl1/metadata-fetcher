@@ -1,1 +1,12 @@
+*.log
+*.o
+*.gch
+
+sounds/
+resources/
+
+*.png
 *.txt
+*.xcf
+*.webm
+*.gif
