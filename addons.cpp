@@ -1,8 +1,6 @@
-#include <iostream>
 #include "addons.h"
 
 #if 0
-
 void Addons::skeletonVoid(){
   std::cout << "Makefile Example\n";
 }
