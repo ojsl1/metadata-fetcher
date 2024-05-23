@@ -1,6 +1,10 @@
 # Foray-SDL2
 
 TODO:
+- Mouse event
+
+- Clickable button
+
 1. Currently all header files that require SDL libs source them through `render.h` -> `main.h`. Delete this superfluous step and directly source the SDL libs through main.h. For the affected header files this will require adding includes for the standard libs that are also in render.h (as of now just iostream and vector).
 
 2. Separate classes from `render.h` to their own header files.
