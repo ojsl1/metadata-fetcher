@@ -20,6 +20,12 @@ main.o: main.cpp main.h
 render.o: render.cpp render.h
 	$(CC) $(CXXFLAGS) render.cpp $(shell pkg-config --cflags sdl2)
 
+mouse.o: mouse.cpp mouse.h
+	$(CC) $(CXXFLAGS) mouse.cpp $(shell pkg-config --cflags sdl2)
+
+button.o: button.cpp button.h
+	$(CC) $(CXXFLAGS) button.cpp $(shell pkg-config --cflags sdl2)
+
 addons.o: addons.cpp addons.h
 	$(CC) $(CXXFLAGS) addons.cpp $(shell pkg-config --cflags sdl2)
 
