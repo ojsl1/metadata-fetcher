@@ -2,9 +2,9 @@
 
 void initVideo(){
     SDL_Init( SDL_INIT_EVERYTHING );
-
+    
+    // Create the window
     SDL_Window *window = NULL;
-
     window = SDL_CreateWindow( "イカは食用のいきものである",
                                 SDL_WINDOWPOS_UNDEFINED,
                                 SDL_WINDOWPOS_UNDEFINED,
@@ -20,12 +20,11 @@ void initVideo(){
         << SDL_GetError()
         << std::endl;
     }
-   
+
     //Note: below disables SDL_WINDOW_FULLSCREEN_DESKTOP
     SDL_SetWindowBordered( window, SDL_TRUE );
 
-    //SDL_Surface *screen = SDL_GetWindowSurface( window );
-    
+    // Create a surface for the window
     SDL_Surface *screen = NULL;
     screen = SDL_GetWindowSurface( window );
 
@@ -35,16 +34,23 @@ void initVideo(){
     Uint32 blue  = SDL_MapRGB( screen->format, 0, 0, 255 );
     Uint32 darkblue  = SDL_MapRGB( screen->format, 111,114,120 );
     Uint32 darkgreen  = SDL_MapRGB( screen->format, 100,120,100 );
+
+    ///////////////         START DRAWING           ///////////////
+
+    // fill screen with one color
     SDL_FillRect( screen, NULL, darkgreen );
 
+    // Creating bare Sprites
     //Sprite object( red, window_width/2, window_height/2 );
     //Sprite another( blue, window_width/2-100, window_height/2+20 );
 
+    // Creating Block sprites
     Block block1( pink, 120, 30 );
     Block block2( pink, 100, 15 );
-    block1.set_image( "cosmox2.png" );
-    block2.set_image( "avatar.bmp" );
+    block1.set_image( "resources/cosmox2.png" );
+    block2.set_image( "resources/avatar.bmp" );
 
+    // Manipulate SpriteGroups
     SpriteGroup active_sprites;
     active_sprites.add( &block2 );
     active_sprites.add( &block1 );
@@ -55,7 +61,11 @@ void initVideo(){
 
     active_sprites.draw( screen );
 
+    // RENDER THE WINDOW SURFACE ( FRAME ) WITH SOFTWARE RENDERING
     SDL_UpdateWindowSurface( window );
+
+
+    ///////////////           SOUNDS            //////////////////
 
     // Init mixer
     // MIX_DEFAULT_FREQUENCY = 22050

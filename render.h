@@ -10,43 +10,6 @@
 #define fps 1
 
 void initVideo();
-/*
-class Game{
-public:
-};
-
-class Sound{
-public:
-  Sound(  ){
-
-  }
-
-  ~Sound(){
-  Mix_FreeChunk(bell);
-  bell = NULL;
-  Mix_FreeMusic(bgm);
-  bgm = NULL;
-  }
-};
-
-class BlankRect{
-public:
-    //public members
-};
-
-class EventReceiver {
-public:
-    virtual bool HandleEvent(const SDL_Event* Event){
-        return false;
-    }
-};
-
-class Button{
-public:
-    //public stuff
-private:
-    //private stuff
-}; */
 
 class Sprite{
 protected:
@@ -55,7 +18,6 @@ protected:
     SDL_Rect rect;
     // declaring origin variables pre-emptively here, could they be declared in Block instead? TODO
     int origin_x, origin_y;
-
 public:
     Sprite( Uint32 color, int x, int y, int w = 48, int h = 64 ){
         image = SDL_CreateRGBSurface( 0, w, h, 32, 0, 0, 0, 0 );
@@ -105,7 +67,6 @@ private:
     //the sprite size by accessing the function of the vector,
     // as you know, the function std::vector has the size value and it's accessible with the .size function
     int spriteList_size;
-
 public:
     SpriteGroup copy(  ){
     // pygame.sprite.Group.copy  - duplicate the sprite group
@@ -192,12 +153,11 @@ public:
 };
 
 class Block : public Sprite{
-// inherit everything from Sprite to class Block,
-// no need for private as everything we care about is already inherited
 public:
-  //funnily this constructor will take the same arguments as original Sprite class
-      // call the constructor for the parent object/Sprite class itself,
-        // effectively mapping the parent object to Block
+    // inherit everything public from Sprite
+    //funnily this constructor will take the same arguments as original Sprite class
+    // call the constructor for the parent object/Sprite class itself,
+    // effectively mapping the parent object to Block
     Block( Uint32 color, int x, int y, int w = 48, int h = 64 )
     : Sprite( color, x, y, w, h ){
         update_properties();
@@ -246,9 +206,9 @@ public:
 
               //apply origin
               update_properties();
-
             }
         }
     }
 };
+
 #endif // RENDER_H
