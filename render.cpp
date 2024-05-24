@@ -35,6 +35,10 @@ void initVideo(){
     Uint32 darkblue  = SDL_MapRGB( screen->format, 111,114,120 );
     Uint32 darkgreen  = SDL_MapRGB( screen->format, 100,120,100 );
 
+    Mouse mouse;
+
+    mouse.drawMouse( mouse.imageMouse );
+
     ///////////////         START DRAWING           ///////////////
 
     // fill screen with one color

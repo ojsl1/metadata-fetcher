@@ -4,29 +4,32 @@
 
 class Mouse{
 public:
-  //SDL_Texture *image;
-  SDL_Surface *image;
-  SDL_Rect rect;
-  SDL_Rect point;
+  //SDL_Texture *imageMouse;
+  SDL_Surface *imageMouse;
+  SDL_Rect rectMouse;
+  SDL_Rect pointMouse;
 
   Mouse(){
-    image = IMG_Load("resources/mouse.png");
-    rect.w  = 25;
-    rect.h  = 25;
-    point.w = 1; //point only for collision detectection
-    point.h = 1; //which is why its only 1x1
+    imageMouse = IMG_Load("resources/mouse.png");
+    rectMouse.w  = 25;
+    rectMouse.h  = 25;
+    pointMouse.w = 1; //point only for collision detectection
+    pointMouse.h = 1; //which is why its only 1x1
     SDL_ShowCursor(false); //hide system cursor
   }
 
   void updateCursor(){
-      SDL_GetMouseState(&rect.x, &rect.y);
-      point.x = rect.x; // collision point topleft
-      point.y = rect.y;
+      SDL_GetMouseState(&rectMouse.x, &rectMouse.y);
+      pointMouse.x = rectMouse.x; // collision point topleft
+      pointMouse.y = rectMouse.y;
   }
 
-  void drawMouse(){
-      //SDL_RenderCopy( ren, image, NULL, &rect );
+  //void drawMouse(){
+      //SDL_RenderCopy( ren, imageMouse, NULL, &rectMouse );
+  void drawMouse( SDL_Surface *destinationMouse ){
+      SDL_BlitSurface( imageMouse, NULL, destinationMouse, &rectMouse);
   }
 
 };
+
 #endif // MOUSE_H
