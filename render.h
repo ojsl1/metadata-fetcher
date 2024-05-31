@@ -11,6 +11,7 @@
 #define fps 1
 
 void initVideo();
+void initMixer();
 
 class Sprite{
 protected:
@@ -155,7 +156,6 @@ public:
 
 class Block : public Sprite{
 public:
-    // inherit everything public from Sprite
     //funnily this constructor will take the same arguments as original Sprite class
     // call the constructor for the parent object/Sprite class itself,
     // effectively mapping the parent object to Block

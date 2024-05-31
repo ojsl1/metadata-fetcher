@@ -35,6 +35,7 @@ void prepClose ( SDL_Window* window, WindowDimensions dims ){
 
 int main( int argc, char *argv[] ){
     initVideo();
+    initMixer();
 
     // main loop
     bool running = true;
@@ -42,9 +43,6 @@ int main( int argc, char *argv[] ){
     double delta = .0001;
     double time2 = SDL_GetTicks();
    
-    SDL_Rect movable{100,50,200,132}; // x,y,w,h
-    float  xKB = movable.x;
-
     Uint32 starting_tick;
     SDL_Event Event;
     Mouse mouse;
@@ -54,6 +52,7 @@ int main( int argc, char *argv[] ){
       time2 = SDL_GetTicks(); // reset time2 for the next loop
 
       mouse.updateCursor();
+      //mouse.drawMouse( mouse.imageMouse ); // TODO: segfaults on t480s
 
       starting_tick = SDL_GetTicks();
       cap_framerate( starting_tick );
@@ -90,27 +89,14 @@ int main( int argc, char *argv[] ){
                   break;
                 default:
                   break;
-                case SDLK_DOWN:
-                  std::cout << "down key works!" << std::endl;
-                  break;
               }
               break;
              break;
             default: // event loop
               break;
           } // end outer switch
+      SDL_UpdateWindowSurface( window ); // TODO: attempt to render every frame/tick
       } // end event loop
-
-    // Moving the SDL_Rect movable with keyboard
-    auto key = SDL_GetKeyboardState(0); // get states of every key on the keyboard
-    if (key[SDL_SCANCODE_A]){
-      xKB += -100 * delta; // velocity of movement
-    }
-    if (key[SDL_SCANCODE_D]){
-      xKB +=  100 * delta; // velocity of movement
-    }
-    movable.x = xKB;
-
     } // end main loop
 
     WindowDimensions dims = {640, 480, 1920, 0};

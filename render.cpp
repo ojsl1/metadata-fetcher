@@ -35,10 +35,6 @@ void initVideo(){
     Uint32 darkblue  = SDL_MapRGB( screen->format, 111,114,120 );
     Uint32 darkgreen  = SDL_MapRGB( screen->format, 100,120,100 );
 
-    Mouse mouse;
-
-    mouse.drawMouse( mouse.imageMouse );
-
     ///////////////         START DRAWING           ///////////////
 
     // fill screen with one color
@@ -58,6 +54,7 @@ void initVideo(){
     SpriteGroup active_sprites;
     active_sprites.add( &block2 );
     active_sprites.add( &block1 );
+
     //active_sprites.add( &another );
     //object.draw( screen );
 
@@ -65,13 +62,12 @@ void initVideo(){
 
     active_sprites.draw( screen );
 
-    // RENDER THE WINDOW SURFACE ( FRAME ) WITH SOFTWARE RENDERING
+    // RENDER INITIAL WINDOW SURFACE WITH SOFTWARE RENDERING
     SDL_UpdateWindowSurface( window );
 
+}
 
-    ///////////////           SOUNDS            //////////////////
-
-    // Init mixer
+void initMixer(){
     // MIX_DEFAULT_FREQUENCY = 22050
     Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096 );
     Mix_Chunk *bell = NULL;
@@ -79,7 +75,6 @@ void initVideo(){
 
     bell = Mix_LoadWAV( "sounds/school-bell.mp3" );
     bgm = Mix_LoadMUS( "sounds/sarajevo-pad-keys-melody_140bpm_C_minor.wav" );
-
 
     Mix_PlayChannel( -1, bell, 0);
     Mix_VolumeChunk( bell, 10 );
