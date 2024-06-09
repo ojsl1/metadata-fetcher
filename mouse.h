@@ -4,8 +4,8 @@
 
 class Mouse{
 public:
-  //SDL_Texture *imageMouse;
-  SDL_Surface *imageMouse;
+  //SDL_Texture *imageMouse; 
+  SDL_Surface *imageMouse;// 1. bruteforce changed from above SDL_Texture 2. not initializing to null causes a segfault in mouse.drawMouse() 
   SDL_Rect rectMouse;
   SDL_Rect pointMouse;
 
@@ -26,8 +26,13 @@ public:
 
   //void drawMouse(){
       //SDL_RenderCopy( ren, imageMouse, NULL, &rectMouse );
+/* old method, not sure where destinationMouse was supposed to be
   void drawMouse( SDL_Surface *destinationMouse ){
       SDL_BlitSurface( imageMouse, NULL, destinationMouse, &rectMouse);
+  }
+*/
+  void drawMouse( SDL_Surface *screen ){
+      SDL_BlitSurface( imageMouse, NULL, screen, &rectMouse);
   }
 
 };

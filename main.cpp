@@ -37,22 +37,20 @@ int main( int argc, char *argv[] ){
     initVideo();
     initMixer();
 
-    // main loop
     bool running = true;
 
     double delta = .0001;
     double time2 = SDL_GetTicks();
    
     Uint32 starting_tick;
-    SDL_Event Event;
-    Mouse mouse;
 
+    // main loop
     while ( running ){
       delta = (SDL_GetTicks() - time2)/1000; //dividing with thousand to convert ms into s
       time2 = SDL_GetTicks(); // reset time2 for the next loop
 
-      mouse.updateCursor();
-      //mouse.drawMouse( mouse.imageMouse ); // TODO: segfaults on t480s
+      SDL_Event Event;
+      Mouse mouse;
 
       starting_tick = SDL_GetTicks();
       cap_framerate( starting_tick );
@@ -87,6 +85,8 @@ int main( int argc, char *argv[] ){
                 case SDLK_UP:
                   std::cout << "up key works!" << std::endl;
                   break;
+                case SDLK_DOWN:
+                  std::cout << "down key works!" << std::endl;
                 default:
                   break;
               }
@@ -95,7 +95,11 @@ int main( int argc, char *argv[] ){
             default: // event loop
               break;
           } // end outer switch
+
+      mouse.updateCursor();
+      mouse.drawMouse( mouse.imageMouse ); // TODO: segfaults on t480s
       SDL_UpdateWindowSurface( window ); // TODO: attempt to render every frame/tick
+
       } // end event loop
     } // end main loop
 
