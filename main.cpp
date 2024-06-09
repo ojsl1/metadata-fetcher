@@ -1,9 +1,12 @@
-#include "render.h"
+#include "main.h" // globals
+//#include "render.h"
 //#include "addons.h" //TODO
 #include "mouse.h" //TODO
 
-SDL_Window *window;
-SDL_Surface *screen;
+#define window_width 480
+#define window_height 320
+#define fps 30
+
 Mix_Chunk *bell;
 Mix_Music *bgm;
 double delta;
@@ -36,7 +39,7 @@ void prepClose ( SDL_Window* window, WindowDimensions dims ){
 }
 
 int main( int argc, char *argv[] ){
-    initVideo();
+    initVideo(window_width, window_height);
     initMixer();
 
     bool running = true;
@@ -46,10 +49,8 @@ int main( int argc, char *argv[] ){
    
     Uint32 starting_tick;
     
-    // TODO: below segfaults, add prior screen and screen->format debug checks here
-
-    Uint32 beige = SDL_MapRGB( screen->format, 255, 255, 115 );
     Uint32 pink = SDL_MapRGB( screen->format, 232, 111, 148 );
+    Uint32 beige = SDL_MapRGB( screen->format, 255, 255, 115 );
     Uint32 blue = SDL_MapRGB( screen->format, 0, 0, 255 );
     Uint32 darkblue = SDL_MapRGB( screen->format, 111,114,120 );
     Uint32 darkgreen  = SDL_MapRGB( screen->format, 100,120,100 );
@@ -110,9 +111,8 @@ int main( int argc, char *argv[] ){
               break;
           } // end outer switch
 
-
-      // fill screen with one color
-      SDL_FillRect( screen, NULL, darkgreen );
+      // Draw operations:
+      SDL_FillRect( screen, NULL, pink );
       
       // Creating bare Sprites
       //Sprite object( red, window_width/2, window_height/2 );
@@ -136,11 +136,9 @@ int main( int argc, char *argv[] ){
   
       active_sprites.draw( screen );
   
-      //SDL_UpdateWindowSurface( window );
-
       mouse.updateCursor();
-      //SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 255, 255, 255)); // clear screen TODO: segfaults on t480s
-      mouse.drawMouse( mouse.imageMouse );
+      //SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 255, 255, 255)); // clear screen
+      mouse.drawMouse( mouse.imageMouse ); //TODO: ´screen´ or ´mouse.imageMouse´?
       SDL_UpdateWindowSurface( window );
 
 
@@ -149,8 +147,6 @@ int main( int argc, char *argv[] ){
 
     WindowDimensions dims = {640, 480, 1920, 0};
     prepClose( window, dims);
-
     close(window, bell, bgm);
-
     return 0;
 }

@@ -1,17 +1,10 @@
 #ifndef RENDER_H
 #define RENDER_H
-#include "main.h"
+#include "main.h" // globals
 #include "mouse.h"
 
 #include <iostream>
 #include <vector>
-
-#define window_width 480
-#define window_height 320
-#define fps 1
-
-void initVideo();
-void initMixer();
 
 class Sprite{
 protected:

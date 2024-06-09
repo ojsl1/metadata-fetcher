@@ -1,5 +1,6 @@
 #ifndef MOUSE_H
 #define MOUSE_H
+#include "main.h" // globals
 #include "render.h"
 #include <iostream>
 

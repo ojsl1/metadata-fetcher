@@ -1,10 +1,13 @@
+#include "main.h" // globals
 #include "render.h"
 
-void initVideo(){
+SDL_Window *window = nullptr;
+SDL_Surface *screen = nullptr;
+
+void initVideo( int window_width, int window_height ){
     SDL_Init( SDL_INIT_EVERYTHING );
     
     // Create the window
-    SDL_Window *window = NULL;
     window = SDL_CreateWindow( "イカは食用のいきものである",
                                 SDL_WINDOWPOS_UNDEFINED,
                                 SDL_WINDOWPOS_UNDEFINED,
@@ -15,15 +18,21 @@ void initVideo(){
                                 );
 
     if ( window == NULL ){
-      std::cout << "window still null, \n" << SDL_GetError() << std::endl;
+      std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
+      SDL_Quit();
+      return;
     }
 
     //Note: this disables SDL_WINDOW_FULLSCREEN_DESKTOP
-    SDL_SetWindowBordered( window, SDL_TRUE );
-
-    // Create a surface for the window
-    SDL_Surface *screen = NULL;
-    screen = SDL_GetWindowSurface( window );
+    SDL_SetWindowBordered(window, SDL_TRUE);
+    
+    screen = SDL_GetWindowSurface(window);
+    if ( screen == NULL ){
+      std::cerr << "SDL_ GetWindowSurface Error: " << SDL_GetError() << std::endl;
+      SDL_DestroyWindow(window);
+      SDL_Quit();
+      return;
+    }
 }
 
 void initMixer(){
