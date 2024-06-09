@@ -14,57 +14,16 @@ void initVideo(){
                                 //SDL_WINDOW_FULLSCREEN_DESKTOP
                                 );
 
-    if ( window == NULL){
-      std::cout << "Error initializing the window! "
-        << std::endl
-        << SDL_GetError()
-        << std::endl;
+    if ( window == NULL ){
+      std::cout << "window still null, \n" << SDL_GetError() << std::endl;
     }
 
-    //Note: below disables SDL_WINDOW_FULLSCREEN_DESKTOP
+    //Note: this disables SDL_WINDOW_FULLSCREEN_DESKTOP
     SDL_SetWindowBordered( window, SDL_TRUE );
 
     // Create a surface for the window
     SDL_Surface *screen = NULL;
     screen = SDL_GetWindowSurface( window );
-
-    //unsigned int 32
-    Uint32 beige = SDL_MapRGB( screen->format, 255, 255, 115 );
-    Uint32 pink   = SDL_MapRGB( screen->format, 232, 111, 148 );
-    Uint32 blue  = SDL_MapRGB( screen->format, 0, 0, 255 );
-    Uint32 darkblue  = SDL_MapRGB( screen->format, 111,114,120 );
-    Uint32 darkgreen  = SDL_MapRGB( screen->format, 100,120,100 );
-
-    ///////////////         START DRAWING           ///////////////
-
-    // fill screen with one color
-    SDL_FillRect( screen, NULL, darkgreen );
-
-    // Creating bare Sprites
-    //Sprite object( red, window_width/2, window_height/2 );
-    //Sprite another( blue, window_width/2-100, window_height/2+20 );
-
-    // Creating Block sprites
-    Block block1( pink, 120, 30 );
-    Block block2( pink, 100, 15 );
-    block1.set_image( "resources/cosmox2.png" );
-    block2.set_image( "resources/avatar.bmp" );
-
-    // Manipulate SpriteGroups
-    SpriteGroup active_sprites;
-    active_sprites.add( &block2 );
-    active_sprites.add( &block1 );
-
-    //active_sprites.add( &another );
-    //object.draw( screen );
-
-    //std::cout << active_sprites.has( another ) << std::endl;
-
-    active_sprites.draw( screen );
-
-    // RENDER INITIAL WINDOW SURFACE WITH SOFTWARE RENDERING
-    SDL_UpdateWindowSurface( window );
-
 }
 
 void initMixer(){

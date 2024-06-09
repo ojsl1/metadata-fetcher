@@ -1,16 +1,19 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 #include "render.h"
+#include <iostream>
 
 class Mouse{
 public:
-  //SDL_Texture *imageMouse; 
-  SDL_Surface *imageMouse;// 1. bruteforce changed from above SDL_Texture 2. not initializing to null causes a segfault in mouse.drawMouse() 
+  SDL_Surface *imageMouse = NULL; // TODO: necessary to initialize as null?
   SDL_Rect rectMouse;
   SDL_Rect pointMouse;
 
   Mouse(){
     imageMouse = IMG_Load("resources/mouse.png");
+    if (!imageMouse){
+      std::cout << "Failed to load image: " << IMG_GetError() << std::endl;
+    }
     rectMouse.w  = 25;
     rectMouse.h  = 25;
     pointMouse.w = 1; //point only for collision detectection
@@ -20,17 +23,10 @@ public:
 
   void updateCursor(){
       SDL_GetMouseState(&rectMouse.x, &rectMouse.y);
-      pointMouse.x = rectMouse.x; // collision point topleft
+      pointMouse.x = rectMouse.x; // make collision point topleft
       pointMouse.y = rectMouse.y;
   }
 
-  //void drawMouse(){
-      //SDL_RenderCopy( ren, imageMouse, NULL, &rectMouse );
-/* old method, not sure where destinationMouse was supposed to be
-  void drawMouse( SDL_Surface *destinationMouse ){
-      SDL_BlitSurface( imageMouse, NULL, destinationMouse, &rectMouse);
-  }
-*/
   void drawMouse( SDL_Surface *screen ){
       SDL_BlitSurface( imageMouse, NULL, screen, &rectMouse);
   }
