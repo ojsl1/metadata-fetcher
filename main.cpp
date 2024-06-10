@@ -74,20 +74,24 @@ int main( int argc, char *argv[] ){
               running = false;
               break;
 
-            case SDL_MOUSEBUTTONDOWN: // event loop
+            case SDL_MOUSEBUTTONDOWN: // TODO when pressing play button
               switch (Event.button.button){
                 case SDL_BUTTON_LEFT:
+                  std::cout << "left mouse press detected!" << std::endl;
                   break;
                 case SDL_BUTTON_RIGHT:
+                  std::cout << "right mouse press detected!" << std::endl;
                   break;
               }
               break;
 
-            case SDL_MOUSEBUTTONUP: // event loop
+            case SDL_MOUSEBUTTONUP: // TODO when releasing from play button
               switch (Event.button.button){
                 case SDL_BUTTON_LEFT:
+                  std::cout << "left mouse release detected!" << std::endl;
                   break;
                 case SDL_BUTTON_RIGHT:
+                  std::cout << "right mouse release detected!" << std::endl;
                   break;
               }
               break;
@@ -111,7 +115,7 @@ int main( int argc, char *argv[] ){
               break;
           } // end outer switch
 
-      // Draw operations:
+      // Draw operations
       SDL_FillRect( screen, NULL, pink );
       
       // Creating bare Sprites
@@ -138,7 +142,7 @@ int main( int argc, char *argv[] ){
   
       mouse.updateCursor();
       //SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 255, 255, 255)); // clear screen
-      mouse.drawMouse( mouse.imageMouse ); //TODO: ´screen´ or ´mouse.imageMouse´?
+      mouse.drawMouse( screen ); // TODO screen works but the size is wrong is it using the `screen` size? why doesnt ´mouse.imageMouse´ work?
       SDL_UpdateWindowSurface( window );
 
 
