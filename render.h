@@ -1,7 +1,6 @@
 #ifndef RENDER_H
 #define RENDER_H
 #include "main.h" // globals
-#include "mouse.h"
 
 #include <iostream>
 #include <vector>

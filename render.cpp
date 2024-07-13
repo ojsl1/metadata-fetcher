@@ -1,14 +1,14 @@
 #include "main.h" // globals
 #include "render.h"
 
-SDL_Window *window = nullptr;
-SDL_Surface *screen = nullptr;
+SDL_Window *gWindow = nullptr;
+SDL_Surface *gScreen = nullptr;
 
 void initVideo( int window_width, int window_height ){
     SDL_Init( SDL_INIT_EVERYTHING );
     
     // Create the window
-    window = SDL_CreateWindow( "イカは食用のいきものである",
+    gWindow = SDL_CreateWindow( "Cosmox's Playground",
                                 SDL_WINDOWPOS_UNDEFINED,
                                 SDL_WINDOWPOS_UNDEFINED,
                                 window_width, // window_width
@@ -17,19 +17,19 @@ void initVideo( int window_width, int window_height ){
                                 //SDL_WINDOW_FULLSCREEN_DESKTOP
                                 );
 
-    if ( window == NULL ){
+    if ( gWindow == NULL ){
       std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
       SDL_Quit();
       return;
     }
 
     //Note: this disables SDL_WINDOW_FULLSCREEN_DESKTOP
-    SDL_SetWindowBordered(window, SDL_TRUE);
+    SDL_SetWindowBordered(gWindow, SDL_TRUE);
     
-    screen = SDL_GetWindowSurface(window);
-    if ( screen == NULL ){
+    gScreen = SDL_GetWindowSurface(gWindow);
+    if ( gScreen == NULL ){
       std::cerr << "SDL_ GetWindowSurface Error: " << SDL_GetError() << std::endl;
-      SDL_DestroyWindow(window);
+      SDL_DestroyWindow(gWindow);
       SDL_Quit();
       return;
     }
@@ -49,6 +49,6 @@ void initMixer(){
     SDL_Delay(1700);
 
     Mix_PlayMusic( bgm, -1 );
-    Mix_VolumeMusic( 10 );
+    Mix_VolumeMusic( 100 );
     //Mix_FadeInMusic( music1, 0, 5000 );
 }

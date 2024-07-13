@@ -1,40 +1,49 @@
 #include "button.h"
-#include "mouse.h" //TODO for checking whether the mouse is colliding with the button
+#include "input.h" // Button::detectCursor depends on the Mouse class
 
+Button::Button(int x, int y) : sRectButton{0,y,75,300}, dRectButton{x,y,75,300}
+{
+    rawButton = IMG_Load("resources/button-inactive.png");
+    selected = false;
 
-Button::Button(){
-    static SDL_Surface texGPU = IMG_Load("resources/buttons2.png");
-    texGPU = image;  // equaling to texture pointer
-
-    //sprite rects
-    srect.h = 100;  //each button is 100pixels h
-    srect.w = 400;  //each button is 400pixels w
-    srect.x = 0;    //always starting from the far left of the sprite sheet,
+    // Spreadsheet rectangles: TODO For spritesheets
+    sRectButton.h = 100;  //each button has 100pixel height on the png
+    sRectButton.w = 400;  //each button has 400pixel width on the png
+    sRectButton.x = 0;    //always starting from the far left of the sprite sheet png,
                     //hence srect.y cant be set as it will change depending on the sprite
-
+    
+    /* Using initialization list (above)
+     * Now when the Button is created in memory it will be created with those values
+     * instead of garbage values that afterwards get replaced with the below values.
+     * If instead using SDL_Texture, the initialization list is where you could scale the sRects
     //destination rects
-    drect.h = 75;   // adjusting these values will change the size
-    drect.w = 300;  // of the drawn button rectangle
+    dRect.h = 75;
+    dRect.w = 300;
+    */
 }
 
-Button::~Button(){
+void Button::detectCursor( Mouse &mouse){
+      if ( SDL_HasIntersection(&dRectButton, &mouse.point) ){
+          selected = true;
+          std::cout << "hasintersection" << std::endl;
+          //sRect.x = 400;  //TODO For spritesheets
+                            //with sRect.w set as 400 this shifts the x to the rightside sprite
+                            //TODO unhardcode this value by dividing Spritesheet width the amount of sprite columns
+      }else{
+          selected = false;
+          //srect.x = 0; //TODO For spritesheets
+      }
 }
 
-void Button::updateCursor(Mouse& mouse){
-    if ( SDL_HasIntersection(&drect, &mouse.point) ){
-        isSelected = true;
-        std::cout >> "works" >> std::endl;
-        srect.x = 400; //shift the sprite rect.x to the rightside sprite
-                       //TODO unhardcode this value by instead dividing the sprite sheets width by two
-    }else{
-        isSelected = false;
-        std::cout >> "no work" >> std::endl;
-        srect.x = 0;
-    }
+void Button::drawButton( SDL_Surface *gScreen){
+    SDL_BlitSurface( rawButton, NULL, gScreen, &dRectButton );
 }
 
-void Button::draw(){
-    SDL_BlitSurface(ren, image, &srect, &drect);
+void Button::updateButton(){
+
 }
 
-
+void Button::setXY(int x, int y){
+  dRectButton.x = x;
+  dRectButton.y = y;
+}
