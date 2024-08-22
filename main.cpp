@@ -60,40 +60,46 @@ void initColors(SDL_Surface* gScreen){
     gDarkgreen = SDL_MapRGB(gScreen->format, 100, 120, 100);
 }
 
-void printTodos(){
-    std::cout << "########################## TO DO LIST ##########################" << std::endl;
-    std::cout << "# HIGH PRIO: Rewrite the eventloop as a separate EventListener (mouse events) -> clickable buttons -> main menu -> submenus" << std::endl;
-    std::cout << "# MED  PRIO: Separate classes from `render.h` to their own header files" << std::endl;
-    std::cout << "# MED  PRIO: Is it possible to draw mouse using Sprite, SpriteGroup or Block classes" << std::endl;
-    std::cout << "# MED  PRIO: was adding window_width and window_height return types to initVideo() really necessary when you made it a global/extern function" << std::endl;
-    std::cout << "# LOW PRIO: Add listeners for ctrl+q and ctrl+w and q to exit the game" << std::endl;
-    std::cout << "# NO  PRIO: test if `double delta` timer from main.cpp can be combined with cap_framerate()" << std::endl;
-    std::cout << "# NO  PRIO: test if the SDL_Rect movable; from main.cpp works at all" << std::endl;
-    std::cout << "# NO  PRIO: Currently all header files that require SDL libs source them through `render.h` -> `main.h`. \n Delete this superfluous step and directly source the SDL libs through main.h.\n For the affected header files this will require adding includes for the standard libs that are also in render.h (as of now just iostream and vector)." << std::endl;
-    std::cout << "# NO  PRIO: implement gl_renderer.cpp (and vk_renderer.cpp) for the SDL_Render stuff and comments" << std::endl;
-    std::cout << "# NO  PRIO: physics.h: finish the empty classes" << std::endl;
-    std::cout << "# NO  PRIO: physics.h: vect2 to move sprites" << std::endl;
-    std::cout << "# NO  PRIO: Refactor everything into OOP, with base classes and subclasses" << std::endl;
-    std::cout << "# NO  PRIO: button.cpp: implement spritesheet capabilities" << std::endl;
+void printVectorTodos(){
+  //Store all to-dos in a vector of pairs (priority, description)
+  // 1: current, 2: high, 3: medium, 4: low, 5: future
+  std::vector<std::pair<int, std::string>> todos = {
+    {1, "main.cpp: refactor game and event loops to include the enum game states"},
+    {1, "button.cpp: change playButton sprite on interact without spritesheets"},
 
-    std::cout << "# WORK PRIO: autosort priorities on std::cout, so no need to rewrite the " << std::endl;
-    std::cout << "# WORK PRIO: main.cpp: refactor game and event loops to include the enum game states" << std::endl;
-    std::cout << "# WORK PRIO: button.cpp: change playButton sprite on interact without spritesheets" << std::endl;
-}
+    {2, "Rewrite the eventloop as a separate EventListener (mouse events) -> clickable buttons -> main menu -> submenus"},
 
-#if 1
-void printTodosNEW(){
-  std::cout << "TODO: autosorting to-dos..." << std::endl;
-  std::cout << "1. Create an int with switchcases for values 0-5. \n 2. On the list above append the int with prio value to each todo" << std::endl;
-  std::cout << " 3. 1 current issues, 2 high issues, 3 med issues, 4 low issues 5 future issues" << std::endl;
-  std::cout << " 4. main problems are what should the int be, class, func, enum, or what?" << std::endl;
-  std::cout << " 5. and where would it be created at?" << std::endl;
+    {3, "Separate classes from `render.h` to their own header files"},
+    {3, "Is it possible to draw mouse using Sprite, SpriteGroup or Block classes"},
+    {3, "was adding window_width and window_height return types to initVideo() really necessary when you made it a global/extern function"},
+
+    {4, "Add listeners for ctrl+q and ctrl+w and q to exit the game"},
+
+    {5, "test if `double delta` timer from main.cpp can be combined with cap_framerate()"},
+    {5, "test if the SDL_Rect movable; from main.cpp works at all"},
+    {5, "Currently all header files that require SDL libs source them through `render.h` -> `main.h`. \n Delete this superfluous step and directly source the SDL libs through main.h.\n For the affected header files this will require adding includes for the standard libs that are also in render.h (as of now just iostream and vector)."},
+    {5, "implement gl_renderer.cpp (and vk_renderer.cpp) for the SDL_Render stuff and comments"},
+    {5, "physics.h: finish the empty classes"},
+    {5, "physics.h: vect2 to move sprites"},
+    {5, "Refactor everything into OOP, with base classes and subclasses"},
+    {5, "button.cpp: implement spritesheet capabilities"},
+  };
+
+  std::cout << "### Printing The Autosorted TODO List... ###" << std::endl;
+
+  //print todos by priority
+//for (int priority = 1; priority <= 5; ++priority) {
+  for (int priority = 5; priority >= 1; --priority) {
+    for (const auto& todo : todos) {
+      if (todo.first == priority) {
+        std::cout << priority << ". " << todo.second << std::endl;
+      }
+    }
+  }
 }
-#endif
 
 int main( int argc, char *argv[] ){
-    printTodos();
-    printTodosNEW();
+    printVectorTodos();
 
     initVideo(window_width, window_height);
     initColors(gScreen);
