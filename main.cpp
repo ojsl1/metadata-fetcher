@@ -6,6 +6,12 @@
 #define window_height 320
 #define fps 15
 
+enum AppState {
+    MENU_STATE,
+    PLAY_STATE,
+    GALLERY_STATE,
+};
+
 Uint32 gPink;
 Uint32 gRed;
 Uint32 gBeige;
@@ -15,6 +21,7 @@ Uint32 gDarkgreen;
 Mix_Chunk *bell;
 Mix_Music *bgm;
 double delta;
+AppState currentState;
 
 void cap_framerate ( Uint32 starting_tick ){
     if ( ( 1000 / fps ) > SDL_GetTicks() - starting_tick ){
@@ -64,13 +71,30 @@ void printTodos(){
     std::cout << "# NO  PRIO: test if the SDL_Rect movable; from main.cpp works at all" << std::endl;
     std::cout << "# NO  PRIO: Currently all header files that require SDL libs source them through `render.h` -> `main.h`. \n Delete this superfluous step and directly source the SDL libs through main.h.\n For the affected header files this will require adding includes for the standard libs that are also in render.h (as of now just iostream and vector)." << std::endl;
     std::cout << "# NO  PRIO: implement gl_renderer.cpp (and vk_renderer.cpp) for the SDL_Render stuff and comments" << std::endl;
+    std::cout << "# NO  PRIO: physics.h: finish the empty classes" << std::endl;
+    std::cout << "# NO  PRIO: physics.h: vect2 to move sprites" << std::endl;
+    std::cout << "# NO  PRIO: Refactor everything into OOP, with base classes and subclasses" << std::endl;
+    std::cout << "# NO  PRIO: button.cpp: implement spritesheet capabilities" << std::endl;
 
+    std::cout << "# WORK PRIO: autosort priorities on std::cout, so no need to rewrite the " << std::endl;
+    std::cout << "# WORK PRIO: main.cpp: refactor game and event loops to include the enum game states" << std::endl;
     std::cout << "# WORK PRIO: button.cpp: change playButton sprite on interact without spritesheets" << std::endl;
-    std::cout << "# WORK PRIO: button.cpp: implement spritesheet capabilities" << std::endl;
 }
+
+#if 1
+void printTodosNEW(){
+  std::cout << "TODO: autosorting to-dos..." << std::endl;
+  std::cout << "1. Create an int with switchcases for values 0-5. \n 2. On the list above append the int with prio value to each todo" << std::endl;
+  std::cout << " 3. 1 current issues, 2 high issues, 3 med issues, 4 low issues 5 future issues" << std::endl;
+  std::cout << " 4. main problems are what should the int be, class, func, enum, or what?" << std::endl;
+  std::cout << " 5. and where would it be created at?" << std::endl;
+}
+#endif
 
 int main( int argc, char *argv[] ){
     printTodos();
+    printTodosNEW();
+
     initVideo(window_width, window_height);
     initColors(gScreen);
     initMixer();

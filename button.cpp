@@ -1,8 +1,7 @@
 #include "button.h"
 #include "input.h" // Button::detectCursor depends on the Mouse class
 
-Button::Button(int x, int y) : sRectButton{0,y,75,300}, dRectButton{x,y,75,300}
-{
+Button::Button(int x, int y) : sRectButton{0,y,75,300}, dRectButton{x,y,75,300}{
     rawButton = IMG_Load("resources/button-inactive.png");
     selected = false;
 
