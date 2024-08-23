@@ -88,7 +88,7 @@ void printVectorTodos(){
   std::cout << "### Printing The Autosorted TODO List... ###" << std::endl;
 
   //print todos by priority
-//for (int priority = 1; priority <= 5; ++priority) {
+  //for (int priority = 1; priority <= 5; ++priority) {
   for (int priority = 5; priority >= 1; --priority) {
     for (const auto& todo : todos) {
       if (todo.first == priority) {
