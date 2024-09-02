@@ -4,8 +4,6 @@
 
 #include "render.h"
 
-//TODO
-
 #if 0
 #define FACTOR 7
 

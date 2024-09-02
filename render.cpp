@@ -49,6 +49,6 @@ void initMixer(){
     SDL_Delay(1700);
 
     Mix_PlayMusic( bgm, -1 );
-    Mix_VolumeMusic( 100 );
+    Mix_VolumeMusic( 20 );
     //Mix_FadeInMusic( music1, 0, 5000 );
 }

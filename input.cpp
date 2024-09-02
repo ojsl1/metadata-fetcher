@@ -16,6 +16,9 @@ Mouse::Mouse(){
     SDL_ShowCursor(false);
 }
 
+Mouse::~Mouse(){
+}
+
 void Mouse::updateCursor(){
       SDL_GetMouseState(&dRectMouse.x, &dRectMouse.y);
       point.x = dRectMouse.x;

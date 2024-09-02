@@ -17,7 +17,7 @@ struct WindowDimensions{
     int xPosi;
     int yPosi;
 };
-
+/*
 // Extern Uint32 variables
 extern Uint32 gPink;
 extern Uint32 gRed;
@@ -25,5 +25,5 @@ extern Uint32 gBeige;
 extern Uint32 gBlue;
 extern Uint32 gDarkblue;
 extern Uint32 gDarkgreen;
-
+*/
 #endif // MAIN_H

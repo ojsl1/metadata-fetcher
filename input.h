@@ -7,13 +7,22 @@
 #include <iostream>
 
 class Mouse{
-public:
+private:
   SDL_Surface *rawMouse = NULL;
   SDL_Surface *scaledMouse = NULL;
   SDL_Rect dRectMouse;
-  SDL_Rect point;
 
+public:
+  SDL_Rect point; //TODO button::detectCursor() reads from this
+                  //
   Mouse();
+  ~Mouse();
+  
+  // Getter for the private point
+  SDL_Rect getPoint() const {
+    return point;
+  }
+
   void updateCursor();
   void drawCursor(SDL_Surface *gScreen);
 };

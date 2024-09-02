@@ -1,24 +1,26 @@
 #include "button.h"
 #include "input.h" // Button::detectCursor depends on the Mouse class
 
-Button::Button(int x, int y) : sRectButton{0,y,75,300}, dRectButton{x,y,75,300}{
+Button::Button(int x, int y)
+  : sRectButton{0,y,75,300},  // Initialization list
+    dRectButton{x,y,75,300}   // Member variables are initialized directly
+                              // Without this init list the button gets drawn at topleft, why? TODO
+{
     rawButton = IMG_Load("resources/button-inactive.png");
     selected = false;
 
-    // Spreadsheet rectangles: TODO For spritesheets
-    sRectButton.h = 100;  //each button has 100pixel height on the png
-    sRectButton.w = 400;  //each button has 400pixel width on the png
-    sRectButton.x = 0;    //always starting from the far left of the sprite sheet png,
+#if 0 // WIP: Reading rects from a spritesheet:
+    sRectButton.h = 100;  //each button has 100pixel height on the png spritesheet
+    sRectButton.w = 400;  //each button has 400pixel width on the png spritesheet
+
+    sRectButton.x = 0;    //to always start from the far left of the sprite sheet png,
                     //hence srect.y cant be set as it will change depending on the sprite
-    
-    /* Using initialization list (above)
-     * Now when the Button is created in memory it will be created with those values
-     * instead of garbage values that afterwards get replaced with the below values.
-     * If instead using SDL_Texture, the initialization list is where you could scale the sRects
+
     //destination rects
     dRect.h = 75;
     dRect.w = 300;
     */
+#endif
 }
 
 void Button::detectCursor( Mouse &mouse){
