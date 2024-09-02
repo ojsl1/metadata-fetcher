@@ -23,6 +23,10 @@ Button::Button(int x, int y)
 #endif
 }
 
+Button::~Button(){
+  // Clean up code for buttons when changing app state
+}
+
 void Button::detectCursor( Mouse &mouse){
       if ( SDL_HasIntersection(&dRectButton, &mouse.point) ){
           selected = true;

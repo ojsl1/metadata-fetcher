@@ -2,9 +2,9 @@
 #include "input.h" // -> render.h -> <vector>
 #include "button.h"
 
-#define window_width 480
-#define window_height 320
-#define fps 15
+#define WINDOW_WIDTH 480
+#define WINDOW_HEIGHT 320
+#define FPS 15
 
 enum AppState {
     MENU_STATE,
@@ -17,6 +17,9 @@ enum AppState {
 AppState currentState;
 double delta;
 bool running;
+
+// Debug declarations
+WindowDimensions dims;
 
 // Resource declarations
 Mix_Chunk *bell;
@@ -32,8 +35,8 @@ Uint32 gDarkblue;
 Uint32 gDarkgreen;
 
 void cap_framerate ( Uint32 starting_tick ){
-    if ( ( 1000 / fps ) > SDL_GetTicks() - starting_tick ){
-      SDL_Delay( 1000 / fps - ( SDL_GetTicks() - starting_tick ) );
+    if ( ( 1000 / FPS ) > SDL_GetTicks() - starting_tick ){
+      SDL_Delay( 1000 / FPS - ( SDL_GetTicks() - starting_tick ) );
     }
 };
 
@@ -49,13 +52,13 @@ void closeSDL ( SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm ){
     SDL_Quit();
 }
 
-void preCloseOperations ( SDL_Window* gWindow, WindowDimensions dims ){
+void handleExitState( SDL_Window* gWindow, WindowDimensions dims){
     //SDL_SetWindowSize( gWindow, dims.wSize, dims.hSize ); //enforce size
     //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
     SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );
     std::cout << "Exit Position: " << dims.xPosi << "," << dims.yPosi << std::endl;
     std::cout << "Exit Size: " << dims.wSize << "," << dims.hSize << " [TODO: Doesnt update after resizing]" << std::endl;
-    std::cout << "FPS: " << fps << std::endl;
+    std::cout << "FPS: " << FPS << std::endl;
     std::cout << "Exit succesfully" << std::endl;
 }
 
@@ -167,8 +170,8 @@ void handleMenuState() {
 
   // ## Drawing operations ##
   // ALLEY. Create Sprites
-  Sprite object( gRed, window_width/2, window_height/2 );
-  Sprite another( gBlue, window_width/2-100, window_height/2+20 );
+  Sprite object( gRed, WINDOW_WIDTH/2, WINDOW_HEIGHT/2 );
+  Sprite another( gBlue, WINDOW_WIDTH/2-100, WINDOW_HEIGHT/2+20 );
 
   // ALLEY. Create Block sprites
   Block block1( gPink, 120, 30 );
@@ -232,7 +235,7 @@ void handleGalleryState() {
 
 int main (int argc, char *argv[]){
   printVectorTodos();
-  initVideo(window_width, window_height);
+  initVideo(WINDOW_WIDTH, WINDOW_HEIGHT);
   initColors(gScreen);
   initMixer();
   bool running = true;
@@ -243,12 +246,12 @@ int main (int argc, char *argv[]){
   Mouse mouse; // cant have this globally declared because it has SDL stuff inside that need to be initialized first
   
   while (running){
-    SDL_Event e;
     starting_tick = SDL_GetTicks();
     cap_framerate( starting_tick );
 
     switch (currentState){
       case EXIT_STATE:
+        handleExitState(gWindow, dims);
         running = false;
         break;
       case MENU_STATE:

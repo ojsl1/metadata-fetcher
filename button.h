@@ -17,6 +17,7 @@ public:
 
   // pass in the x and y of the topleft corner of the sprite
   Button(int x, int y);
+  ~Button();
 
   // Method declaration using the forward declared Mouse class
   void detectCursor(Mouse &mouse);

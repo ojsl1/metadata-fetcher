@@ -17,6 +17,7 @@ Mouse::Mouse(){
 }
 
 Mouse::~Mouse(){
+  // Clean up code for mouse, in what context though, is this necessary?
 }
 
 void Mouse::updateCursor(){
