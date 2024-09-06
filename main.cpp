@@ -1,10 +1,7 @@
 #include "main.h" // globals
 #include "input.h" // -> render.h -> <vector>
 #include "button.h"
-
-#define WINDOW_WIDTH 480
-#define WINDOW_HEIGHT 320
-#define FPS 15
+#include "addons.h"
 
 enum AppState {
     MENU_STATE,
@@ -13,106 +10,26 @@ enum AppState {
     EXIT_STATE,
 };
 
-// System declarations
+// System definitions
 AppState currentState;
 double delta;
 bool running;
 
-// Debug declarations
+// Debug definitions
 WindowDimensions dims;
 
-// Resource declarations
+// Resource definitions
 Mix_Chunk *bell;
 Mix_Music *bgm;
 Button playButton(20,230);
 
-// WIP Color declarations; currently redundantly also in main.h as externs
+// Color definitions
 Uint32 gPink;
 Uint32 gRed;
 Uint32 gBeige;
 Uint32 gBlue;
 Uint32 gDarkblue;
 Uint32 gDarkgreen;
-
-void cap_framerate ( Uint32 starting_tick ){
-    if ( ( 1000 / FPS ) > SDL_GetTicks() - starting_tick ){
-      SDL_Delay( 1000 / FPS - ( SDL_GetTicks() - starting_tick ) );
-    }
-};
-
-void closeSDL ( SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm ){
-    Mix_FreeChunk(bell);
-    bell = NULL;
-    Mix_FreeMusic(bgm);
-    bgm = NULL;
-
-    Mix_CloseAudio();
-    SDL_FreeSurface(gScreen);
-    SDL_DestroyWindow(gWindow);
-    SDL_Quit();
-}
-
-void handleExitState( SDL_Window* gWindow, WindowDimensions dims){
-    //SDL_SetWindowSize( gWindow, dims.wSize, dims.hSize ); //enforce size
-    //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
-    SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );
-    std::cout << "Exit Position: " << dims.xPosi << "," << dims.yPosi << std::endl;
-    std::cout << "Exit Size: " << dims.wSize << "," << dims.hSize << " [TODO: Doesnt update after resizing]" << std::endl;
-    std::cout << "FPS: " << FPS << std::endl;
-    std::cout << "Exit succesfully" << std::endl;
-}
-
-void initColors(SDL_Surface* gScreen){
-    gPink = SDL_MapRGB(gScreen->format, 232, 111, 148);
-    gRed = SDL_MapRGB(gScreen->format, 250, 0, 0);
-    gBeige = SDL_MapRGB(gScreen->format, 255, 255, 115);
-    gBlue = SDL_MapRGB(gScreen->format, 0, 0, 255);
-    gDarkblue = SDL_MapRGB(gScreen->format, 111, 114, 120);
-    gDarkgreen = SDL_MapRGB(gScreen->format, 100, 120, 100);
-}
-
-void printVectorTodos(){
-  //Store all to-dos in a vector of pairs (priority, description)
-  // 1: current, 2: high, 3: medium, 4: low, 5: future
-  std::vector<std::pair<int, std::string>> todos = {
-    {1, "REFACTOR \n input.h: refactor mouse class according to the comments"},
-    {1, "CLEANUP \n to avoid confusion make sure all variables are declared only either GLOBALLY or LOCALLY"},
-
-    {2, "FEATURE \n implement a state-agnostic viewport render function and clean handleMenuState()"},
-    {2, "FEATURE \n Add destructors to classes where appropriate"},
-    {2, "FEATURE \n Make class members private where appropriate"},
-
-    {3, "button.cpp: change playButton sprite on interact without spritesheets"},
-    {6, "Rewrite the eventloop as a separate EventListener (mouse events) -> clickable buttons -> main menu -> submenus"},
-
-    {6, "Separate classes from `render.h` to their own header files"},
-    {6, "Is it possible to draw mouse using Sprite, SpriteGroup or Block classes"},
-    {6, "was adding window_width and window_height return types to initVideo() really necessary when you made it a global/extern function"},
-
-    {4, "BUG \n Fix clicking X not closing the game"},
-    {4, "Add listeners for ctrl+q and ctrl+w and q to exit the game"},
-
-    {6, "FEATURE \n test if `double delta` timer from main.cpp can be combined with cap_framerate()"},
-    {6, "Currently all header files that require SDL libs source them through `render.h` -> `main.h`. \n Delete this superfluous step and directly source the SDL libs through main.h.\n For the affected header files this will require adding includes for the standard libs that are also in render.h (as of now just iostream and vector)."},
-    {6, "FEATURE \n implement gl_renderer.cpp (and vk_renderer.cpp) for the SDL_Render stuff and comments"},
-    {5, "physics.h: finish the empty classes"},
-    {5, "FEATURE \n physics.h: vect2 to move sprites"},
-    {6, "Refactor everything into OOP, with base classes and subclasses"},
-    {5, "FEATURE \n button.cpp: implement spritesheet capabilities"},
-  };
-
-  std::cout << "### Printing The Autosorted TODO List... ###" << std::endl;
-
-  //print todos by priority
-  //for (int priority = 1; priority <= 6; ++priority) {
-  for (int priority = 6; priority >= 1; --priority) {
-    for (const auto& todo : todos) {
-      if (todo.first == priority) {
-        std::cout << priority << ". " << todo.second << std::endl;
-      }
-    }
-  }
-}
 
 void handleMenuState() {
   SDL_Event e;
@@ -233,6 +150,27 @@ void handleGalleryState() {
   // Render gallery state (ie. gallery viewport, images etc.)
 }
 
+void handleExitState( SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims){
+    //SDL_SetWindowSize( gWindow, dims.wSize, dims.hSize ); //enforce size
+    //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
+    SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );
+    std::cout << "Exit Position: " << dims.xPosi << "," << dims.yPosi << std::endl;
+    std::cout << "Exit Size: " << dims.wSize << "," << dims.hSize << " [TODO: Doesnt update after resizing]" << std::endl;
+    std::cout << "FPS: " << FPS << std::endl;
+
+    Mix_FreeChunk(bell);
+    bell = NULL;
+    Mix_FreeMusic(bgm);
+    bgm = NULL;
+
+    Mix_CloseAudio();
+    SDL_FreeSurface(gScreen);
+    SDL_DestroyWindow(gWindow);
+    SDL_Quit();
+
+    std::cout << "Exit succesfully" << std::endl;
+}
+
 int main (int argc, char *argv[]){
   printVectorTodos();
   initVideo(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -251,7 +189,7 @@ int main (int argc, char *argv[]){
 
     switch (currentState){
       case EXIT_STATE:
-        handleExitState(gWindow, dims);
+        handleExitState(gWindow, bell, bgm, dims);
         running = false;
         break;
       case MENU_STATE:

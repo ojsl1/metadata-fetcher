@@ -24,7 +24,7 @@ Button::Button(int x, int y)
 }
 
 Button::~Button(){
-  // Clean up code for buttons when changing app state
+  // WIP Clean up code for buttons when changing app state
 }
 
 void Button::detectCursor( Mouse &mouse){
@@ -44,11 +44,14 @@ void Button::drawButton( SDL_Surface *gScreen){
     SDL_BlitSurface( rawButton, NULL, gScreen, &dRectButton );
 }
 
+#if 0 // WIP this is for updating buttons eg. on mousehover
 void Button::updateButton(){
-
 }
+#endif
 
+#if 0 // WIP
 void Button::setXY(int x, int y){
   dRectButton.x = x;
   dRectButton.y = y;
 }
+#endif

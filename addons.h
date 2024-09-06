@@ -1,8 +1,11 @@
 #ifndef ADDONS_H
 #define ADDONS_H
-#define ADDONS_INCLUDED
 
 #include "render.h"
+
+void cap_framerate ( Uint32 starting_tick );
+void initColors(SDL_Surface* gScreen);
+void printVectorTodos();
 
 #if 0
 #define FACTOR 7
@@ -19,6 +22,6 @@ class Scaler{
           return(FACTOR*ins);
       }
 };
+#endif
 
-#endif // ADDONS_INCLUDED
 #endif // ADDONS_H

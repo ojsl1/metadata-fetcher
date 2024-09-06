@@ -24,7 +24,9 @@ public:
 
   void drawButton(SDL_Surface *gScreen);
 
+#if 0 // WIP see definition in button.cpp
   void updateButton();
+#endif
 
   // set the destination
   void setXY(int x, int y);
