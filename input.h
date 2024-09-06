@@ -13,8 +13,9 @@ private:
   SDL_Rect dRectMouse;
 
 public:
-  SDL_Rect point; //TODO button::detectCursor() reads from this
+  SDL_Rect point; // WIP button.cpp reads from this variable via button::detectCursor()
                   //
+
   Mouse();
   ~Mouse();
   

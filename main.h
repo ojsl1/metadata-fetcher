@@ -19,7 +19,7 @@ struct WindowDimensions{
     int yPosi;
 };
 
-// Declaring certain variables as extern.
+// Global variable declarations
 extern SDL_Window *gWindow;
 extern SDL_Surface *gScreen;
 

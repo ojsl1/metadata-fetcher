@@ -9,11 +9,14 @@ class Mouse;
 #include <iostream>
 
 class Button{
-public:
+private:
   SDL_Surface *rawButton = NULL;
-  SDL_Rect sRectButton; // TODO For spritesheets
+  SDL_Rect sRectButton; // WIP For spritesheets
   SDL_Rect dRectButton;
-  bool selected;
+
+public:
+  bool selected; // WIP main.cpp reads from this variable via playButton.selected
+                 //
 
   // pass in the x and y of the topleft corner of the sprite
   Button(int x, int y);
@@ -28,7 +31,7 @@ public:
   void updateButton();
 #endif
 
-  // set the destination
+  // Setter for the destination
   void setXY(int x, int y);
 };
 

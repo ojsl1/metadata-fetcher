@@ -19,11 +19,10 @@ void printVectorTodos(){
   //Store all to-dos in a vector of pairs (priority, description)
   // 1: current, 2: high, 3: medium, 4: low, 5: future
   std::vector<std::pair<int, std::string>> todos = {
-    {1, "REFACTOR \n input.h: refactor mouse class according to the comments"},
+    {1, "REFACTOR \n input.h: refactor point as a private member with getters"},
     {1, "CLEANUP \n to avoid confusion make sure all variables are declared only either GLOBALLY or LOCALLY"},
 
     {2, "FEATURE \n implement a state-agnostic viewport render function and clean handleMenuState()"},
-    {2, "FEATURE \n Add destructors to classes where appropriate"},
     {2, "FEATURE \n Make class members private where appropriate"},
 
     {3, "button.cpp: change playButton sprite on interact without spritesheets"},
