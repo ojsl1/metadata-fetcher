@@ -7,25 +7,25 @@
 #include <iostream>
 
 class Mouse{
-private:
-  SDL_Surface *rawMouse = NULL;
-  SDL_Surface *scaledMouse = NULL;
-  SDL_Rect dRectMouse;
-
 public:
-  SDL_Rect point; // WIP button.cpp reads from this variable via button::detectCursor()
-                  //
-
-  Mouse();
+  // Optional filepath for custom cursor
+  Mouse(const char* mouseImagePath = NULL);
   ~Mouse();
   
-  // Getter for the private point
+  SDL_Rect point; // WIP cant privatize button.cpp reads from this via button::detectCursor()
+  
+  // WIP Getter for the private point
   SDL_Rect getPoint() const {
     return point;
   }
 
   void updateCursor();
   void drawCursor(SDL_Surface *gScreen);
+
+private:
+  SDL_Surface *rawMouse = NULL;
+  SDL_Surface *scaledMouse = NULL;
+  SDL_Rect dRectMouse; // The size of the scaled cursor
 };
 
 #endif // INPUT_H

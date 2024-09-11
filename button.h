@@ -9,18 +9,12 @@ class Mouse;
 #include <iostream>
 
 class Button{
-private:
-  SDL_Surface *rawButton = NULL;
-  SDL_Rect sRectButton; // WIP For spritesheets
-  SDL_Rect dRectButton;
-
 public:
-  bool selected; // WIP main.cpp reads from this variable via playButton.selected
-                 //
-
-  // pass in the x and y of the topleft corner of the sprite
-  Button(int x, int y);
+  // Topleft x,y coords of the image and filepath
+  Button(int x, int y, const char* imagePath);
   ~Button();
+  
+  bool selected; // WIP cant privatize main.cpp reads from this via playButton.selected
 
   // Method declaration using the forward declared Mouse class
   void detectCursor(Mouse &mouse);
@@ -31,8 +25,13 @@ public:
   void updateButton();
 #endif
 
-  // Setter for the destination
+  // WIP Setter for the destination
   void setXY(int x, int y);
+
+private:
+  SDL_Surface *rawButton = NULL;
+  SDL_Rect sRectButton; // WIP For spritesheets
+  SDL_Rect dRectButton;
 };
 
 #endif // BUTTON_H

@@ -1,15 +1,18 @@
 #include "button.h"
 #include "input.h" // Button::detectCursor depends on the Mouse class
 
-Button::Button(int x, int y)
-  : sRectButton{0,y,75,300},  // Initialization list
-    dRectButton{x,y,75,300}   // Member variables are initialized directly
-                              // Without this init list the button gets drawn at topleft, why? TODO
+Button::Button(int x, int y, const char* buttonImagePath)
+  : sRectButton{0,y,75,300},          // Initialization list
+    dRectButton{x,y,75,300},          // Member variables are initialized directly
+    rawButton(NULL), selected(false)  // Default init values
+                                      // TODO Without this init list the buttons gets drawn at topleft, why?
 {
-    rawButton = IMG_Load("resources/button-inactive.png");
-    selected = false;
-
-#if 0 // WIP: Reading rects from a spritesheet:
+    rawButton = IMG_Load(buttonImagePath);
+    if (!rawButton){
+      SDL_Log("Failed to load image: %s, SDL_Image Error: %s", buttonImagePath, IMG_GetError());
+    }
+#if 0
+    // WIP: Reading rects from a spritesheet:
     sRectButton.h = 100;  //each button has 100pixel height on the png spritesheet
     sRectButton.w = 400;  //each button has 400pixel width on the png spritesheet
 
@@ -24,7 +27,9 @@ Button::Button(int x, int y)
 }
 
 Button::~Button(){
-  // WIP Clean up code for buttons when changing app state
+  if (rawButton){
+    SDL_FreeSurface(rawButton);
+  }
 }
 
 void Button::detectCursor( Mouse &mouse){
@@ -40,8 +45,8 @@ void Button::detectCursor( Mouse &mouse){
       }
 }
 
-void Button::drawButton( SDL_Surface *gScreen){
-    SDL_BlitSurface( rawButton, NULL, gScreen, &dRectButton );
+void Button::drawButton(SDL_Surface *gScreen){
+    SDL_BlitSurface(rawButton, NULL, gScreen, &dRectButton);
 }
 
 #if 0 // WIP this is for updating buttons eg. on mousehover

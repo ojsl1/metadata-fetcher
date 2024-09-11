@@ -21,7 +21,8 @@ WindowDimensions dims;
 // Resource definitions
 Mix_Chunk *bell;
 Mix_Music *bgm;
-Button playButton(20,230);
+Button playButton(20,230, "resources/button-inactive.png");
+Button topleftButton(20,20, "resources/button-inactive.png");
 
 // Color definitions
 Uint32 gPink;
@@ -46,6 +47,11 @@ void handleMenuState() {
 
             if (playButton.selected){
             std::cout << "Play Music... (m1)" << std::endl;
+            }
+            break;
+
+            if (topleftButton.selected){
+            std::cout << "currentState = PLAY_STATE..." << std::endl;
             }
             break;
 
@@ -79,7 +85,10 @@ void handleMenuState() {
 
   // Update cursor position
   mouse.updateCursor();
+
+  // Detect button-cursor collisions
   playButton.detectCursor(mouse);
+  topleftButton.detectCursor(mouse);
 
   // Clear the screen (optional, depends on game logic) with a custom uint32
   SDL_FillRect( gScreen, NULL, gPink );
@@ -119,30 +128,34 @@ void handleMenuState() {
   // ALLEY. Blit the whole SpriteGroup
   active_sprites.draw(gScreen);
 
-  // Draw the play button
+  // Draw the buttons
   playButton.drawButton(gScreen);
+  topleftButton.drawButton(gScreen);
 
-  // Draw the cursor on top of everything else
+  // Draw the cursor last ie. on top of everything else
   mouse.drawCursor(gScreen);
   
-  // Update the window surface
+  // Update the window surface ie. display new draw ops ie. new frame
   SDL_UpdateWindowSurface(gWindow);
 }
 
 void handlePlayState() {
   SDL_Event e;
   while (SDL_PollEvent(&e)) {
-    std::cout << "Entering Play State... TODO" << std::endl;
-      //add playstate-specific input handling, probably none
-      // case 2. "Returning to Main Menu"
+    std::cout << "WIP Clicked Play button..." << std::endl;
+    std::cout << "WIP currentState = PLAY_STATE;" << std::endl;
+    std::cout << "WIP Playing bgm music..." << std::endl;
+    std::cout << "WIP Render Pause button into Play button rect..." << std::endl;
+    std::cout << "WIP Clicked Pause button..." << std::endl;
+    std::cout << "WIP Pause bgm music..." << std::endl;
+    std::cout << "WIP currentState = MENU_STATE;" << std::endl;
   }
-  //Playing music, change play rect into pause rect
 }
 
 void handleGalleryState() {
   SDL_Event e;
   while (SDL_PollEvent(&e)) {
-    std::cout << "Entering Gallery State... TODO" << std::endl;
+    std::cout << "TODO Entering Gallery State..." << std::endl;
 
     //add gallery-specific input handling
     //if 2. Returning to Main Menu..." -> currentState = MENU_STATE;

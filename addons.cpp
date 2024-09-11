@@ -19,6 +19,9 @@ void printVectorTodos(){
   //Store all to-dos in a vector of pairs (priority, description)
   // 1: current, 2: high, 3: medium, 4: low, 5: future
   std::vector<std::pair<int, std::string>> todos = {
+    {1, "REFACTOR \n button.h: rename playButton into startButton"},
+    {1, "FEATURE \n button.h: chnge topleft image to play/pause icons"},
+
     {1, "REFACTOR \n input.h: refactor point as a private member with getters"},
     {1, "CLEANUP \n to avoid confusion make sure all variables are declared only either GLOBALLY or LOCALLY"},
 

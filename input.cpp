@@ -1,23 +1,47 @@
 #include "input.h"
 
-Mouse::Mouse(){
-    rawMouse = IMG_Load("resources/mouse.png");
+Mouse::Mouse(const char* mouseImagePath)
+  : rawMouse(NULL), scaledMouse(NULL)
+{
+    dRectMouse = {0,0,64,64}; // x,y,w,h,
+    point = {0,0,1,1}; // x,y,w,h
+
+    if (!mouseImagePath){
+      mouseImagePath = "resources/mouse.png";
+    }
+
+    rawMouse = IMG_Load(mouseImagePath);
+    if (!rawMouse ){
+      SDL_Log("Failed to load image: %s, SDL_Image Error: %s", mouseImagePath, IMG_GetError());
+      rawMouse = IMG_Load("resources/mouse.png");
+      if (!rawMouse){
+        SDL_Log("Failed to load fallback image: resources/mouse.png, SDL_Image Error: %s", IMG_GetError());
+        return;
+      }
+    }
+
     // The size of the rectangle the cursor will be drawn on
     scaledMouse = SDL_CreateRGBSurface(0, 50, 50, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+    if (!scaledMouse){
+      SDL_Log("Failed to create scaled mouse surface, SDL Error: %s", SDL_GetError());
+      return;
+    }
 
-    // The size of the scaled cursor 
-    dRectMouse =  { 0, 0, 64, 64 }; // x,y,w,h
+    // Scale the rawMouse on the scaledMouse surface
+    SDL_BlitScaled(rawMouse, NULL, scaledMouse, &dRectMouse);
 
-    SDL_BlitScaled( rawMouse, NULL, scaledMouse, &dRectMouse );
-    SDL_FreeSurface( rawMouse );
-
-    point.w = 1;
-    point.h = 1;
-    SDL_ShowCursor(false);
+    
+    SDL_ShowCursor(SDL_DISABLE);
 }
 
 Mouse::~Mouse(){
-  // WIP Clean up code for mouse, in what context though, is this necessary?
+  if (rawMouse){
+    SDL_FreeSurface(rawMouse);
+  }
+
+  if (scaledMouse){
+    SDL_FreeSurface(scaledMouse);
+  }
 }
 
 void Mouse::updateCursor(){
@@ -27,5 +51,5 @@ void Mouse::updateCursor(){
 }
 
 void Mouse::drawCursor(SDL_Surface *gScreen){
-    SDL_BlitSurface( scaledMouse, NULL, gScreen, &dRectMouse);
+    SDL_BlitSurface(scaledMouse, NULL, gScreen, &dRectMouse);
 }
