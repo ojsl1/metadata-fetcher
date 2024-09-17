@@ -21,8 +21,8 @@ WindowDimensions dims;
 // Resource definitions
 Mix_Chunk *bell;
 Mix_Music *bgm;
-Button playButton(20,230, "resources/button-inactive.png");
-Button topleftButton(20,20, "resources/button-inactive.png");
+Button playButton(20, 230, 25, 25, "resources/button-inactive.png");
+Button topleftButton(10, 10, 80, 80, "resources/play-pause.png");
 
 // Color definitions
 Uint32 gPink;
@@ -37,8 +37,6 @@ void handleMenuState() {
   Mouse mouse; // cannot globally declare this because theres SDL_ShowCursor() inside that requires sdl to be initialized first
   while (SDL_PollEvent(&e)) {
     switch (e.type){
-      //TODO case 1. if play rect pressed -> currentState = PLAY_STATE;
-      //TODO case 2. if gallery rect pressed -> currentState = GALLERY_STATE;
 
       case SDL_MOUSEBUTTONUP:
         switch (e.button.button){
@@ -130,7 +128,7 @@ void handleMenuState() {
 
   // Draw the buttons
   playButton.drawButton(gScreen);
-  topleftButton.drawButton(gScreen);
+  topleftButton.drawButtonScaled(gScreen);
 
   // Draw the cursor last ie. on top of everything else
   mouse.drawCursor(gScreen);
@@ -189,16 +187,23 @@ int main (int argc, char *argv[]){
   initVideo(WINDOW_WIDTH, WINDOW_HEIGHT);
   initColors(gScreen);
   initMixer();
+
+  Timer timer;
+  timer.Start();
+
+  Uint32 starting_tick;
+
   bool running = true;
   currentState = MENU_STATE;
-  //double delta = .0001;
-  //double time2 = SDL_GetTicks();  
-  Uint32 starting_tick;
   Mouse mouse; // cant have this globally declared because it has SDL stuff inside that need to be initialized first
   
   while (running){
     starting_tick = SDL_GetTicks();
     cap_framerate( starting_tick );
+
+    timer.Update();
+    float deltaTime = timer.getDeltaTime();
+    std::cout << "Delta time: " << deltaTime << " seconds" << std::endl;
 
     switch (currentState){
       case EXIT_STATE:

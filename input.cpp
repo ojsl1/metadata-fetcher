@@ -1,21 +1,22 @@
 #include "input.h"
 
 Mouse::Mouse(const char* mouseImagePath)
-  : rawMouse(NULL), scaledMouse(NULL)
+  : rawMouse(NULL),
+    scaledMouse(NULL)
 {
     dRectMouse = {0,0,64,64}; // x,y,w,h,
     point = {0,0,1,1}; // x,y,w,h
 
     if (!mouseImagePath){
-      mouseImagePath = "resources/mouse.png";
+      mouseImagePath = "resources/mouse-fallback.png";
     }
 
     rawMouse = IMG_Load(mouseImagePath);
     if (!rawMouse ){
       SDL_Log("Failed to load image: %s, SDL_Image Error: %s", mouseImagePath, IMG_GetError());
-      rawMouse = IMG_Load("resources/mouse.png");
+      rawMouse = IMG_Load("resources/mouse-fallback.png");
       if (!rawMouse){
-        SDL_Log("Failed to load fallback image: resources/mouse.png, SDL_Image Error: %s", IMG_GetError());
+        SDL_Log("Failed to load fallback image: resources/mouse-fallback.png, SDL_Image Error: %s", IMG_GetError());
         return;
       }
     }
@@ -29,7 +30,6 @@ Mouse::Mouse(const char* mouseImagePath)
 
     // Scale the rawMouse on the scaledMouse surface
     SDL_BlitScaled(rawMouse, NULL, scaledMouse, &dRectMouse);
-
     
     SDL_ShowCursor(SDL_DISABLE);
 }

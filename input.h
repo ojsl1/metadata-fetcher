@@ -1,4 +1,4 @@
-#ifndef INPUt_H
+#ifndef INPUT_H
 #define INPUT_H
 #pragma once
 
@@ -14,7 +14,7 @@ public:
   
   SDL_Rect point; // WIP cant privatize button.cpp reads from this via button::detectCursor()
   
-  // WIP Getter for the private point
+  // WIP to privatize point, use getter for getting the values
   SDL_Rect getPoint() const {
     return point;
   }

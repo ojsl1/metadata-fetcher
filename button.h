@@ -11,15 +11,16 @@ class Mouse;
 class Button{
 public:
   // Topleft x,y coords of the image and filepath
-  Button(int x, int y, const char* imagePath);
+  Button(int x, int y, int width, int height, const char* imagePath);
   ~Button();
   
   bool selected; // WIP cant privatize main.cpp reads from this via playButton.selected
 
-  // Method declaration using the forward declared Mouse class
+  // Using the forward declared Mouse class
   void detectCursor(Mouse &mouse);
 
   void drawButton(SDL_Surface *gScreen);
+  void drawButtonScaled(SDL_Surface *gScreen);
 
 #if 0 // WIP see definition in button.cpp
   void updateButton();
@@ -30,6 +31,7 @@ public:
 
 private:
   SDL_Surface *rawButton = NULL;
+  SDL_Surface *scaledButton = NULL;
   SDL_Rect sRectButton; // WIP For spritesheets
   SDL_Rect dRectButton;
 };
