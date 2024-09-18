@@ -32,7 +32,7 @@ Uint32 gBlue;
 Uint32 gDarkblue;
 Uint32 gDarkgreen;
 
-void handleMenuState() {
+void loopMenuState() {
   SDL_Event e;
   Mouse mouse; // cannot globally declare this because theres SDL_ShowCursor() inside that requires sdl to be initialized first
   while (SDL_PollEvent(&e)) {
@@ -40,45 +40,30 @@ void handleMenuState() {
 
       case SDL_MOUSEBUTTONUP:
         switch (e.button.button){
-          case SDL_BUTTON_LEFT:
+
+          case SDL_BUTTON_LEFT:{
             std::cout << "value is: " <<  playButton.selected << std::endl;
+            if (playButton.selected){std::cout << "Play Music... (m1)" << std::endl;};
+            if (topleftButton.selected){std::cout << "currentState = PLAY_STATE..." << std::endl;}
+            } break;
 
-            if (playButton.selected){
-            std::cout << "Play Music... (m1)" << std::endl;
-            }
-            break;
-
-            if (topleftButton.selected){
-            std::cout << "currentState = PLAY_STATE..." << std::endl;
-            }
-            break;
-
-          case SDL_BUTTON_RIGHT:
+          case SDL_BUTTON_RIGHT:{
             std::cout << "value is: " <<  playButton.selected << std::endl;
+            if (playButton.selected){std::cout << "Play Music... (m2)" << std::endl;}
+            } break;
 
-            if (playButton.selected){
-            std::cout << "Play Music... (m2)" << std::endl;
-            }
-            break;
-        }
-        break;
+        } break;
 
-      case SDL_KEYDOWN: // event loop
+      case SDL_KEYDOWN:{
         switch (e.key.keysym.sym){
-          case SDLK_ESCAPE:
-            currentState = EXIT_STATE;
-            break;
-          case SDLK_UP:
-            std::cout << "up key works!" << std::endl;
-            break;
-          case SDLK_DOWN:
-            std::cout << "down key works!" << std::endl;
+          case SDLK_ESCAPE: {currentState = EXIT_STATE;} break;
+          case SDLK_UP: {std::cout << "up key works!" << std::endl;} break;
+          case SDLK_DOWN: {std::cout << "down key works!" << std::endl;} break;
+          default: break;}
 
-          default:
-            break;
-        }
-        break;
-    }
+        } break;
+
+      default: break;}
   }
 
   // Update cursor position
@@ -137,7 +122,7 @@ void handleMenuState() {
   SDL_UpdateWindowSurface(gWindow);
 }
 
-void handlePlayState() {
+void loopPlayState() {
   SDL_Event e;
   while (SDL_PollEvent(&e)) {
     std::cout << "WIP Clicked Play button..." << std::endl;
@@ -150,7 +135,7 @@ void handlePlayState() {
   }
 }
 
-void handleGalleryState() {
+void loopGalleryState() {
   SDL_Event e;
   while (SDL_PollEvent(&e)) {
     std::cout << "TODO Entering Gallery State..." << std::endl;
@@ -161,7 +146,7 @@ void handleGalleryState() {
   // Render gallery state (ie. gallery viewport, images etc.)
 }
 
-void handleExitState( SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims){
+void loopExitState( SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims){
     //SDL_SetWindowSize( gWindow, dims.wSize, dims.hSize ); //enforce size
     //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
     SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );
@@ -206,24 +191,11 @@ int main (int argc, char *argv[]){
     std::cout << "Delta time: " << deltaTime << " seconds" << std::endl;
 
     switch (currentState){
-      case EXIT_STATE:
-        handleExitState(gWindow, bell, bgm, dims);
-        running = false;
-        break;
-      case MENU_STATE:
-        handleMenuState();
-        break;
-      case PLAY_STATE:
-        std::cout << "Entering Play State... TODO" << std::endl;
-        handlePlayState();
-        break;
-      case GALLERY_STATE:
-        std::cout << "Entering Gallery State... TODO" << std::endl;
-        handleGalleryState();
-        break;
-      default:
-        std::cout << "This shouldn't happen" << std::endl;
-        break;
+      case EXIT_STATE: {loopExitState(gWindow, bell, bgm, dims); running = false;} break;
+      case MENU_STATE: {loopMenuState();} break;
+      case PLAY_STATE: {std::cout << "Entering Play State... TODO" << std::endl; loopPlayState();} break;
+      case GALLERY_STATE: {std::cout << "Entering Gallery State... TODO" << std::endl; loopGalleryState();} break;
+      default: {std::cout << "This shouldn't happen" << std::endl;} break;
     }
   }
   

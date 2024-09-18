@@ -2,8 +2,7 @@
 #include "input.h" // Button::detectCursor depends on the Mouse class
 
 Button::Button(int x, int y, int width, int height, const char* buttonImagePath)
-  : sRectButton{0, 0, width, height},    // Initialization list
-    rawButton(NULL),
+  : rawButton(NULL),
     scaledButton(NULL),
     selected(false)
     // TODO Without this init list the buttons gets drawn at topleft, why?
