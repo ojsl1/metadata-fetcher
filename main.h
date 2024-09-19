@@ -11,6 +11,7 @@
 
 void initVideo(int window_width, int window_height);
 void initMixer();
+void drawFrame();
 
 struct WindowDimensions{
     int wSize;

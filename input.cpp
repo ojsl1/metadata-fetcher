@@ -44,12 +44,12 @@ Mouse::~Mouse(){
   }
 }
 
-void Mouse::updateCursor(){
+void Mouse::Update(){
       SDL_GetMouseState(&dRectMouse.x, &dRectMouse.y);
       point.x = dRectMouse.x;
       point.y = dRectMouse.y;
 }
 
-void Mouse::drawCursor(SDL_Surface *gScreen){
+void Mouse::Draw(SDL_Surface *gScreen){
     SDL_BlitSurface(scaledMouse, NULL, gScreen, &dRectMouse);
 }

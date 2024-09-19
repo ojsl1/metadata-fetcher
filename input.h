@@ -19,8 +19,8 @@ public:
     return point;
   }
 
-  void updateCursor();
-  void drawCursor(SDL_Surface *gScreen);
+  void Update();
+  void Draw(SDL_Surface *gScreen);
 
 private:
   SDL_Surface *rawMouse = NULL;

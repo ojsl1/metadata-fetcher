@@ -30,7 +30,7 @@ Button::~Button(){
   }
 }
 
-void Button::detectCursor( Mouse &mouse){
+void Button::DetectCollisions( Mouse &mouse){
       if ( SDL_HasIntersection(&dRectButton, &mouse.point) ){
           selected = true;
           std::cout << "hasintersection" << std::endl;
@@ -39,11 +39,11 @@ void Button::detectCursor( Mouse &mouse){
       }
 }
 
-void Button::drawButton(SDL_Surface *gScreen){
+void Button::Draw(SDL_Surface *gScreen){
     SDL_BlitSurface(rawButton, NULL, gScreen, &dRectButton);
 }
 
-void Button::drawButtonScaled(SDL_Surface *gScreen){
+void Button::DrawScaled(SDL_Surface *gScreen){
     // The size of the rectangle the button will be drawn on ie. doesnt resize the image itself
     scaledButton = SDL_CreateRGBSurface(0, dRectButton.w, dRectButton.h, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
     if (!scaledButton){

@@ -16,10 +16,10 @@ public:
   bool selected; // WIP cant privatize main.cpp reads from this via playButton.selected
 
   // Using the forward declared Mouse class
-  void detectCursor(Mouse &mouse);
+  void DetectCollisions(Mouse &mouse);
 
-  void drawButton(SDL_Surface *gScreen);
-  void drawButtonScaled(SDL_Surface *gScreen);
+  void Draw(SDL_Surface *gScreen);
+  void DrawScaled(SDL_Surface *gScreen);
 
 private:
   SDL_Surface *rawButton = NULL;

@@ -52,3 +52,43 @@ void initMixer(){
     Mix_VolumeMusic( 20 );
     //Mix_FadeInMusic( music1, 0, 5000 );
 }
+
+void drawFrame(){
+  // Clear the screen (optional, depends on game logic) with a custom uint32
+  SDL_FillRect( gScreen, NULL, gPink );
+  //SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 255, 255));
+
+  // ALLEY. Create Sprites
+  Sprite object( gRed, WINDOW_WIDTH/2, WINDOW_HEIGHT/2 );
+  Sprite another( gBlue, WINDOW_WIDTH/2-100, WINDOW_HEIGHT/2+20 );
+
+  // ALLEY. Create Block sprites
+  Block block1( gPink, 120, 30 );
+  Block block2( gPink, 100, 15 );
+  block1.set_image( "resources/cosmox2.png" );
+  block2.set_image( "resources/avatar.bmp" );
+
+  /*
+  TODO: ALLEY. Trying to blit cursor along with other sprites
+  Block block3mouse( blue, 130, 40 );
+  block3mouse.set_image( "resources/mouse.png" );
+  SpriteGroup pointers;
+  pointers.add( &block3mouse );
+  pointers.draw( gScreen ); // draw to mouse not to screen
+  */
+
+  // ALLEY. Create a SpriteGroup & add previously created Blocks to it
+  SpriteGroup active_sprites;
+  active_sprites.add( &block2 );
+  active_sprites.add( &block1 );
+  active_sprites.add( &another );
+  active_sprites.add( &object );
+  object.draw( gScreen );
+
+  // ALLEY. Test if SpriteGroup contains a specified sprite_object
+  //std::cout << active_sprites.has( another ) << std::endl; // TODO: Print only once instead of spamming
+
+  // ALLEY. Blit the whole SpriteGroup
+  active_sprites.draw(gScreen);
+
+}
