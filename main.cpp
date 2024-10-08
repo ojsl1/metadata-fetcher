@@ -45,27 +45,27 @@ void loopMenuState() {
           case SDL_BUTTON_LEFT:{
             std::cout << "value is: " <<  playButton.selected << std::endl;
             if (playButton.selected){std::cout << "Play Music... (m1)" << std::endl;};
-            if (topleftButton.selected){std::cout << "currentState = PLAY_STATE..." << std::endl;}
-            } break;
-
-          case SDL_BUTTON_RIGHT:{
-            std::cout << "value is: " <<  playButton.selected << std::endl;
-            if (playButton.selected){std::cout << "Play Music... (m2)" << std::endl;}
+            if (topleftButton.selected){currentState = PLAY_STATE;}
             } break;
 
         } break;
 
       case SDL_KEYDOWN:{
-        switch (e.key.keysym.sym){
-          case SDLK_ESCAPE: {currentState = EXIT_STATE;} break;
-          case SDLK_UP: {std::cout << "up key works!" << std::endl;} break;
-          case SDLK_DOWN: {std::cout << "down key works!" << std::endl;} break;
-          default: break;}
+          switch (e.key.keysym.sym){
+              case SDLK_ESCAPE:{currentState = EXIT_STATE;} break;
+          }
+      }break;
+      
+      //WIP Music player interactions
+      //TODO EVENT Clicked Play button... -> statePlayer = PLAYING;
+      //TODO EVENT Render Play button into Pause button rect...
+      //
+      //TODO EVENT Clicked Pause button.. -> statePlayer = NOT_PLAYING
+      //TODO EVENT Pause bgm music...
+      //TODO EVENT Render Pause button into Play button rect...
 
-        } break;
-
-      default: break;}
-  }
+      default: break;} //end - switch (e.type){
+  }//end - while (SDL_PollEvent(&e)){
 
 
   // Update cursor position
@@ -92,23 +92,20 @@ void loopMenuState() {
 void loopPlayState() {
   SDL_Event e;
   while (SDL_PollEvent(&e)) {
-    std::cout << "WIP Clicked Play button..." << std::endl;
-    std::cout << "WIP currentState = PLAY_STATE;" << std::endl;
-    std::cout << "WIP Playing bgm music..." << std::endl;
-    std::cout << "WIP Render Pause button into Play button rect..." << std::endl;
-    std::cout << "WIP Clicked Pause button..." << std::endl;
-    std::cout << "WIP Pause bgm music..." << std::endl;
-    std::cout << "WIP currentState = MENU_STATE;" << std::endl;
+    std::cout << "App entered deprecated state, exiting." << std::endl;
+    SDL_Delay(3000);
+    currentState = EXIT_STATE;
   }
 }
 
 void loopGalleryState() {
   SDL_Event e;
   while (SDL_PollEvent(&e)) {
-    std::cout << "TODO Entering Gallery State..." << std::endl;
-
+    std::cout << "App entered unimplemented state, exiting." << std::endl;
+    SDL_Delay(3000);
+    currentState = EXIT_STATE;
     //add gallery-specific input handling
-    //if 2. Returning to Main Menu..." -> currentState = MENU_STATE;
+    //TODO EVENT Returning to Main Menu... -> currentState = MENU_STATE;
   }
   // Render gallery state (ie. gallery viewport, images etc.)
 }
@@ -155,13 +152,13 @@ int main (int argc, char *argv[]){
 
     timer.Update();
     float deltaTime = timer.getDeltaTime();
-    std::cout << "Delta time: " << deltaTime << " seconds" << std::endl;
+    //std::cout << "Delta time: " << deltaTime << " seconds" << std::endl;
 
     switch (currentState){
       case EXIT_STATE: {loopExitState(gWindow, bell, bgm, dims); running = false;} break;
       case MENU_STATE: {loopMenuState();} break;
-      case PLAY_STATE: {std::cout << "Entering Play State... TODO" << std::endl; loopPlayState();} break;
-      case GALLERY_STATE: {std::cout << "Entering Gallery State... TODO" << std::endl; loopGalleryState();} break;
+      case PLAY_STATE: {loopPlayState();} break;
+      case GALLERY_STATE: {loopGalleryState();} break;
       default: {std::cout << "This shouldn't happen" << std::endl;} break;
     }
   }

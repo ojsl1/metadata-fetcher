@@ -20,6 +20,7 @@ void printVectorTodos(){
   // 1: current, 2: high, 3: medium, 4: low, 5: future
   std::vector<std::pair<int, std::string>> todos = {
 
+    {1, "REFACTOR loopPlayState() into a separate player class, that has the playing/notplaying/paused etc states, and maybe even the play/pause button rects"},
     {1, "REFACTOR \n button.cpp: add rect dimensions into the class arguments, to avoid having to resize image files"},
     {1, "SDL2 THEORY \n button.cpp: why are the 3rd args of SDL_BlitScaled() and SDL_BlitSurface() different? the SDL_BlitScaled was yoinked from input.cpp scaling logic"},
 
