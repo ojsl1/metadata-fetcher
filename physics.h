@@ -1,10 +1,12 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
+#include <cmath>
+
 //OOP: Base class
 class AppObject {
 public:
-  AppObject(
+  AppObject();
 };
 
 //OOP: Subclasses
