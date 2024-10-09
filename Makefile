@@ -29,6 +29,9 @@ button.o: button.cpp button.h
 addons.o: addons.cpp addons.h
 	$(CC) $(CXXFLAGS) addons.cpp $(shell pkg-config --cflags sdl2)
 
+setup:
+	bash setup.sh
+
 clean: 
 	@echo "Cleaning everything..."
 	rm -f game
