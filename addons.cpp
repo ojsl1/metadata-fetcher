@@ -5,6 +5,9 @@ void printVectorTodos(){
   // 1: current, 2: high, 3: medium, 4: low, 5: future
   std::vector<std::pair<int, std::string>> todos = {
 
+    {1, "FEATURE \n handleMenuState(): move the draw ops for buttons etc to ren.draw"},
+    {1, "FEATURE \n renderer.cpp create separate draw functions for different menus: drawMainMenu, drawPlayer, drawGallery, etc"}
+
     {1, "REFACTOR loopPlayState() into a separate player class, that has the playing/notplaying/paused etc states, and maybe even the play/pause button rects"},
     {1, "REFACTOR \n button.cpp: add rect dimensions into the class arguments, to avoid having to resize image files"},
     {1, "SDL2 THEORY \n button.cpp: why are the 3rd args of SDL_BlitScaled() and SDL_BlitSurface() different? the SDL_BlitScaled was yoinked from input.cpp scaling logic"},
@@ -13,7 +16,7 @@ void printVectorTodos(){
     {1, "REFACTOR \n input.h: refactor point as a private member with getters"},
     {1, "CLEANUP \n to avoid confusion make sure all variables are declared only either GLOBALLY or LOCALLY"},
 
-    {2, "FEATURE \n handleMenuState(): abstract the render logic into separate state-agnostic functions"},
+
     {2, "FEATURE \n Make class members private where appropriate"},
 
     {3, "BACKLOG \n main.cpp: if play rect pressed -> currentState = PLAY_STATE"},
