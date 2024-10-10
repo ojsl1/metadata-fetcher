@@ -4,6 +4,12 @@
 SDL_Window *gWindow = nullptr;
 SDL_Surface *gScreen = nullptr;
 
+void Renderer::cap_framerate ( Uint32 starting_tick ){
+    if ( ( 1000 / FPS ) > SDL_GetTicks() - starting_tick ){
+      SDL_Delay( 1000 / FPS - ( SDL_GetTicks() - starting_tick ) );
+    }
+};
+
 void Renderer::initColors(SDL_Surface* gScreen){
     gPink = SDL_MapRGB(gScreen->format, 232, 111, 148);
     gRed = SDL_MapRGB(gScreen->format, 250, 0, 0);

@@ -3,7 +3,7 @@
 
 #include "render.h"
 
-void cap_framerate ( Uint32 starting_tick );
+//void cap_framerate ( Uint32 starting_tick );
 //void initColors(SDL_Surface* gScreen);
 void printVectorTodos();
 

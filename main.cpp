@@ -151,7 +151,7 @@ int main (int argc, char *argv[]){
   
   while (running){
     starting_tick = SDL_GetTicks();
-    cap_framerate( starting_tick );
+    ren.cap_framerate( starting_tick );
 
     timer.Update();
     float deltaTime = timer.getDeltaTime();

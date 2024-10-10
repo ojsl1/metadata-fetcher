@@ -206,6 +206,7 @@ public:
 
 class Renderer{
 public:
+void cap_framerate(Uint32 starting_tick);
 void initVideo(int window_width, int window_height); //<= tyhjennettyä nimeä init();
 void initColors(SDL_Surface* gScreen);
 void initMixer(); //<= siirrä sisältö init();

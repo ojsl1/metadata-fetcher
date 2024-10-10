@@ -1,13 +1,5 @@
 #include "addons.h"
 
-void cap_framerate ( Uint32 starting_tick ){
-    if ( ( 1000 / FPS ) > SDL_GetTicks() - starting_tick ){
-      SDL_Delay( 1000 / FPS - ( SDL_GetTicks() - starting_tick ) );
-    }
-};
-
-
-
 void printVectorTodos(){
   //Store all to-dos in a vector of pairs (priority, description)
   // 1: current, 2: high, 3: medium, 4: low, 5: future
