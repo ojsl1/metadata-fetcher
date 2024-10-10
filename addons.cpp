@@ -6,7 +6,7 @@ void printVectorTodos(){
   std::vector<std::pair<int, std::string>> todos = {
 
     {1, "FEATURE \n handleMenuState(): move the draw ops for buttons etc to ren.draw"},
-    {1, "FEATURE \n renderer.cpp create separate draw functions for different menus: drawMainMenu, drawPlayer, drawGallery, etc"}
+    {1, "FEATURE \n renderer.cpp create separate draw functions for different menus: drawMainMenu, drawPlayer, drawGallery, etc"},
 
     {1, "REFACTOR loopPlayState() into a separate player class, that has the playing/notplaying/paused etc states, and maybe even the play/pause button rects"},
     {1, "REFACTOR \n button.cpp: add rect dimensions into the class arguments, to avoid having to resize image files"},
