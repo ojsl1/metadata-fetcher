@@ -4,6 +4,15 @@
 SDL_Window *gWindow = nullptr;
 SDL_Surface *gScreen = nullptr;
 
+void Renderer::initColors(SDL_Surface* gScreen){
+    gPink = SDL_MapRGB(gScreen->format, 232, 111, 148);
+    gRed = SDL_MapRGB(gScreen->format, 250, 0, 0);
+    gBeige = SDL_MapRGB(gScreen->format, 255, 255, 115);
+    gBlue = SDL_MapRGB(gScreen->format, 0, 0, 255);
+    gDarkblue = SDL_MapRGB(gScreen->format, 111, 114, 120);
+    gDarkgreen = SDL_MapRGB(gScreen->format, 100, 120, 100);
+}
+
 void Renderer::initVideo( int window_width, int window_height ){
     SDL_Init( SDL_INIT_EVERYTHING );
     

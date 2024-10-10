@@ -6,14 +6,7 @@ void cap_framerate ( Uint32 starting_tick ){
     }
 };
 
-void initColors(SDL_Surface* gScreen){
-    gPink = SDL_MapRGB(gScreen->format, 232, 111, 148);
-    gRed = SDL_MapRGB(gScreen->format, 250, 0, 0);
-    gBeige = SDL_MapRGB(gScreen->format, 255, 255, 115);
-    gBlue = SDL_MapRGB(gScreen->format, 0, 0, 255);
-    gDarkblue = SDL_MapRGB(gScreen->format, 111, 114, 120);
-    gDarkgreen = SDL_MapRGB(gScreen->format, 100, 120, 100);
-}
+
 
 void printVectorTodos(){
   //Store all to-dos in a vector of pairs (priority, description)

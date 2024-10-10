@@ -137,7 +137,7 @@ int main (int argc, char *argv[]){
 
   Renderer ren;
   ren.initVideo(WINDOW_WIDTH, WINDOW_HEIGHT);
-  initColors(gScreen);
+  ren.initColors(gScreen);
   ren.initMixer();
 
   Timer timer;

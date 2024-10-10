@@ -207,6 +207,7 @@ public:
 class Renderer{
 public:
 void initVideo(int window_width, int window_height); //<= tyhjennettyä nimeä init();
+void initColors(SDL_Surface* gScreen);
 void initMixer(); //<= siirrä sisältö init();
 void clearScreen(); //<- täytä loopMenuState(); sisällöllä
 void draw(); //<= tyhjennettyä nimeä draw();
