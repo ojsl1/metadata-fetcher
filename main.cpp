@@ -33,7 +33,7 @@ Uint32 gBlue;
 Uint32 gDarkblue;
 Uint32 gDarkgreen;
 
-void loopMenuState() {
+void loopMenuState(Renderer& ren) {
   SDL_Event e;
   Mouse mouse; // cannot globally declare this because theres SDL_ShowCursor() inside that requires sdl to be initialized first
   while (SDL_PollEvent(&e)) {
@@ -75,7 +75,8 @@ void loopMenuState() {
   playButton.DetectCollisions(mouse);
   topleftButton.DetectCollisions(mouse);
 
-  drawFrame();
+  ren.clearScreen();
+  ren.draw();
 
   // Draw the buttons
   playButton.Draw(gScreen);
@@ -133,9 +134,11 @@ void loopExitState( SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, Window
 
 int main (int argc, char *argv[]){
   printVectorTodos();
-  initVideo(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+  Renderer ren;
+  ren.initVideo(WINDOW_WIDTH, WINDOW_HEIGHT);
   initColors(gScreen);
-  initMixer();
+  ren.initMixer();
 
   Timer timer;
   timer.Start();
@@ -156,7 +159,7 @@ int main (int argc, char *argv[]){
 
     switch (currentState){
       case EXIT_STATE: {loopExitState(gWindow, bell, bgm, dims); running = false;} break;
-      case MENU_STATE: {loopMenuState();} break;
+      case MENU_STATE: {loopMenuState(ren);} break;
       case PLAY_STATE: {loopPlayState();} break;
       case GALLERY_STATE: {loopGalleryState();} break;
       default: {std::cout << "This shouldn't happen" << std::endl;} break;

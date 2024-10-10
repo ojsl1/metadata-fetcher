@@ -4,7 +4,7 @@
 SDL_Window *gWindow = nullptr;
 SDL_Surface *gScreen = nullptr;
 
-void initVideo( int window_width, int window_height ){
+void Renderer::initVideo( int window_width, int window_height ){
     SDL_Init( SDL_INIT_EVERYTHING );
     
     // Create the window
@@ -35,7 +35,7 @@ void initVideo( int window_width, int window_height ){
     }
 }
 
-void initMixer(){
+void Renderer::initMixer(){
     // MIX_DEFAULT_FREQUENCY = 22050
     Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096 );
     Mix_Chunk *bell = NULL;
@@ -53,11 +53,13 @@ void initMixer(){
     //Mix_FadeInMusic( music1, 0, 5000 );
 }
 
-void drawFrame(){
+void Renderer::clearScreen(){
   // Clear the screen (optional, depends on game logic) with a custom uint32
   SDL_FillRect( gScreen, NULL, gPink );
   //SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 255, 255));
+}
 
+void Renderer::draw(){
   // ALLEY. Create Sprites
   Sprite object( gRed, WINDOW_WIDTH/2, WINDOW_HEIGHT/2 );
   Sprite another( gBlue, WINDOW_WIDTH/2-100, WINDOW_HEIGHT/2+20 );

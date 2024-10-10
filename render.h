@@ -204,4 +204,17 @@ public:
     }
 };
 
+class Renderer{
+public:
+void initVideo(int window_width, int window_height); //<= tyhjennettyä nimeä init();
+void initMixer(); //<= siirrä sisältö init();
+void clearScreen(); //<- täytä loopMenuState(); sisällöllä
+void draw(); //<= tyhjennettyä nimeä draw();
+void present(); //for swapping buffers with opengl
+void cleanup(); //<- täytä loopExitState(); sisällöllä
+
+private:
+    // TODO after it works
+};
+
 #endif // RENDER_H
