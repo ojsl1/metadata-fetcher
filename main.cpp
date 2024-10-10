@@ -4,17 +4,16 @@
 #include "button.h"
 #include "addons.h"
 
-enum AppState {
-    MENU_STATE,
-    PLAY_STATE,
-    GALLERY_STATE,
-    EXIT_STATE,
+enum class MenuState {
+    MAIN_MENU,
+    PLAY_MENU,
+    GALLERY_MENU,
+    EXIT,
 };
 
 // System definitions
-AppState currentState;
+MenuState currentMenu = MenuState::MAIN_MENU;
 double delta;
-bool running;
 
 // Debug definitions
 WindowDimensions dims;
@@ -45,14 +44,14 @@ void loopMenuState(Renderer& ren) {
           case SDL_BUTTON_LEFT:{
             std::cout << "value is: " <<  playButton.selected << std::endl;
             if (playButton.selected){std::cout << "Play Music... (m1)" << std::endl;};
-            if (topleftButton.selected){currentState = PLAY_STATE;}
+            if (topleftButton.selected){currentMenu = MenuState::PLAY_MENU;}
             } break;
 
         } break;
 
       case SDL_KEYDOWN:{
           switch (e.key.keysym.sym){
-              case SDLK_ESCAPE:{currentState = EXIT_STATE;} break;
+            case SDLK_ESCAPE:{currentMenu = MenuState::EXIT;} break;
           }
       }break;
       
@@ -76,7 +75,7 @@ void loopMenuState(Renderer& ren) {
   topleftButton.DetectCollisions(mouse);
 
   ren.clearScreen();
-  ren.draw();
+  ren.drawMainMenu();
 
   // Draw the buttons
   playButton.Draw(gScreen);
@@ -94,8 +93,7 @@ void loopPlayState() {
   SDL_Event e;
   while (SDL_PollEvent(&e)) {
     std::cout << "App entered deprecated state, exiting." << std::endl;
-    SDL_Delay(3000);
-    currentState = EXIT_STATE;
+    currentMenu = MenuState::EXIT;
   }
 }
 
@@ -103,33 +101,31 @@ void loopGalleryState() {
   SDL_Event e;
   while (SDL_PollEvent(&e)) {
     std::cout << "App entered unimplemented state, exiting." << std::endl;
-    SDL_Delay(3000);
-    currentState = EXIT_STATE;
+    currentMenu = MenuState::EXIT;
     //add gallery-specific input handling
-    //TODO EVENT Returning to Main Menu... -> currentState = MENU_STATE;
+    //TODO EVENT Returning to Main Menu... -> currentMenu = MAIN_MENU;
   }
   // Render gallery state (ie. gallery viewport, images etc.)
 }
 
-void loopExitState( SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims){
-    //SDL_SetWindowSize( gWindow, dims.wSize, dims.hSize ); //enforce size
-    //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
-    SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );
-    std::cout << "Exit Position: " << dims.xPosi << "," << dims.yPosi << std::endl;
-    std::cout << "Exit Size: " << dims.wSize << "," << dims.hSize << " [TODO: Doesnt update after resizing]" << std::endl;
-    std::cout << "FPS: " << FPS << std::endl;
-
-    Mix_FreeChunk(bell);
-    bell = NULL;
-    Mix_FreeMusic(bgm);
-    bgm = NULL;
-
-    Mix_CloseAudio();
-    SDL_FreeSurface(gScreen);
-    SDL_DestroyWindow(gWindow);
-    SDL_Quit();
-
-    std::cout << "Exit succesfully" << std::endl;
+void renderMenus(Renderer& ren){
+    switch (currentMenu) {
+      case MenuState::MAIN_MENU:
+          loopMenuState(ren);
+          break;
+      case MenuState::PLAY_MENU:
+          loopPlayState();
+          break;
+      case MenuState::GALLERY_MENU:
+          loopGalleryState();
+          break;
+      case MenuState::EXIT:
+          std::cout << "[TODO: this doesnt get printed out]" << std::endl;
+          break;
+      default:
+          std::cout << "This shouldn't happen" << std::endl;
+          break;
+    }
 }
 
 int main (int argc, char *argv[]){
@@ -145,11 +141,10 @@ int main (int argc, char *argv[]){
 
   Uint32 starting_tick;
 
-  bool running = true;
-  currentState = MENU_STATE;
+  currentMenu = MenuState::MAIN_MENU;
   Mouse mouse; // cant have this globally declared because it has SDL stuff inside that need to be initialized first
   
-  while (running){
+  while (true){
     starting_tick = SDL_GetTicks();
     ren.cap_framerate( starting_tick );
 
@@ -157,14 +152,20 @@ int main (int argc, char *argv[]){
     float deltaTime = timer.getDeltaTime();
     //std::cout << "Delta time: " << deltaTime << " seconds" << std::endl;
 
-    switch (currentState){
-      case EXIT_STATE: {loopExitState(gWindow, bell, bgm, dims); running = false;} break;
-      case MENU_STATE: {loopMenuState(ren);} break;
-      case PLAY_STATE: {loopPlayState();} break;
-      case GALLERY_STATE: {loopGalleryState();} break;
-      default: {std::cout << "This shouldn't happen" << std::endl;} break;
+    /*
+    // Handle input to switch between menus
+    handleMenuInput();
+    */
+
+    // Render the appropriate menu based on the currentMenu state.
+    renderMenus(ren);
+
+    if (currentMenu == MenuState::EXIT){
+        break;
     }
   }
   
-  // main function logic
+  ren.cleanup(gWindow, bell, bgm, dims);
+  return 0;
 }
+

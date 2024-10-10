@@ -69,12 +69,16 @@ void Renderer::initMixer(){
 }
 
 void Renderer::clearScreen(){
-  // Clear the screen (optional, depends on game logic) with a custom uint32
+  // Clear the screen (optional, depends on game logic)
   SDL_FillRect( gScreen, NULL, gPink );
   //SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 255, 255));
 }
 
-void Renderer::draw(){
+void Renderer::drawMainMenu(){
+
+}
+
+void Renderer::drawAlleys(){
   // ALLEY. Create Sprites
   Sprite object( gRed, WINDOW_WIDTH/2, WINDOW_HEIGHT/2 );
   Sprite another( gBlue, WINDOW_WIDTH/2-100, WINDOW_HEIGHT/2+20 );
@@ -107,5 +111,44 @@ void Renderer::draw(){
 
   // ALLEY. Blit the whole SpriteGroup
   active_sprites.draw(gScreen);
+}
 
+void Renderer::cleanup( SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims){
+    //SDL_SetWindowSize( gWindow, dims.wSize, dims.hSize ); //enforce size
+    //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
+    SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );
+    std::cout << "Exit Position: " << dims.xPosi << "," << dims.yPosi << std::endl;
+    std::cout << "Exit Size: " << dims.wSize << "," << dims.hSize << " [TODO: Doesnt update after resizing]" << std::endl;
+    std::cout << "FPS: " << FPS << std::endl;
+
+    if (bell != NULL) {
+      Mix_FreeChunk(bell);
+      bell = NULL;
+    }
+    if (bgm != NULL) {
+      Mix_FreeMusic(bgm);
+      bgm = NULL;
+    }
+    Mix_CloseAudio();
+
+    if (gScreen != NULL) {
+      SDL_FreeSurface(gScreen);
+      gScreen = NULL;
+    }
+   
+    /*
+    if (gFont != NULL) {
+      TTF_CloseFont(gFont);
+      gFont = NULL;
+    }
+    TTF_Quit();
+    */
+
+    if (gWindow != NULL) {
+      SDL_DestroyWindow(gWindow);
+      gWindow = NULL;
+    }
+    SDL_Quit();
+
+    std::cout << "Exit succesfully" << std::endl;
 }

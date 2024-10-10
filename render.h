@@ -206,14 +206,15 @@ public:
 
 class Renderer{
 public:
-void cap_framerate(Uint32 starting_tick);
-void initVideo(int window_width, int window_height);
-void initColors(SDL_Surface* gScreen);
-void initMixer();
-void clearScreen();
-void draw();
-void present(); //for swapping buffers with opengl
-void cleanup(); //<- täytä loopExitState(); sisällöllä
+    void cap_framerate(Uint32 starting_tick);
+    void initVideo(int window_width, int window_height);
+    void initColors(SDL_Surface* gScreen);
+    void initMixer();
+    void clearScreen();
+    void drawMainMenu();
+    void drawAlleys();
+    void present(); //for swapping buffers with opengl
+    void cleanup(SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims);
 
 private:
     // TODO after it works
