@@ -4,7 +4,8 @@
 Button::Button(int x, int y, int width, int height, const char* buttonImagePath)
   : rawButton(NULL),
     scaledButton(NULL),
-    selected(false)
+    hasintersection(false),
+    toggled(false)
     // TODO Without this init list the buttons gets drawn at topleft, why?
 {
     dRectButton = {x, y, width, height}; //x,y,w,h
@@ -30,13 +31,25 @@ Button::~Button(){
   }
 }
 
-void Button::DetectCollisions( Mouse &mouse){
-      if ( SDL_HasIntersection(&dRectButton, &mouse.point) ){
-          selected = true;
-          std::cout << "hasintersection" << std::endl;
-      }else{
-          selected = false;
-      }
+void Button::DetectIntersections(Mouse &mouse){
+    if ( SDL_HasIntersection(&dRectButton, &mouse.point) ){
+        hasintersection = true;
+        //std::cout << "hasintersection" << std::endl;
+    }else{
+        hasintersection = false;
+    }
+}
+
+void Button::DetectClicks(Mouse &mouse){
+    if (mouse.clicked &&
+        mouse.x >= dRectButton.x &&
+        mouse.x <= (dRectButton.x + dRectButton.w) &&
+        mouse.y >= dRectButton.y &&
+        mouse.y <= (dRectButton.y + dRectButton.h)) {
+
+        toggled = !toggled;
+        std::cout << "toggled state is: " << toggled << std::endl;
+        }
 }
 
 void Button::Draw(SDL_Surface *gScreen){

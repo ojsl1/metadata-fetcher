@@ -1,14 +1,19 @@
 #include "addons.h"
+#include <vector>
+#include <iostream>
 
 void printVectorTodos(){
   //Store all to-dos in a vector of pairs (priority, description)
   // 1: current, 2: high, 3: medium, 4: low, 5: future
   std::vector<std::pair<int, std::string>> todos = {
 
-    {1, "FEATURE \n handleMenuState(): move the draw ops for buttons etc to ren.draw"},
+    {1, "CLEANUP \n Document why input.h needs the #pragma once."},
+    {1, "WIP \n Finish turning all classes into subclasses of appobject, button not done, mouse done"},
+    {1, "WIP \n Finish implementing the button.cpp `bool toggled` and input.cpp `bool clicked` for centralizing input handling, using less sdl and cleaner code overall"},
+    {1, "REFACTOR \n play_state into a separate player subclass, that has the playing/notplaying/paused etc states, and maybe even the play/pause button rects"},
+    {1, "FEATURE \n handleMenuState(): move the draw operations for buttons etc to ren.draw"},
     {1, "FEATURE \n renderer.cpp create separate draw functions for different menus: drawMainMenu, drawPlayer, drawGallery, etc"},
 
-    {1, "REFACTOR loopPlayState() into a separate player class, that has the playing/notplaying/paused etc states, and maybe even the play/pause button rects"},
     {1, "REFACTOR \n button.cpp: add rect dimensions into the class arguments, to avoid having to resize image files"},
     {1, "SDL2 THEORY \n button.cpp: why are the 3rd args of SDL_BlitScaled() and SDL_BlitSurface() different? the SDL_BlitScaled was yoinked from input.cpp scaling logic"},
 
@@ -17,7 +22,7 @@ void printVectorTodos(){
     {1, "CLEANUP \n to avoid confusion make sure all variables are declared only either GLOBALLY or LOCALLY"},
 
 
-    {2, "FEATURE \n Make class members private where appropriate"},
+    {2, "BACKLOG \n Figure out the relationship between all the 50,50 values"},
 
     {3, "BACKLOG \n main.cpp: if play rect pressed -> currentState = PLAY_STATE"},
     {3, "BACKLOG \n main.cpp: if gallery rect pressed -> currentState = GAY_STATE"},
@@ -33,10 +38,6 @@ void printVectorTodos(){
     {4, "Add listeners for ctrl+q and ctrl+w and q to exit the game"},
 
     {6, "FEATURE \n test if `double delta` timer from main.cpp can be combined with cap_framerate()"},
-    {6, "Currently all header files that require SDL libs source them through `render.h` -> `main.h`. \n Delete this superfluous step and directly source the SDL libs through main.h.\n For the affected header files this will require adding includes for the standard libs that are also in render.h (as of now just iostream and vector)."},
-    {6, "FEATURE \n implement gl_renderer.cpp (and vk_renderer.cpp) for the SDL_Render stuff and comments"},
-    {5, "FEATURE \n physics.h: vect2 to move sprites"},
-    {6, "Refactor everything into OOP, with base classes and subclasses"},
     {5, "FEATURE \n button.cpp: implement spritesheet capabilities"},
   };
 

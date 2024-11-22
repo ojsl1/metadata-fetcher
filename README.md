@@ -1,6 +1,22 @@
 # Foray-SDL2
 
-## Fixes
+## Todo
+
+- [X] OOP
+    - [X] Baseclass
+    - [ ] Subclasses
+    - [ ] Polymorphism
+- [ ] RAII
+- [ ] SFINAE
+- [ ] Optimize memory of classes with union keywords
+- [ ] Currently all header files that require SDL libs source them through "render.h" -> "main.h". Delete this superfluous step and directly source SDL libs through main.h. For the affected header files this will require adding includes for the standard libs that are also in render.h (as of now just iostream and vector).
+- [ ] Gallery: Iterate over filenames image000...image991 and draw them one by one with some delay between
+- [ ] Render: vect2 for sprite movement
+- [ ] Render: gl\_renderer
+- [ ] Render: vk_renderer
+- [ ] SDL2 -> SDL3
+
+## Fix memos
 
 #### mouse.drawMouse( screen ) (2024)
 1. changed variable from mouse.mouseImage to screen

@@ -13,10 +13,11 @@ public:
   Button(int x, int y, int width, int height, const char* imagePath);
   ~Button();
   
-  bool selected; // WIP cant privatize main.cpp reads from this via playButton.selected
+  bool hasintersection; // WIP cant privatize main.cpp reads from this via playButton.hasintersection
+  bool toggled;
 
-  // Using the forward declared Mouse class
-  void DetectCollisions(Mouse &mouse);
+  void DetectIntersections(Mouse &mouse); // Using the forward declared Mouse class
+  void DetectClicks(Mouse &mouse);
 
   void Draw(SDL_Surface *gScreen);
   void DrawScaled(SDL_Surface *gScreen);

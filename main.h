@@ -9,12 +9,6 @@
 #define WINDOW_HEIGHT 320
 #define FPS 15
 
-/*
-void initVideo(int window_width, int window_height);
-void initMixer();
-void drawFrame();
-*/
-
 struct WindowDimensions{
     int wSize;
     int hSize;

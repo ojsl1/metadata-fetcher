@@ -3,10 +3,10 @@
 #include "input.h" // -> render.h -> <vector>
 #include "button.h"
 #include "addons.h"
+#include <iostream>
 
 enum class MenuState {
     MAIN_MENU,
-    PLAY_MENU,
     GALLERY_MENU,
     EXIT,
 };
@@ -35,25 +35,24 @@ Uint32 gDarkgreen;
 void loopMenuState(Renderer& ren) {
   SDL_Event e;
   Mouse mouse; // cannot globally declare this because theres SDL_ShowCursor() inside that requires sdl to be initialized first
-  while (SDL_PollEvent(&e)) {
+  while (SDL_PollEvent(&e)){
     switch (e.type){
 
       case SDL_MOUSEBUTTONUP:
         switch (e.button.button){
-
           case SDL_BUTTON_LEFT:{
-            std::cout << "value is: " <<  playButton.selected << std::endl;
-            if (playButton.selected){std::cout << "Play Music... (m1)" << std::endl;};
-            if (topleftButton.selected){currentMenu = MenuState::PLAY_MENU;}
-            } break;
+              if (topleftButton.hasintersection){
+                std::cout << "unimplemented" << std::endl;
+              };
+            }break;
+        }
 
-        } break;
-
-      case SDL_KEYDOWN:{
-          switch (e.key.keysym.sym){
-            case SDLK_ESCAPE:{currentMenu = MenuState::EXIT;} break;
-          }
-      }break;
+      case SDL_KEYDOWN:
+        switch (e.key.keysym.sym){
+          case SDLK_ESCAPE:{
+            currentMenu = MenuState::EXIT;
+          }break;
+        }
       
       //WIP Music player interactions
       //TODO EVENT Clicked Play button... -> statePlayer = PLAYING;
@@ -63,18 +62,28 @@ void loopMenuState(Renderer& ren) {
       //TODO EVENT Pause bgm music...
       //TODO EVENT Render Pause button into Play button rect...
 
-      default: break;} //end - switch (e.type){
-  }//end - while (SDL_PollEvent(&e)){
+    }
+  }
 
 
   // Update cursor position
   mouse.Update();
 
-  // Detect button---cursor collisions
-  playButton.DetectCollisions(mouse);
-  topleftButton.DetectCollisions(mouse);
+  // Update the mouse state
+  mouse.UpdateMouseState(e);
+  // Use the mouse state for button toggle detection
+  playButton.DetectClicks(mouse);
+
+  // Detect button---mouse collisions
+  playButton.DetectIntersections(mouse);
+  topleftButton.DetectIntersections(mouse);
 
   ren.clearScreen();
+
+  if (playButton.hasintersection){
+    ren.drawAlleys();
+  };
+
   ren.drawMainMenu();
 
   // Draw the buttons
@@ -84,17 +93,9 @@ void loopMenuState(Renderer& ren) {
   // Draw the cursor last ie. on top of everything else
   mouse.Draw(gScreen);
   
-  // Update the window surface ie. display new draw ops ie. new frame
+  // Update the window surface ie. display new frame
   SDL_UpdateWindowSurface(gWindow);
 
-}
-
-void loopPlayState() {
-  SDL_Event e;
-  while (SDL_PollEvent(&e)) {
-    std::cout << "App entered deprecated state, exiting." << std::endl;
-    currentMenu = MenuState::EXIT;
-  }
 }
 
 void loopGalleryState() {
@@ -112,9 +113,6 @@ void renderMenus(Renderer& ren){
     switch (currentMenu) {
       case MenuState::MAIN_MENU:
           loopMenuState(ren);
-          break;
-      case MenuState::PLAY_MENU:
-          loopPlayState();
           break;
       case MenuState::GALLERY_MENU:
           loopGalleryState();
@@ -136,9 +134,6 @@ int main (int argc, char *argv[]){
   ren.initColors(gScreen);
   ren.initMixer();
 
-  Timer timer;
-  timer.Start();
-
   Uint32 starting_tick;
 
   currentMenu = MenuState::MAIN_MENU;
@@ -147,10 +142,6 @@ int main (int argc, char *argv[]){
   while (true){
     starting_tick = SDL_GetTicks();
     ren.cap_framerate( starting_tick );
-
-    timer.Update();
-    float deltaTime = timer.getDeltaTime();
-    //std::cout << "Delta time: " << deltaTime << " seconds" << std::endl;
 
     /*
     // Handle input to switch between menus
