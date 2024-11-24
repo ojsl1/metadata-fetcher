@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-class Renderer{
+class RendererBase{
 public:
     void cap_framerate(Uint32 starting_tick);
     void initVideo(int window_width, int window_height);

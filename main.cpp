@@ -32,7 +32,7 @@ Uint32 gBlue;
 Uint32 gDarkblue;
 Uint32 gDarkgreen;
 
-void loopMenuState(Renderer& ren) {
+void loopMenuState(RendererBase& ren) {
   SDL_Event e;
   Mouse mouse; // cannot globally declare this because theres SDL_ShowCursor() inside that requires sdl to be initialized first
   while (SDL_PollEvent(&e)){
@@ -109,7 +109,7 @@ void loopGalleryState() {
   // Render gallery state (ie. gallery viewport, images etc.)
 }
 
-void renderMenus(Renderer& ren){
+void renderMenus(RendererBase& ren){
     switch (currentMenu) {
       case MenuState::MAIN_MENU:
           loopMenuState(ren);
@@ -129,7 +129,7 @@ void renderMenus(Renderer& ren){
 int main (int argc, char *argv[]){
   printVectorTodos();
 
-  Renderer ren;
+  RendererBase ren;
   ren.initVideo(WINDOW_WIDTH, WINDOW_HEIGHT);
   ren.initColors(gScreen);
   ren.initMixer();

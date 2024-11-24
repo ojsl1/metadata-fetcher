@@ -4,13 +4,13 @@
 SDL_Window *gWindow = nullptr;
 SDL_Surface *gScreen = nullptr;
 
-void Renderer::cap_framerate ( Uint32 starting_tick ){
+void RendererBase::cap_framerate ( Uint32 starting_tick ){
     if ( ( 1000 / FPS ) > SDL_GetTicks() - starting_tick ){
       SDL_Delay( 1000 / FPS - ( SDL_GetTicks() - starting_tick ) );
     }
 };
 
-void Renderer::initColors(SDL_Surface* gScreen){
+void RendererBase::initColors(SDL_Surface* gScreen){
     gPink = SDL_MapRGB(gScreen->format, 232, 111, 148);
     gRed = SDL_MapRGB(gScreen->format, 250, 0, 0);
     gBeige = SDL_MapRGB(gScreen->format, 255, 255, 115);
@@ -19,7 +19,7 @@ void Renderer::initColors(SDL_Surface* gScreen){
     gDarkgreen = SDL_MapRGB(gScreen->format, 100, 120, 100);
 }
 
-void Renderer::initVideo( int window_width, int window_height ){
+void RendererBase::initVideo( int window_width, int window_height ){
     SDL_Init( SDL_INIT_EVERYTHING );
     
     // Create the window
@@ -50,7 +50,7 @@ void Renderer::initVideo( int window_width, int window_height ){
     }
 }
 
-void Renderer::initMixer(){
+void RendererBase::initMixer(){
     // MIX_DEFAULT_FREQUENCY = 22050
     Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096 );
     Mix_Chunk *bell = NULL;
@@ -68,17 +68,17 @@ void Renderer::initMixer(){
     //Mix_FadeInMusic( music1, 0, 5000 );
 }
 
-void Renderer::clearScreen(){
+void RendererBase::clearScreen(){
   // Clear the screen (optional, depends on game logic)
   SDL_FillRect( gScreen, NULL, gPink );
   //SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 255, 255));
 }
 
-void Renderer::drawMainMenu(){
+void RendererBase::drawMainMenu(){
 
 }
 
-void Renderer::drawAlleys(){
+void RendererBase::drawAlleys(){
   // ALLEY. Create Sprites
   Sprite object( gRed, WINDOW_WIDTH/2, WINDOW_HEIGHT/2 );
   Sprite another( gBlue, WINDOW_WIDTH/2-100, WINDOW_HEIGHT/2+20 );
@@ -113,7 +113,7 @@ void Renderer::drawAlleys(){
   active_sprites.draw(gScreen);
 }
 
-void Renderer::cleanup( SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims){
+void RendererBase::cleanup( SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims){
     //SDL_SetWindowSize( gWindow, dims.wSize, dims.hSize ); //enforce size
     //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
     SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );
