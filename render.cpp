@@ -68,17 +68,17 @@ void RendererBase::initMixer(){
     //Mix_FadeInMusic( music1, 0, 5000 );
 }
 
-void RendererBase::clearScreen(){
+void RendererBase::Clear(){
   // Clear the screen (optional, depends on game logic)
   SDL_FillRect( gScreen, NULL, gPink );
   //SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 255, 255));
 }
 
-void RendererBase::drawMainMenu(){
+void RendererBase::DrawMainMenu(){
 
 }
 
-void RendererBase::drawAlleys(){
+void RendererBase::DrawAlleys(){
   // ALLEY. Create Sprites
   Sprite object( gRed, WINDOW_WIDTH/2, WINDOW_HEIGHT/2 );
   Sprite another( gBlue, WINDOW_WIDTH/2-100, WINDOW_HEIGHT/2+20 );
@@ -113,7 +113,15 @@ void RendererBase::drawAlleys(){
   active_sprites.draw(gScreen);
 }
 
-void RendererBase::cleanup( SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims){
+void RendererBase::Present(){
+  /*  renderer_sdl_sw
+  * drawing operations (e.g., filling rectangles or blitting surfaces) modify an off-screen surface associated with the window.
+  * Update the window surface ie. present the new frame, same as SDL_RenderPresent()
+  */
+  SDL_UpdateWindowSurface(gWindow);
+}
+
+void RendererBase::Shutdown( SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims){
     //SDL_SetWindowSize( gWindow, dims.wSize, dims.hSize ); //enforce size
     //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
     SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );

@@ -3,9 +3,7 @@
 
 // VECTOR-RELATED FUNCTIONS
 
-
-// Vect2:
-/* Purpose:
+/*
  * vect2 provides a lightweight 2D vector class for operations such as
  * addition, scaling, normalization, and dot products. Useful for
  * managing positions, velocities, and directions in 2D space.

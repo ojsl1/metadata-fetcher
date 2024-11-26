@@ -7,6 +7,7 @@ void printVectorTodos(){
   // 1: current, 2: high, 3: medium, 4: low, 5: future
   std::vector<std::pair<int, std::string>> todos = {
 
+    {1, "FEATURE \n is this project small enough for ODR and inline keywords or will it expand in the future"},
     {1, "CLEANUP \n Document why input.h needs the #pragma once."},
     {1, "WIP \n Finish turning all classes into subclasses of appobject, button not done, mouse done"},
     {1, "WIP \n Finish implementing the button.cpp `bool toggled` and input.cpp `bool clicked` for centralizing input handling, using less sdl and cleaner code overall"},

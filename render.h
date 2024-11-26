@@ -11,11 +11,11 @@ public:
     void initVideo(int window_width, int window_height);
     void initColors(SDL_Surface* gScreen);
     void initMixer();
-    void clearScreen();
-    void drawMainMenu();
-    void drawAlleys();
-    void present(); //for swapping buffers with opengl
-    void cleanup(SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims);
+    void Clear();
+    void DrawMainMenu();
+    void DrawAlleys();
+    void Present(); //for swapping buffers with opengl
+    void Shutdown(SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims);
 };
 
 

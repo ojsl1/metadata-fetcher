@@ -78,24 +78,18 @@ void loopMenuState(RendererBase& ren) {
   playButton.DetectIntersections(mouse);
   topleftButton.DetectIntersections(mouse);
 
-  ren.clearScreen();
+  ren.Clear();
 
+  // Draw operations
   if (playButton.hasintersection){
-    ren.drawAlleys();
+    ren.DrawAlleys();
   };
-
-  ren.drawMainMenu();
-
-  // Draw the buttons
+  ren.DrawMainMenu();
   playButton.Draw(gScreen);
   topleftButton.DrawScaled(gScreen);
-
-  // Draw the cursor last ie. on top of everything else
-  mouse.Draw(gScreen);
+  mouse.Draw(gScreen); // draw mouse last so it's always on top
   
-  // Update the window surface ie. display new frame
-  SDL_UpdateWindowSurface(gWindow);
-
+  ren.Present();
 }
 
 void loopGalleryState() {
@@ -156,7 +150,7 @@ int main (int argc, char *argv[]){
     }
   }
   
-  ren.cleanup(gWindow, bell, bgm, dims);
+  ren.Shutdown(gWindow, bell, bgm, dims);
   return 0;
 }
 
