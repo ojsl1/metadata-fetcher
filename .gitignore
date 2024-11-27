@@ -1,7 +1,12 @@
+# Ghostwriter files
+widgets.qss
+
+# Make and debug files
 *.log
 *.o
 *.gch
 
+# External resources
 sounds/
 resources/
 
