@@ -80,11 +80,12 @@ void loopMenuState(RendererBase& ren) {
   topleftButton.DetectIntersections(mouse);
 
   ren.Clear();
-
+  #if ALLEYS
   // Draw operations
   if (playButton.hasintersection){
     ren.DrawAlleys();
   };
+  #endif // ALLEYS
   ren.DrawMainMenu();
   playButton.Draw(gScreen);
   topleftButton.DrawScaled(gScreen);

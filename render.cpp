@@ -60,6 +60,7 @@ void RendererBase::DrawMainMenu(){
 
 }
 
+#if ALLEYS
 void RendererBase::DrawAlleys(){
   // ALLEY. Create Sprites
   Sprite object( gRed, WINDOW_WIDTH/2, WINDOW_HEIGHT/2 );
@@ -94,6 +95,7 @@ void RendererBase::DrawAlleys(){
   // ALLEY. Blit the whole SpriteGroup
   active_sprites.draw(gScreen);
 }
+#endif // ALLEYS
 
 void RendererBase::Present(){
   /*  renderer_sdl_sw

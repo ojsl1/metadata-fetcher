@@ -18,7 +18,7 @@ public:
 };
 
 
-
+#if ALLEYS
 // Refactor below Alley classes
 class Sprite{
 protected:
@@ -218,5 +218,6 @@ public:
         }
     }
 };
+#endif // ALLEYS
 
 #endif // RENDER_H
