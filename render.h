@@ -10,12 +10,11 @@ public:
     void cap_framerate(Uint32 starting_tick);
     void initVideo(int window_width, int window_height);
     void initColors(SDL_Surface* gScreen);
-    void initMixer();
     void Clear();
     void DrawMainMenu();
     void DrawAlleys();
     void Present(); //for swapping buffers with opengl
-    void Shutdown(SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims);
+    void Shutdown(SDL_Window* gWindow, WindowDimensions dims);
 };
 
 

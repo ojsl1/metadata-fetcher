@@ -3,6 +3,7 @@
 #include "input.h" // -> render.h -> <vector>
 #include "button.h"
 #include "addons.h"
+#include "audio.h"
 #include <iostream>
 
 enum class MenuState {
@@ -124,9 +125,10 @@ int main (int argc, char *argv[]){
   printVectorTodos();
 
   RendererBase ren;
+  Audio audio;
   ren.initVideo(WINDOW_WIDTH, WINDOW_HEIGHT);
   ren.initColors(gScreen);
-  ren.initMixer();
+  audio.initMixer();
 
   Uint32 starting_tick;
 
@@ -149,8 +151,9 @@ int main (int argc, char *argv[]){
         break;
     }
   }
-  
-  ren.Shutdown(gWindow, bell, bgm, dims);
+ 
+  audio.Shutdown(bell, bgm);
+  ren.Shutdown(gWindow, dims);
   return 0;
 }
 
