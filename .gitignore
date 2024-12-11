@@ -9,6 +9,7 @@ widgets.qss
 # External resources
 sounds/
 resources/
+assets/
 
 *.png
 *.txt

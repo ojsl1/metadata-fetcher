@@ -8,7 +8,6 @@
 
 enum class MenuState {
     MAIN_MENU,
-    GALLERY_MENU,
     EXIT,
 };
 
@@ -22,8 +21,8 @@ WindowDimensions dims;
 // Resource definitions
 Mix_Chunk *bell;
 Mix_Music *bgm;
-Button playButton(20, 230, 25, 25, "resources/button-inactive.png");
-Button topleftButton(10, 10, 80, 80, "resources/play-pause.png");
+Button buttonShowAlleys(75, 150, 25, 25, "assets/button-alleysshow.png");
+Button buttonExit(75, 230, 80, 80, "assets/button-exit.png");
 
 // Color definitions
 Uint32 gPink;
@@ -32,6 +31,36 @@ Uint32 gBeige;
 Uint32 gBlue;
 Uint32 gDarkblue;
 Uint32 gDarkgreen;
+
+// Detect all button intersections
+void DetectButtonIntersections(Mouse& mouse){
+  buttonShowAlleys.DetectIntersections(mouse);
+  buttonExit.DetectIntersections(mouse);
+}
+
+void UpdateMouseInteractions(Mouse& mouse, SDL_Event& e){
+  mouse.Update();
+  mouse.UpdateMouseState(e);
+  // Use the mouse state for button toggle detection
+  buttonShowAlleys.DetectClicks(mouse);
+  DetectButtonIntersections(mouse);
+}
+
+//TODO This method should be moved under RendererBase in the future once you've settled on the menus
+void DrawUI(RendererBase& ren, Mouse& mouse){
+  ren.Clear();
+
+  #if ALLEYS
+  if (buttonShowAlleys.hasintersection){
+    ren.DrawAlleys();
+  };
+  buttonShowAlleys.Draw(gScreen);
+  #endif // ALLEYS
+  buttonExit.Draw(gScreen);
+
+  //buttonExit.DrawScaled(gScreen); // TODO this doesnt work?
+  mouse.Draw(gScreen); // draw mouse last so it's always on top
+}
 
 void loopMenuState(RendererBase& ren) {
   SDL_Event e;
@@ -42,10 +71,10 @@ void loopMenuState(RendererBase& ren) {
       case SDL_MOUSEBUTTONUP:
         switch (e.button.button){
           case SDL_BUTTON_LEFT:{
-              if (topleftButton.hasintersection){
-                std::cout << "unimplemented" << std::endl;
-              };
-            }break;
+            if (buttonExit.hasintersection){
+            currentMenu = MenuState::EXIT;
+            };
+          }break;
         }
 
       case SDL_KEYDOWN:
@@ -54,64 +83,19 @@ void loopMenuState(RendererBase& ren) {
             currentMenu = MenuState::EXIT;
           }break;
         }
-      
-      //WIP Music player interactions
-      //TODO EVENT Clicked Play button... -> statePlayer = PLAYING;
-      //TODO EVENT Render Play button into Pause button rect...
-      //
-      //TODO EVENT Clicked Pause button.. -> statePlayer = NOT_PLAYING
-      //TODO EVENT Pause bgm music...
-      //TODO EVENT Render Pause button into Play button rect...
 
     }
   }
 
-
-  // Update cursor position
-  mouse.Update();
-
-  // Update the mouse state
-  mouse.UpdateMouseState(e);
-  // Use the mouse state for button toggle detection
-  playButton.DetectClicks(mouse);
-
-  // Detect button---mouse collisions
-  playButton.DetectIntersections(mouse);
-  topleftButton.DetectIntersections(mouse);
-
-  ren.Clear();
-  #if ALLEYS
-  // Draw operations
-  if (playButton.hasintersection){
-    ren.DrawAlleys();
-  };
-  #endif // ALLEYS
-  ren.DrawMainMenu();
-  playButton.Draw(gScreen);
-  topleftButton.DrawScaled(gScreen);
-  mouse.Draw(gScreen); // draw mouse last so it's always on top
-  
+  UpdateMouseInteractions(mouse, e);
+  DrawUI(ren, mouse);
   ren.Present();
-}
-
-void loopGalleryState() {
-  SDL_Event e;
-  while (SDL_PollEvent(&e)) {
-    std::cout << "App entered unimplemented state, exiting." << std::endl;
-    currentMenu = MenuState::EXIT;
-    //add gallery-specific input handling
-    //TODO EVENT Returning to Main Menu... -> currentMenu = MAIN_MENU;
-  }
-  // Render gallery state (ie. gallery viewport, images etc.)
 }
 
 void renderMenus(RendererBase& ren){
     switch (currentMenu) {
       case MenuState::MAIN_MENU:
           loopMenuState(ren);
-          break;
-      case MenuState::GALLERY_MENU:
-          loopGalleryState();
           break;
       case MenuState::EXIT:
           std::cout << "[TODO: this doesnt get printed out]" << std::endl;
@@ -140,17 +124,14 @@ int main (int argc, char *argv[]){
     starting_tick = SDL_GetTicks();
     ren.cap_framerate( starting_tick );
 
-    /*
-    // Handle input to switch between menus
-    handleMenuInput();
-    */
-
     // Render the appropriate menu based on the currentMenu state.
     renderMenus(ren);
 
     if (currentMenu == MenuState::EXIT){
         break;
     }
+
+    // end of main loop
   }
  
   audio.Shutdown(bell, bgm);

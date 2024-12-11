@@ -11,15 +11,15 @@ Button::Button(int x, int y, int width, int height, const char* buttonImagePath)
     dRectButton = {x, y, width, height}; //x,y,w,h
 
     if (!buttonImagePath){
-      buttonImagePath = "resources/texture-error.png";
+      buttonImagePath = "assets/texture-error.png";
     }
 
     rawButton = IMG_Load(buttonImagePath);
     if (!rawButton){
       SDL_Log("Failed to load image: %s, SDL_Image Error: %s", buttonImagePath, IMG_GetError());
-      rawButton = IMG_Load("resources/texture-error.png");
+      rawButton = IMG_Load("assets/texture-error.png");
       if (!rawButton){
-        SDL_Log("Failed to load fallback image: resources/texture-error.png, SDL_Image Error: %s", IMG_GetError());
+        SDL_Log("Failed to load fallback image: assets/texture-error.png, SDL_Image Error: %s", IMG_GetError());
         return;
       }
     }

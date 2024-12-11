@@ -56,10 +56,6 @@ void RendererBase::Clear(){
   //SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 255, 255));
 }
 
-void RendererBase::DrawMainMenu(){
-
-}
-
 #if ALLEYS
 void RendererBase::DrawAlleys(){
   // ALLEY. Create Sprites
@@ -69,13 +65,13 @@ void RendererBase::DrawAlleys(){
   // ALLEY. Create Block sprites
   Block block1( gPink, 120, 30 );
   Block block2( gPink, 100, 15 );
-  block1.set_image( "resources/cosmox2.png" );
-  block2.set_image( "resources/avatar.bmp" );
+  block1.set_image( "assets/cosmox2.png" );
+  block2.set_image( "assets/avatar.bmp" );
 
   /*
   TODO: ALLEY. Trying to blit cursor along with other sprites
   Block block3mouse( blue, 130, 40 );
-  block3mouse.set_image( "resources/mouse.png" );
+  block3mouse.set_image( "assets/mouse.png" );
   SpriteGroup pointers;
   pointers.add( &block3mouse );
   pointers.draw( gScreen ); // draw to mouse not to screen
