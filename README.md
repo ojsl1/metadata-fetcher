@@ -20,7 +20,8 @@ Currently the main goals are:
         - [X] AppObject
             - [X] Mouse
             - [X] Button
-    - [ ] Polymorphism
+        - [ ] Subclasses for polymorphism:
+            - [ ] Runtime polymorphism: pure virtual class methods
 - [ ] OpenGLRenderer subclass
     - [ ] Replace all SDL\_Rects with vertex buffers (VBO) and vertex array objects (VAO)
         - [ ] If some SDL\_Rects were texctured, load textures into opengl, bind them and adjust texture coords

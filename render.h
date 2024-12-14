@@ -5,12 +5,18 @@
 #include <iostream>
 #include <vector>
 
+#include "input.h" // forward declare class for Draw();
+#include "button.h" // forward declare class for Draw();
+class Mouse;
+class Button;
+
 class RendererBase{
 public:
     void cap_framerate(Uint32 starting_tick);
     void initVideo(int window_width, int window_height);
     void initColors(SDL_Surface* gScreen);
     void Clear();
+    void Draw(Mouse& mouse, Button& buttonExit, Button& buttonAlleys);
     void DrawAlleys();
     void Present(); //for swapping buffers with opengl
     void Shutdown(SDL_Window* gWindow, WindowDimensions dims);

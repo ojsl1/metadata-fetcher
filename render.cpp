@@ -56,6 +56,22 @@ void RendererBase::Clear(){
   //SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 255, 255));
 }
 
+void RendererBase::Draw(Mouse& mouse, Button& buttonExit, Button& buttonAlleys){
+  Clear();
+
+  #if ALLEYS
+  if (buttonAlleys.hasintersection){
+    DrawAlleys();
+  };
+  buttonAlleys.Draw(gScreen);
+  #endif // ALLEYS
+
+  buttonExit.Draw(gScreen);
+  //buttonExit.DrawScaled(gScreen); // TODO this doesnt work?
+
+  mouse.Draw(gScreen); // draw mouse last so it's always on top
+}
+
 #if ALLEYS
 void RendererBase::DrawAlleys(){
   // ALLEY. Create Sprites
@@ -95,7 +111,6 @@ void RendererBase::DrawAlleys(){
 
 void RendererBase::Present(){
   /*  renderer_sdl_sw
-  * drawing operations (e.g., filling rectangles or blitting surfaces) modify an off-screen surface associated with the window.
   * Update the window surface ie. present the new frame, same as SDL_RenderPresent()
   */
   SDL_UpdateWindowSurface(gWindow);

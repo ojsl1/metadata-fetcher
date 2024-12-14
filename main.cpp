@@ -21,8 +21,8 @@ WindowDimensions dims;
 // Resource definitions
 Mix_Chunk *bell;
 Mix_Music *bgm;
-Button buttonShowAlleys(75, 150, 25, 25, "assets/button-alleysshow.png");
-Button buttonExit(75, 230, 80, 80, "assets/button-exit.png");
+Button buttonAlleys(10, 220, 25, 25, "assets/button-alleysshow.png");
+Button buttonExit(10, 270, 80, 80, "assets/button-exit.png");
 
 // Color definitions
 Uint32 gPink;
@@ -34,7 +34,7 @@ Uint32 gDarkgreen;
 
 // Detect all button intersections
 void DetectButtonIntersections(Mouse& mouse){
-  buttonShowAlleys.DetectIntersections(mouse);
+  buttonAlleys.DetectIntersections(mouse);
   buttonExit.DetectIntersections(mouse);
 }
 
@@ -42,24 +42,8 @@ void UpdateMouseInteractions(Mouse& mouse, SDL_Event& e){
   mouse.Update();
   mouse.UpdateMouseState(e);
   // Use the mouse state for button toggle detection
-  buttonShowAlleys.DetectClicks(mouse);
+  buttonAlleys.DetectClicks(mouse);
   DetectButtonIntersections(mouse);
-}
-
-//TODO This method should be moved under RendererBase in the future once you've settled on the menus
-void DrawUI(RendererBase& ren, Mouse& mouse){
-  ren.Clear();
-
-  #if ALLEYS
-  if (buttonShowAlleys.hasintersection){
-    ren.DrawAlleys();
-  };
-  buttonShowAlleys.Draw(gScreen);
-  #endif // ALLEYS
-  buttonExit.Draw(gScreen);
-
-  //buttonExit.DrawScaled(gScreen); // TODO this doesnt work?
-  mouse.Draw(gScreen); // draw mouse last so it's always on top
 }
 
 void loopMenuState(RendererBase& ren) {
@@ -86,9 +70,9 @@ void loopMenuState(RendererBase& ren) {
 
     }
   }
-
+  
   UpdateMouseInteractions(mouse, e);
-  DrawUI(ren, mouse);
+  ren.Draw(mouse,buttonExit,buttonAlleys);
   ren.Present();
 }
 
