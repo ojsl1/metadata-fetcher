@@ -50,34 +50,29 @@ void RendererBase::initVideo( int window_width, int window_height ){
     }
 }
 
-void RendererBase::initMixer(){
-    // MIX_DEFAULT_FREQUENCY = 22050
-    Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096 );
-    Mix_Chunk *bell = NULL;
-    Mix_Music *bgm = NULL;
-
-    bell = Mix_LoadWAV( "sounds/school-bell.mp3" );
-    bgm = Mix_LoadMUS( "sounds/sarajevo-pad-keys-melody_140bpm_C_minor.wav" );
-
-    Mix_PlayChannel( -1, bell, 0);
-    Mix_VolumeChunk( bell, 10 );
-    SDL_Delay(1700);
-
-    Mix_PlayMusic( bgm, -1 );
-    Mix_VolumeMusic( 20 );
-    //Mix_FadeInMusic( music1, 0, 5000 );
-}
-
 void RendererBase::Clear(){
   // Clear the screen (optional, depends on game logic)
   SDL_FillRect( gScreen, NULL, gPink );
   //SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 255, 255));
 }
 
-void RendererBase::DrawMainMenu(){
+void RendererBase::Draw(Mouse& mouse, Button& buttonExit, Button& buttonAlleys){
+  Clear();
 
+  #if ALLEYS
+  if (buttonAlleys.hasintersection){
+    DrawAlleys();
+  };
+  buttonAlleys.Draw(gScreen);
+  #endif // ALLEYS
+
+  buttonExit.Draw(gScreen);
+  //buttonExit.DrawScaled(gScreen); // TODO this doesnt work?
+
+  mouse.Draw(gScreen); // draw mouse last so it's always on top
 }
 
+#if ALLEYS
 void RendererBase::DrawAlleys(){
   // ALLEY. Create Sprites
   Sprite object( gRed, WINDOW_WIDTH/2, WINDOW_HEIGHT/2 );
@@ -86,13 +81,13 @@ void RendererBase::DrawAlleys(){
   // ALLEY. Create Block sprites
   Block block1( gPink, 120, 30 );
   Block block2( gPink, 100, 15 );
-  block1.set_image( "resources/cosmox2.png" );
-  block2.set_image( "resources/avatar.bmp" );
+  block1.set_image( "assets/cosmox2.png" );
+  block2.set_image( "assets/avatar.bmp" );
 
   /*
   TODO: ALLEY. Trying to blit cursor along with other sprites
   Block block3mouse( blue, 130, 40 );
-  block3mouse.set_image( "resources/mouse.png" );
+  block3mouse.set_image( "assets/mouse.png" );
   SpriteGroup pointers;
   pointers.add( &block3mouse );
   pointers.draw( gScreen ); // draw to mouse not to screen
@@ -112,32 +107,22 @@ void RendererBase::DrawAlleys(){
   // ALLEY. Blit the whole SpriteGroup
   active_sprites.draw(gScreen);
 }
+#endif // ALLEYS
 
 void RendererBase::Present(){
   /*  renderer_sdl_sw
-  * drawing operations (e.g., filling rectangles or blitting surfaces) modify an off-screen surface associated with the window.
   * Update the window surface ie. present the new frame, same as SDL_RenderPresent()
   */
   SDL_UpdateWindowSurface(gWindow);
 }
 
-void RendererBase::Shutdown( SDL_Window* gWindow, Mix_Chunk* bell, Mix_Music* bgm, WindowDimensions dims){
+void RendererBase::Shutdown(SDL_Window* gWindow, WindowDimensions dims){
     //SDL_SetWindowSize( gWindow, dims.wSize, dims.hSize ); //enforce size
     //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
     SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );
     std::cout << "Exit Position: " << dims.xPosi << "," << dims.yPosi << std::endl;
     std::cout << "Exit Size: " << dims.wSize << "," << dims.hSize << " [TODO: Doesnt update after resizing]" << std::endl;
     std::cout << "FPS: " << FPS << std::endl;
-
-    if (bell != NULL) {
-      Mix_FreeChunk(bell);
-      bell = NULL;
-    }
-    if (bgm != NULL) {
-      Mix_FreeMusic(bgm);
-      bgm = NULL;
-    }
-    Mix_CloseAudio();
 
     if (gScreen != NULL) {
       SDL_FreeSurface(gScreen);

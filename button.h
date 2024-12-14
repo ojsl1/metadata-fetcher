@@ -9,7 +9,7 @@ class Mouse; // forward declaring Mouse class
 
 class Button{
 public:
-  // Image topleft x,y coords, size of rect, and filepath
+  // x,y coords (origo is topleft); w,h size, filepath
   Button(int x, int y, int width, int height, const char* imagePath);
   ~Button();
   

@@ -8,15 +8,15 @@ Mouse::Mouse(const char* mouseImagePath)
     point = {0,0,1,1}; // x,y,w,h
 
     if (!mouseImagePath){
-      mouseImagePath = "resources/mouse-fallback.png";
+      mouseImagePath = "assets/mouse-fallback.png";
     }
 
     rawMouse = IMG_Load(mouseImagePath);
         if (!rawMouse ){
           SDL_Log("Failed to load image: %s, SDL_Image Error: %s", mouseImagePath, IMG_GetError());
-          rawMouse = IMG_Load("resources/mouse-fallback.png");
+          rawMouse = IMG_Load("assets/mouse-fallback.png");
           if (!rawMouse){
-            SDL_Log("Failed to load fallback image: resources/mouse-fallback.png, SDL_Image Error: %s", IMG_GetError());
+            SDL_Log("Failed to load fallback image: assets/mouse-fallback.png, SDL_Image Error: %s", IMG_GetError());
             return;
           }
         }
