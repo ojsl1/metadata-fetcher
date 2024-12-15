@@ -40,54 +40,63 @@ void DetectButtonIntersections(Mouse& mouse){
 
 void UpdateMouseInteractions(Mouse& mouse, SDL_Event& e){
   mouse.Update();
-  mouse.UpdateMouseState(e);
-  // Use the mouse state for button toggle detection
+  mouse.UpdateMouseState(e);// TODO IS THIS FUNCTION BROKEN, WTF IS IT FOR?
+  // TODO mouse.clicked is broken - Use the mouse state for button toggle detection
   buttonAlleys.DetectClicks(mouse);
   DetectButtonIntersections(mouse);
 }
 
-void loopMenuState(RendererBase& ren) {
-  SDL_Event e;
-  Mouse mouse; // cannot globally declare this because theres SDL_ShowCursor() inside that requires sdl to be initialized first
-  while (SDL_PollEvent(&e)){
-    switch (e.type){
+void handleMainMenuState(RendererBase& ren, Mouse& mouse, const SDL_Event& e) {
+  switch (e.type){
+    case SDL_MOUSEBUTTONUP:
+      switch (e.button.button){
+        case SDL_BUTTON_LEFT:{
+          if (buttonExit.hasintersection){
+          currentMenu = MenuState::EXIT;
+          };
+        }break;
+      }
 
-      case SDL_MOUSEBUTTONUP:
-        switch (e.button.button){
-          case SDL_BUTTON_LEFT:{
-            if (buttonExit.hasintersection){
-            currentMenu = MenuState::EXIT;
-            };
-          }break;
-        }
+    case SDL_KEYDOWN:
+      switch (e.key.keysym.sym){
+        case SDLK_ESCAPE:{
+          currentMenu = MenuState::EXIT;
+        }break;
+      }
+  } 
+}
 
-      case SDL_KEYDOWN:
-        switch (e.key.keysym.sym){
-          case SDLK_ESCAPE:{
-            currentMenu = MenuState::EXIT;
-          }break;
-        }
-
-    }
-  }
-  
+void renderMainMenuState(RendererBase& ren, Mouse& mouse, SDL_Event& e){
   UpdateMouseInteractions(mouse, e);
   ren.Draw(mouse,buttonExit,buttonAlleys);
   ren.Present();
 }
 
-void renderMenus(RendererBase& ren){
-    switch (currentMenu) {
-      case MenuState::MAIN_MENU:
-          loopMenuState(ren);
-          break;
-      case MenuState::EXIT:
-          std::cout << "[TODO: this doesnt get printed out]" << std::endl;
-          break;
-      default:
-          std::cout << "This shouldn't happen" << std::endl;
-          break;
-    }
+void updateState(RendererBase& ren, Mouse& mouse, SDL_Event& e){
+  switch (currentMenu) {
+    case MenuState::MAIN_MENU:
+        handleMainMenuState(ren,mouse,e);
+        break;
+    case MenuState::EXIT:
+        std::cout << "[TODO: this doesnt get printed out]" << std::endl;
+        break;
+    default:
+        break;
+  }
+}
+
+
+void renderState(RendererBase& ren, Mouse& mouse, SDL_Event& e){
+  switch (currentMenu) {
+    case MenuState::MAIN_MENU:
+        renderMainMenuState(ren,mouse,e);
+        break;
+    case MenuState::EXIT:
+        std::cout << "[TODO: this doesnt get printed out]" << std::endl;
+        break;
+    default:
+        break;
+  }
 }
 
 int main (int argc, char *argv[]){
@@ -95,27 +104,26 @@ int main (int argc, char *argv[]){
 
   RendererBase ren;
   Audio audio;
+
   ren.initVideo(WINDOW_WIDTH, WINDOW_HEIGHT);
   ren.initColors(gScreen);
   audio.initMixer();
 
   Uint32 starting_tick;
-
   currentMenu = MenuState::MAIN_MENU;
+
   Mouse mouse; // cant have this globally declared because it has SDL stuff inside that need to be initialized first
   
-  while (true){
+  while (currentMenu != MenuState::EXIT){
     starting_tick = SDL_GetTicks();
-    ren.cap_framerate( starting_tick );
 
-    // Render the appropriate menu based on the currentMenu state.
-    renderMenus(ren);
-
-    if (currentMenu == MenuState::EXIT){
-        break;
+    SDL_Event e;
+    while (SDL_PollEvent(&e)){
+        updateState(ren,mouse,e); // handle events for the current state
     }
 
-    // end of main loop
+    renderState(ren,mouse,e); // render the current state
+    ren.cap_framerate(starting_tick);
   }
  
   audio.Shutdown(bell, bgm);
