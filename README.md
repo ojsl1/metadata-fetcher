@@ -62,7 +62,8 @@ Currently the main goals are:
 Instead of attempting to abstract all the different renderers into subclasses call by call at the same time, reduce scope by first abstracting just the currently used one.
 
 
-- Namespace Usage: Encapsulate related variables within namespaces to avoid global scope and reduce the need for prefixes like g.
+## Namespace Usage
+Encapsulate related variables within namespaces to avoid global scope and reduce the need for prefixes like g.
 
 ```c++
 namespace Engine {

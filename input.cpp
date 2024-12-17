@@ -63,7 +63,7 @@ void Mouse::UpdateMouseState(SDL_Event &e) {
         y = e.button.y;
         clicked = true;
     } else {
-        std::cout << "click not detected and clicked equals: " << clicked << std::endl;
+        //std::cout << "click not detected and clicked equals: " << clicked << std::endl;
         clicked = false;
     }
 }

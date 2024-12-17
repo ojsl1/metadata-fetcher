@@ -5,6 +5,7 @@ widgets.qss
 *.log
 *.o
 *.gch
+vgcore.*
 
 # External resources
 sounds/

@@ -1,6 +1,6 @@
 CC=g++
 CXXFLAGS=-g -c -Wall
-LDFLAGS=$(shell pkg-config --libs sdl2) -lSDL2_image -lSDL2_mixer
+LDFLAGS=$(shell pkg-config --libs sdl2) -lSDL2_image -lSDL2_mixer -lpng
 
 ifeq ($(strip $(LDFLAGS)),)
 	# fallback if pkg-config is not available or does not provide flags
