@@ -22,8 +22,8 @@ public:
   SDL_Rect point;
 
 private:
-  SDL_Surface* rawMouse = NULL;
-  SDL_Surface* scaledMouse = NULL;
+  SDL_Surface *rawMouse = NULL;
+  SDL_Surface *scaledMouse = NULL;
   SDL_Rect dRectMouse; // The size of the scaled cursor
 };
    

@@ -10,7 +10,7 @@ void RendererBase::cap_framerate ( Uint32 starting_tick ){
     }
 };
 
-void RendererBase::initColors(SDL_Surface* gScreen){
+void RendererBase::initColors(SDL_Surface *gScreen){
     gPink = SDL_MapRGB(gScreen->format, 232, 111, 148);
     gRed = SDL_MapRGB(gScreen->format, 250, 0, 0);
     gBeige = SDL_MapRGB(gScreen->format, 255, 255, 115);
@@ -21,9 +21,10 @@ void RendererBase::initColors(SDL_Surface* gScreen){
 
 void RendererBase::initVideo( int window_width, int window_height ){
     SDL_Init( SDL_INIT_EVERYTHING );
+    IMG_Init( IMG_INIT_PNG );
     
     // Create the window
-    gWindow = SDL_CreateWindow( "Cosmox's Playground",
+    gWindow = SDL_CreateWindow( "Metadata fetcher",
                                 SDL_WINDOWPOS_UNDEFINED,
                                 SDL_WINDOWPOS_UNDEFINED,
                                 window_width, // window_width
@@ -51,24 +52,22 @@ void RendererBase::initVideo( int window_width, int window_height ){
 }
 
 void RendererBase::Clear(){
-  // Clear the screen (optional, depends on game logic)
-  SDL_FillRect( gScreen, NULL, gPink );
-  //SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 255, 255));
+  // Clear the screen (optional, depends on app logic)
+  SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 50, 255));
 }
 
-void RendererBase::Draw(Mouse& mouse, Button& buttonExit, Button& buttonAlleys, Button& buttonDrop){
+void RendererBase::Draw(Mouse &mouse, Button &buttonExit, Button &buttonAlleys, Button &buttonDrop){
   Clear();
-
+  
+  buttonDrop.DrawScaled(gScreen);
+  buttonExit.Draw(gScreen);
 
   #if ALLEYS
+  buttonAlleys.Draw(gScreen);
   if (buttonAlleys.hasintersection){
     DrawAlleys();
   };
-  buttonAlleys.Draw(gScreen);
   #endif // ALLEYS
-
-  buttonExit.Draw(gScreen);
-  buttonDrop.DrawScaled(gScreen);
 
   mouse.Draw(gScreen); // draw mouse last so it's always on top
 }
@@ -117,7 +116,7 @@ void RendererBase::Present(){
   SDL_UpdateWindowSurface(gWindow);
 }
 
-void RendererBase::Shutdown(SDL_Window* gWindow, WindowDimensions dims){
+void RendererBase::Shutdown(SDL_Window *gWindow, WindowDimensions dims){
     //SDL_SetWindowSize( gWindow, dims.wSize, dims.hSize ); //enforce size
     //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
     SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );
@@ -142,6 +141,8 @@ void RendererBase::Shutdown(SDL_Window* gWindow, WindowDimensions dims){
       SDL_DestroyWindow(gWindow);
       gWindow = NULL;
     }
+
+    IMG_Quit();
     SDL_Quit();
 
     std::cout << "Exit succesfully" << std::endl;

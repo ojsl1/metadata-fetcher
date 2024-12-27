@@ -7,40 +7,33 @@ void printVectorTodos(){
   // 1: current, 2: high, 3: medium, 4: low, 5: future
   std::vector<std::pair<int, std::string>> todos = {
 
-    {1, "FEATURE \n is this project small enough for ODR and inline keywords or will it expand in the future"},
-    {1, "CLEANUP \n Document why input.h needs the #pragma once."},
-    {1, "WIP \n Finish turning all classes into subclasses of appobject, button not done, mouse done"},
-    {1, "WIP \n Finish implementing the button.cpp `bool toggled` and input.cpp `bool clicked` for centralizing input handling, using less sdl and cleaner code overall"},
-    {1, "REFACTOR \n play_state into a separate player subclass, that has the playing/notplaying/paused etc states, and maybe even the play/pause button rects"},
-    {1, "FEATURE \n handleMenuState(): move the draw operations for buttons etc to ren.draw"},
-    {1, "FEATURE \n renderer.cpp create separate draw functions for different menus: drawMainMenu, drawPlayer, drawGallery, etc"},
+{1, "GIMP \n CENTER FONT VERTICALLY ON BUTTONS"},
+{1, "WIP button.cpp: implement an sdl_helper function inside SDL_BlitScaled to convert non-32bpp images to 32bpp"},
+{1, "BACKLOG \n make the app runnable without the assets directory, and so it doesnt flood console"},
+{1, "BACKLOG \n make the assets/texture-error.png not rely on an asset ie. just fillrect with pink tiles"},
 
-    {1, "REFACTOR \n button.cpp: add rect dimensions into the class arguments, to avoid having to resize image files"},
-    {1, "SDL2 THEORY \n button.cpp: why are the 3rd args of SDL_BlitScaled() and SDL_BlitSurface() different? the SDL_BlitScaled was yoinked from input.cpp scaling logic"},
+{2, "WIP \n button.cpp: Finish `bool toggled` thus relying less on sdl"},
+{2, "WIP \n input.cpp: Finish `bool clicked` thus relying less on sdl"},
+{4, "WIP \n input.h: refactor `point` as a private member with getters"},
+{4, "WIP \n button.cpp: turn into subclass of appobject"},
 
-    {1, "FEATURE \n drawButtonScaled(): the 2nd & 3rd dRectButton args dont scale properly, aspect ratio shenanigans?"},
-    {1, "REFACTOR \n input.h: refactor point as a private member with getters"},
-    {1, "CLEANUP \n to avoid confusion make sure all variables are declared only either GLOBALLY or LOCALLY"},
+{3, "FEATURE \n button.cpp: implement a spritesheet"},
+{3, "FEATURE \n button.cpp: change playButton sprite on interact using the commented spritesheet draw logic"},
+{6, "FEATURE \n button.cpp: change playButton sprite on interact without a spritesheet"},
+{4, "SDL2 \n button.cpp: SDL_BlitScaled and SDL_BlitSurface have different 3rd args\n ie. why does SDL_BlitScaled blit onto individual surfaces and SDL_BlitSurface directly onto gScreen"},
 
+{4, "BACKLOG \n clicking X doesnt currently close the app"},
+{4, "BACKLOG \n add listeners for ctrl+q and ctrl+w and q to exit the game"},
 
-    {2, "BACKLOG \n Figure out the relationship between all the 50,50 values"},
+{6, "DOCS \n button.cpp: what is Button::DetectClicks for"},
+{6, "DOCS \n input.h: document why the #pragma once is needed"},
+{6, "BACKLOG \n is this project small enough for ODR and inline keywords or will it expand in the future"},
+{6, "CLEANUP \n separate classes from `render.h` to their own header files"},
+{6, "is it possible to draw mouse using the premade classes Sprite, SpriteGroup or Block"},
+{6, "CLEANUP \n are window_width and window_height return types for initVideo necessary, considering its global/external"},
+{6, "CLEANUP \n can `double delta` timer from main.cpp be combined with cap_framerate()"},
 
-    {3, "BACKLOG \n main.cpp: if play rect pressed -> currentState = PLAY_STATE"},
-    {3, "BACKLOG \n main.cpp: if gallery rect pressed -> currentState = GAY_STATE"},
-    {3, "BACKLOG \n Clicking X to close the game"},
-    {3, "BACKLOG \n button.cpp: change playButton sprite on interact using the commented spritesheet drawing logic"},
-    {6, "DEPENDS button.cpp: change playButton sprite on interact without a spritesheet"},
-    {6, "Rewrite the eventloop as a separate EventListener (mouse events) -> clickable buttons -> main menu -> submenus"},
-
-    {6, "Separate classes from `render.h` to their own header files"},
-    {6, "QUESTION: possible to draw mouse using the premade classes Sprite, SpriteGroup or Block"},
-    {6, "was adding window_width and window_height return types to initVideo() really necessary when you made it a global/extern function"},
-
-    {4, "Add listeners for ctrl+q and ctrl+w and q to exit the game"},
-
-    {6, "FEATURE \n test if `double delta` timer from main.cpp can be combined with cap_framerate()"},
-    {5, "FEATURE \n button.cpp: implement spritesheet capabilities"},
-  };
+};
 
   std::cout << "### Printing The Autosorted TODO List... ###" << std::endl;
 

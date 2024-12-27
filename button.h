@@ -10,7 +10,7 @@ class Mouse; // forward declaring Mouse class
 class Button{
 public:
   // x,y coords (origo is topleft); w,h size, filepath
-  Button(int x, int y, int width, int height, const char* imagePath);
+  Button(int x, int y, int w, int h, const char* imagePath);
   ~Button();
   
   bool hasintersection; // WIP cant privatize main.cpp reads from this via playButton.hasintersection

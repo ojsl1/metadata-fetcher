@@ -114,13 +114,13 @@ void PrintPNGInfo(const char* filename){
   fclose(fp);
 }
 
-// Detect all button intersections
-void DetectButtonIntersections(Mouse& mouse){
+void DetectButtonIntersections(Mouse &mouse){
+  // Detect all button intersections
   buttonAlleys.DetectIntersections(mouse);
   buttonExit.DetectIntersections(mouse);
 }
 
-void UpdateMouseInteractions(Mouse& mouse, SDL_Event& e){
+void UpdateMouseInteractions(Mouse &mouse, SDL_Event &e){
   mouse.Update();
   mouse.UpdateMouseState(e);// TODO IS THIS FUNCTION BROKEN, WTF IS IT FOR?
   // TODO mouse.clicked is broken - Use the mouse state for button toggle detection
@@ -128,7 +128,7 @@ void UpdateMouseInteractions(Mouse& mouse, SDL_Event& e){
   DetectButtonIntersections(mouse);
 }
 
-void handleMainMenuState(RendererBase& ren, Mouse& mouse, const SDL_Event& e) {
+void handleMainMenuState(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
   switch (e.type){
     case SDL_MOUSEBUTTONUP:
       switch (e.button.button){
@@ -164,13 +164,13 @@ void handleMainMenuState(RendererBase& ren, Mouse& mouse, const SDL_Event& e) {
   } 
 }
 
-void renderMainMenuState(RendererBase& ren, Mouse& mouse, SDL_Event& e){
+void renderMainMenuState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
   UpdateMouseInteractions(mouse, e);
   ren.Draw(mouse,buttonExit,buttonAlleys,buttonDrop);
   ren.Present();
 }
 
-void updateState(RendererBase& ren, Mouse& mouse, SDL_Event& e){
+void updateState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
 // event loop states
   switch (currentMenu) {
     case MenuState::MAIN_MENU:
@@ -188,7 +188,7 @@ void updateState(RendererBase& ren, Mouse& mouse, SDL_Event& e){
   }
 }
 
-void renderState(RendererBase& ren, Mouse& mouse, SDL_Event& e){
+void renderState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
   switch (currentMenu) {
     case MenuState::MAIN_MENU:
         renderMainMenuState(ren,mouse,e);

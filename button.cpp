@@ -1,14 +1,14 @@
 #include "button.h"
 #include "input.h" // Button::DetectClicks and Button::DetectIntersections depend on mouse class
 
-Button::Button(int x, int y, int width, int height, const char* buttonImagePath)
+Button::Button(int x, int y, int w, int h, const char* buttonImagePath)
   : rawButton(NULL),
     scaledButton(NULL),
     hasintersection(false),
     toggled(false)
     // TODO Without this init list the buttons gets drawn at topleft, why?
 {
-    dRectButton = {x, y, width, height}; //x,y,w,h
+    dRectButton = {x,y,w,h};
 
     if (!buttonImagePath){
       buttonImagePath = "assets/texture-error.png";
@@ -16,10 +16,10 @@ Button::Button(int x, int y, int width, int height, const char* buttonImagePath)
 
     rawButton = IMG_Load(buttonImagePath);
     if (!rawButton){
-      SDL_Log("Failed to load image: %s, SDL_Image Error: %s", buttonImagePath, IMG_GetError());
+      SDL_Log("Failed to load image: %s, SDL_Image Error: %s\n", buttonImagePath, IMG_GetError());
       rawButton = IMG_Load("assets/texture-error.png");
       if (!rawButton){
-        SDL_Log("Failed to load fallback image: assets/texture-error.png, SDL_Image Error: %s", IMG_GetError());
+        SDL_Log("Failed to load fallback image: assets/texture-error.png, SDL_Image Error: %s\n", IMG_GetError());
         return;
       }
     }
@@ -58,7 +58,7 @@ void Button::Draw(SDL_Surface *gScreen){
 
 void Button::DrawScaled(SDL_Surface *gScreen){
     if (!rawButton || !gScreen){
-        SDL_Log("Invalid input surface (rawButton or gScreen is null)");
+        SDL_Log("Invalid input surface (rawButton or gScreen is null)\n");
         return;
     }
 
@@ -72,7 +72,7 @@ void Button::DrawScaled(SDL_Surface *gScreen){
         return;
     }
     // Log rawButton pixel format details.
-    SDL_Log("rawButton Pixel Format: Rmask: 0x%X, Gmask: 0x%X, Bmask: 0x%X, Amask: 0x%X",
+    SDL_Log("rawButton Pixel Format: Rmask: 0x%X, Gmask: 0x%X, Bmask: 0x%X, Amask: 0x%X\n",
             rawButton->format->Rmask,
             rawButton->format->Gmask,
             rawButton->format->Bmask,

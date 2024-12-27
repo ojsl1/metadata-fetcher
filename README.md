@@ -2,12 +2,12 @@
 
 ## Purpose
 Currently the main goals are:
-- To create a pseudo-file manager that allows rendering images into a customizable (and scrollable) mosaic, compare:
+- [X] Easily fetch pnginfo from images by drag-n-dropping into the gui.
+- [ ] Pseudo-file manager that allows rendering images into a customizable (and scrollable) mosaic, compare:
     - imagemagick montage
     - yfszzx/stable-diffusion-webui-images-browser
     - bit9labs/sd-masonry
     - dolphin file manager icon view with all ui panels hidden, small label width, and max line number as 1
-- To be able to easily fetch pnginfo from images by drag-n-dropping into the gui.
 
 ## Todo
 - [X] OOP
@@ -62,7 +62,7 @@ Currently the main goals are:
 Instead of attempting to abstract all the different renderers into subclasses call by call at the same time, reduce scope by first abstracting just the currently used one.
 
 
-## Namespace Usage
+#### Namespace Usage
 Encapsulate related variables within namespaces to avoid global scope and reduce the need for prefixes like g.
 
 ```c++
@@ -102,4 +102,5 @@ int main() {
 }
 ```
 
-- Class Member Variables: If variables are logically tied to a class, use member variables (mWindow, mSurface) instead of global scope, adhering to encapsulation principles.
+#### Class Member Variables:
+If variables are logically tied to a class, use member variables (mWindow, mSurface) instead of global scope, adhering to encapsulation principles.
