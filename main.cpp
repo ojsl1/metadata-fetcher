@@ -1,11 +1,14 @@
 #include "main.h" // globals
-#include "render.h" // -> drawFrame()
-#include "input.h" // -> render.h -> <vector>
+#include "render.h"
+#include "input.h"
 #include "button.h"
 #include "addons.h"
 #include "audio.h"
 #include "png.h"
+
 #include <iostream>
+#include <fstream>
+#include <vector>
 
 enum class MenuState {
     MAIN_MENU,
@@ -70,6 +73,61 @@ void ReadTextChunks(png_structp png, png_infop info){
     std::cout << "-----------------------------------" << std::endl;
   }
 }
+void PrintPNGInfoCPP(const char* filename){
+  // std::ifstream automatically closes the file when it goes out of scope.
+  // So no need to fclose(file) repeatedly.
+
+  // Open the PNG file using std::ifstream
+  std::ifstream file(filename, std::ios::binary);
+  if (!file){
+    std::cerr << "Failed to open file: " << filename << std::endl;
+    return;
+  }
+
+  // Read the file content into a vector
+  std::vector<unsigned char> buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+  // Init libpng structs
+  png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  if (!png){
+    std::cerr << "png_create_read_struct failed.\n" << std::endl;
+    return;
+  }
+
+  png_infop info = png_create_info_struct(png);
+  if (!info){
+    std::cerr << "png_create_info_struct failed.\n" << std::endl;
+    png_destroy_read_struct(&png, NULL, NULL);
+    return;
+  }
+
+  if (setjmp(png_jmpbuf(png))){
+    std::cerr << "libpng error!\n" << std::endl;
+    png_destroy_read_struct(&png, &info, NULL);
+    return;
+  }
+
+  /**
+   * @brief Process the input buffer for libpng.
+   * @details Read PNG data directly from the std::vector with a custom callback function
+   * @param &buffer is the raw pointer that was passed to libpng; buf is a reference to the
+   * dereferenced pointer retrieved from png_get_io_ptr(png).
+   */
+  png_set_read_fn(png, &buffer, [](png_structp png, png_bytep data, png_size_t length){
+      auto &buf = *static_cast<std::vector<unsigned char>*>(png_get_io_ptr(png));
+      std::copy(buf.begin(), buf.begin() + length, data);
+      buf.erase(buf.begin(), buf.begin() + length);
+      });
+
+  // Read the PNG header
+  png_read_info(png, info);
+
+  // Print text metadata
+  ReadTextChunks(png, info);
+      
+  //Cleanup
+  png_destroy_read_struct(&png, &info, NULL);
+}
 
 void PrintPNGInfo(const char* filename){
   // Open PNG file
@@ -81,26 +139,27 @@ void PrintPNGInfo(const char* filename){
   // Init libpng structs
   png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
   if (!png){
-    std::cerr << "Failed to create PNG read struct" << std::endl;
+    std::cerr << "png_create_read_struct failed.\n" << std::endl;
     fclose(fp);
     return;
   }
 
   png_infop info = png_create_info_struct(png);
   if (!info){
-    std::cerr << "Failed to create PNG info struct" << std::endl;
+    std::cerr << "png_create_info_struct failed.\n" << std::endl;
     png_destroy_read_struct(&png, NULL, NULL);
     fclose(fp);
     return;
   }
 
   if (setjmp(png_jmpbuf(png))){
-    std::cerr << "libpng error!" << std::endl;
+    std::cerr << "libpng error!\n" << std::endl;
     png_destroy_read_struct(&png, &info, NULL);
     fclose(fp);
     return;
   }
 
+  // Let libpng handle reading from the C-style FILE* streams
   png_init_io(png, fp);
 
   // Read the PNG header
@@ -153,7 +212,7 @@ void handleMainMenuState(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
 
       if (libpng_droppedfile && libpng_droppedfile[0] != '\0') {
           std::cout << "File dropped: " << libpng_droppedfile << std::endl;
-          PrintPNGInfo(libpng_droppedfile);
+          PrintPNGInfoCPP(libpng_droppedfile);
 
           SDL_free(libpng_droppedfile);
       }else{
