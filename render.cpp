@@ -56,8 +56,9 @@ void RendererBase::Clear(){
   //SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 255, 255));
 }
 
-void RendererBase::Draw(Mouse& mouse, Button& buttonExit, Button& buttonAlleys){
+void RendererBase::Draw(Mouse& mouse, Button& buttonExit, Button& buttonAlleys, Button& buttonDrop){
   Clear();
+
 
   #if ALLEYS
   if (buttonAlleys.hasintersection){
@@ -67,7 +68,7 @@ void RendererBase::Draw(Mouse& mouse, Button& buttonExit, Button& buttonAlleys){
   #endif // ALLEYS
 
   buttonExit.Draw(gScreen);
-  //buttonExit.DrawScaled(gScreen); // TODO this doesnt work?
+  buttonDrop.DrawScaled(gScreen);
 
   mouse.Draw(gScreen); // draw mouse last so it's always on top
 }

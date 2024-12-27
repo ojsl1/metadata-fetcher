@@ -9,6 +9,7 @@
 #define WINDOW_HEIGHT 320
 #define FPS 15
 #define ALLEYS 1
+#define DEBUG 0
 
 struct WindowDimensions{
     int wSize;

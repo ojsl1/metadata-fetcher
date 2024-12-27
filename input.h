@@ -10,7 +10,7 @@
 class Mouse : public AppObject{
 public:
   // Optional filepath for custom cursor
-  Mouse(const char* mouseImagePath = NULL);
+  Mouse(int w, int h, const char* mouseImagePath = NULL);
   SDL_Rect GetDrawRect() const;
   void Draw(SDL_Surface *gScreen) const override;
   void Update() override; // get mouse state

@@ -24,7 +24,7 @@ public:
 
 private:
   SDL_Surface *rawButton = NULL;
-  SDL_Surface *scaledButton = NULL;
+  SDL_Surface *scaledButton;
   SDL_Rect dRectButton;
 };
 

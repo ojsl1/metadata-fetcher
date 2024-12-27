@@ -9,6 +9,7 @@
 
 enum class MenuState {
     MAIN_MENU,
+    OPTIONS,
     EXIT,
 };
 
@@ -24,6 +25,7 @@ Mix_Chunk *bell;
 Mix_Music *bgm;
 Button buttonAlleys(10, 220, 25, 25, "assets/button-alleysshow.png");
 Button buttonExit(10, 270, 80, 80, "assets/button-exit.png");
+Button buttonDrop(10, 10, 80, 80, "assets/dragndrop.png");
 
 // Color definitions
 Uint32 gPink;
@@ -164,17 +166,22 @@ void handleMainMenuState(RendererBase& ren, Mouse& mouse, const SDL_Event& e) {
 
 void renderMainMenuState(RendererBase& ren, Mouse& mouse, SDL_Event& e){
   UpdateMouseInteractions(mouse, e);
-  ren.Draw(mouse,buttonExit,buttonAlleys);
+  ren.Draw(mouse,buttonExit,buttonAlleys,buttonDrop);
   ren.Present();
 }
 
 void updateState(RendererBase& ren, Mouse& mouse, SDL_Event& e){
+// event loop states
   switch (currentMenu) {
     case MenuState::MAIN_MENU:
         handleMainMenuState(ren,mouse,e);
         break;
+    case MenuState::OPTIONS:
+        //TODO handleOptionMenuState(...);
+        std::cout << "Not implemented, exiting..." << std::endl;
+        currentMenu = MenuState::EXIT;
+        break;
     case MenuState::EXIT:
-        std::cout << "[TODO: this doesnt get printed out]" << std::endl;
         break;
     default:
         break;
@@ -186,8 +193,10 @@ void renderState(RendererBase& ren, Mouse& mouse, SDL_Event& e){
     case MenuState::MAIN_MENU:
         renderMainMenuState(ren,mouse,e);
         break;
+    case MenuState::OPTIONS:
+        //TODO renderOptionMenuState(...);
+        break;
     case MenuState::EXIT:
-        std::cout << "[TODO: this doesnt get printed out]" << std::endl;
         break;
     default:
         break;
@@ -205,7 +214,7 @@ int main (int argc, char *argv[]){
   Uint32 starting_tick;
   currentMenu = MenuState::MAIN_MENU;
 
-  Mouse mouse; // cant have this globally declared because it has SDL stuff inside that need to be initialized first
+  Mouse mouse(24, 24, "assets/mouse00.png"); // TODO moving this out of main next to the other resources doesnt apply SDL_ShowCursor(false)
   
   while (currentMenu != MenuState::EXIT){
     starting_tick = SDL_GetTicks();

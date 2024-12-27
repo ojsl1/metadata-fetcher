@@ -1,10 +1,10 @@
 #include "input.h"
 
-Mouse::Mouse(const char* mouseImagePath)
+Mouse::Mouse(int w, int h, const char* mouseImagePath)
   : rawMouse(NULL),
     scaledMouse(NULL)
 {
-    dRectMouse = {0,0,50,50}; // x,y,w,h,
+    dRectMouse = {0,0,w,h}; // x,y,w,h,
     point = {0,0,1,1}; // x,y,w,h
 
     if (!mouseImagePath){
@@ -22,11 +22,20 @@ Mouse::Mouse(const char* mouseImagePath)
         }
 
     // The size of the rectangle the cursor will be drawn on
-    scaledMouse = SDL_CreateRGBSurface(0, 50, 50, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-        if (!scaledMouse){
-          SDL_Log("Failed to create scaled mouse surface, SDL Error: %s", SDL_GetError());
-          return;
-        }
+    scaledMouse = SDL_CreateRGBSurface(
+        rawMouse->flags,
+        dRectMouse.w,
+        dRectMouse.h,
+        32,
+        rawMouse->format->Rmask,
+        rawMouse->format->Gmask,
+        rawMouse->format->Bmask,
+        rawMouse->format->Amask);
+
+    if (!scaledMouse){
+      SDL_Log("SDL_CreateRGBSurface failed: %s", SDL_GetError());
+      return;
+    }
 
     // Scale the rawMouse on the scaledMouse surface
     SDL_BlitScaled(rawMouse, NULL, scaledMouse, &dRectMouse);
@@ -41,8 +50,8 @@ void Mouse::Draw(SDL_Surface *gScreen) const {
 
 /**
  * @brief Convert const SDL_Rect into a non-const SDL_Rect.
- * @param dRectMouse The only reason this helper function exists.
- * @details SDL_BlitSurface() somehow modifies its fourth argument, thus requiring it to be non-const.
+ * @param dRectMouse is the only reason this helper function exists.
+ * @details SDL_BlitSurface somehow modifies its fourth argument, thus requiring it to be non-const.
  */
 SDL_Rect Mouse::GetDrawRect() const {
   return SDL_Rect{ dRectMouse.x, dRectMouse.y, 50, 50 }; // Assuming width and height are constant
