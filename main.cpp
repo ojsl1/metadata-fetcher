@@ -132,6 +132,14 @@ void PrintPNGInfo(const char* filename){
 
   // Print text metadata
   ReadTextChunks(png, info);
+
+  // Get generics of the PNG
+  png_uint_32 width, height;
+  int bit_depth, color_type;
+
+  png_get_IHDR(png, info, &width, &height, &bit_depth, &color_type, NULL, NULL, NULL);
+  std::cout << "PNG Info " << "Width: " << width << ", Height: " << height
+            << ", Bit Depth: " << bit_depth << std::endl;
       
   //Cleanup
   png_destroy_read_struct(&png, &info, NULL);
