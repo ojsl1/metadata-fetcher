@@ -37,6 +37,7 @@ Button buttonMute(10, 180, 0, 0, "assets/button-mute.png");
 Button buttonPause(75, 180, 0, 0, "assets/button-pause.png");
 Button buttonTests(10, 225, 0, 0, "assets/button-tests.png");
 Button buttonExit(10, 270, 0, 0, "assets/button-exit.png");
+Button buttonFrame(0, 0, 0, 0, "assets/frame.png");
 
 // Color definitions
 Uint32 gPink;
@@ -163,7 +164,7 @@ void UpdateInteractions(Mouse &mouse, SDL_Event &e){
 
 void renderMainMenuState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
   UpdateInteractions(mouse, e);
-  ren.Draw(mouse,buttonExit,buttonTests,buttonDrop,buttonMute,buttonPause);
+  ren.Draw(mouse,buttonExit,buttonTests,buttonDrop,buttonMute,buttonPause,buttonFrame);
   ren.Present();
 }
 

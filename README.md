@@ -9,6 +9,17 @@ Currently the main goals are:
     - bit9labs/sd-masonry
     - dolphin file manager icon view with all ui panels hidden, small label width, and max line number as 1
 
+## Build
+#### Requirements
+- at least: sdl2, sdl2_image, sdl2_mixer
+
+#### Compilation
+```
+$ git clone https://github.com/ojsl1/foray-sdl2.git
+$ cd foray-sdl2
+$ make
+```
+
 ## Todo
 - [X] OOP
     - [X] Baseclass

@@ -56,9 +56,10 @@ void RendererBase::Clear(){
   SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 50, 255));
 }
 
-void RendererBase::Draw(Mouse &mouse, Button &buttonExit, Button &buttonTests, Button &buttonDrop, Button &buttonMute, Button &buttonPause){
+void RendererBase::Draw(Mouse &mouse, Button &buttonExit, Button &buttonTests, Button &buttonDrop, Button &buttonMute, Button &buttonPause, Button &buttonFrame){
   Clear();
   
+  buttonFrame.Draw(gScreen);
   buttonDrop.DrawScaled(gScreen);
   buttonMute.Draw(gScreen);
   buttonPause.Draw(gScreen);
