@@ -22,7 +22,8 @@ public:
 
   //TODO REFACTOR: Ensure subclasses call these without errors
   virtual void Draw(SDL_Surface *gScreen) const = 0;
-  virtual void Update() = 0;
+  //virtual void Update() = 0;
+  virtual void GetXY() = 0;
 
   //TODO: Event handling (optional virtual functions)
   virtual void onClick() {}

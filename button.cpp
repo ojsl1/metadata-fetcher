@@ -2,10 +2,7 @@
 #include "input.h" // Button::DetectClicks and Button::DetectIntersections depend on mouse class
 
 Button::Button(int x, int y, int w, int h, const char* buttonImagePath)
-  : rawButton(NULL),
-    scaledButton(NULL),
-    hasintersection(false),
-    toggled(false)
+  : rawButton(),hasintersection(false),toggled(false)
     // TODO Without this init list the buttons gets drawn at topleft, why?
 {
     dRectButton = {x,y,w,h};
@@ -32,24 +29,7 @@ Button::~Button(){
 }
 
 void Button::DetectIntersections(Mouse &mouse){
-    if ( SDL_HasIntersection(&dRectButton, &mouse.point) ){
-        hasintersection = true;
-        //std::cout << "hasintersection" << std::endl;
-    }else{
-        hasintersection = false;
-    }
-}
-
-void Button::DetectClicks(Mouse &mouse){
-    if (mouse.clicked &&
-        mouse.x >= dRectButton.x &&
-        mouse.x <= (dRectButton.x + dRectButton.w) &&
-        mouse.y >= dRectButton.y &&
-        mouse.y <= (dRectButton.y + dRectButton.h)) {
-
-        toggled = !toggled;
-        std::cout << "toggled state is: " << toggled << std::endl;
-        }
+    hasintersection = SDL_HasIntersection(&dRectButton, &mouse.point);
 }
 
 void Button::Draw(SDL_Surface *gScreen){
@@ -79,9 +59,8 @@ void Button::DrawScaled(SDL_Surface *gScreen){
             rawButton->format->Amask);
     #endif
 
-
     // Create a 32bpp scaled surface
-    SDL_Surface *scaledButton = SDL_CreateRGBSurface(
+    SDL_Surface *scaledButtonLocal = SDL_CreateRGBSurface(
         rawButton->flags,
         dRectButton.w,
         dRectButton.h,
@@ -91,7 +70,7 @@ void Button::DrawScaled(SDL_Surface *gScreen){
         rawButton->format->Bmask,
         rawButton->format->Amask);
 
-    if (!scaledButton){
+    if (!scaledButtonLocal){
       SDL_Log("SDL_CreateRGBSurface failed: %s\n", SDL_GetError()); // e.g. "Unknown pixel format"
       return;
     }
@@ -103,26 +82,26 @@ void Button::DrawScaled(SDL_Surface *gScreen){
      * scale it to a specific region of the destination surface, e.g. if
      * scaleRect.w and scaleRect.h differ from scaledButton.
      * @notes If the entire rawButton is scaled to the exact dimensions of
-     * scaledButton, you don't need scaleRect. SDL_BlitScaled automatically matches
+     * scaledButtonLocal, you don't need scaleRect. SDL_BlitScaled automatically matches
      * the size of the source surface to the destination surface if NULL is passed.
      */
      //SDL_Rect scaleRect = {0, 0, dRectButton.w, dRectButton.h}; // x,y,w,h
 
-    // Scale rawButton on scaledButton.
-    if (SDL_BlitScaled(rawButton, NULL, scaledButton, NULL) < 0){
-        // NB: scaledButton is 32bpp, the images have to also be 32bpp.
+    // Scale rawButton on scaledButtonLocal.
+    if (SDL_BlitScaled(rawButton, NULL, scaledButtonLocal, NULL) < 0){
+        // NB: scaledButtonLocal is 32bpp, the images have to also be 32bpp.
         SDL_Log("SDL_BlitScaled failed: %s\n", SDL_GetError()); // e.g. "Blit combination not supported"
-        SDL_FreeSurface(scaledButton);
+        SDL_FreeSurface(scaledButtonLocal);
         return;
     }
 
-    // Blit scaledButton onto the screen.
-    if (SDL_BlitSurface(scaledButton, NULL, gScreen, &dRectButton) < 0){
+    // Blit scaledButtonLocal onto the screen.
+    if (SDL_BlitSurface(scaledButtonLocal, NULL, gScreen, &dRectButton) < 0){
         std::cout << "rawButton BitsPerPixel: " << rawButton->format->BitsPerPixel << std::endl;
-        std::cout << "scaledButton BitsPerPixel: " << scaledButton->format->BitsPerPixel << std::endl;
+        std::cout << "scaledButton BitsPerPixel: " << scaledButtonLocal->format->BitsPerPixel << std::endl;
         SDL_Log("SDL_BlitSurface failed: %s\n", SDL_GetError());
     }
 
-    // Free the scaled surface
-    SDL_FreeSurface(scaledButton);
+    // Free the local surface
+    SDL_FreeSurface(scaledButtonLocal);
 }

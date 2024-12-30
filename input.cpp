@@ -1,10 +1,9 @@
 #include "input.h"
 
 Mouse::Mouse(int w, int h, const char* mouseImagePath)
-  : rawMouse(NULL),
-    scaledMouse(NULL)
+  : rawMouse(NULL),scaledMouse(NULL)
 {
-    dRectMouse = {0,0,w,h}; // x,y,w,h,
+    dRectMouse = {0,0,w,h}; // x,y,w,h //TODO add debugging for non-zero x,y values
     point = {0,0,1,1}; // x,y,w,h
 
     if (!mouseImagePath){
@@ -54,27 +53,15 @@ void Mouse::Draw(SDL_Surface *gScreen) const {
  * @details SDL_BlitSurface somehow modifies its fourth argument, thus requiring it to be non-const.
  */
 SDL_Rect Mouse::GetDrawRect() const {
-  return SDL_Rect{ dRectMouse.x, dRectMouse.y, 50, 50 }; // Assuming width and height are constant
+  return SDL_Rect{ dRectMouse.x, dRectMouse.y, dRectMouse.w, dRectMouse.h };
 }
 
-void Mouse::Update(){
-      // Update the mouse's x and y position:
+void Mouse::GetXY(){
+      // Getter for the mouse x and y positions
       SDL_GetMouseState(&dRectMouse.x, &dRectMouse.y);
-      //TODO: Why are we pushing the private position values to a public member called point:
+
       point.x = dRectMouse.x;
       point.y = dRectMouse.y;
-}
-
-void Mouse::UpdateMouseState(SDL_Event &e) {
-    if (e.type == SDL_MOUSEBUTTONDOWN) {
-        std::cout << "click detected and clicked equals: " << clicked << std::endl;
-        x = e.button.x;
-        y = e.button.y;
-        clicked = true;
-    } else {
-        //std::cout << "click not detected and clicked equals: " << clicked << std::endl;
-        clicked = false;
-    }
 }
 
 Mouse::~Mouse(){

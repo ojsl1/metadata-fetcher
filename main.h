@@ -1,9 +1,9 @@
 #ifndef MAIN_H
 #define MAIN_H // MAIN.H "GLOBALS.H"
 
-#include "SDL.h"
-#include "SDL_image.h"
-#include "SDL_mixer.h"
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_mixer.h>
 
 #define WINDOW_WIDTH 480
 #define WINDOW_HEIGHT 320

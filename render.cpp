@@ -56,16 +56,18 @@ void RendererBase::Clear(){
   SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 50, 255));
 }
 
-void RendererBase::Draw(Mouse &mouse, Button &buttonExit, Button &buttonAlleys, Button &buttonDrop){
+void RendererBase::Draw(Mouse &mouse, Button &buttonExit, Button &buttonTests, Button &buttonDrop, Button &buttonMute, Button &buttonPause){
   Clear();
   
   buttonDrop.DrawScaled(gScreen);
+  buttonMute.Draw(gScreen);
+  buttonPause.Draw(gScreen);
   buttonExit.Draw(gScreen);
 
   #if ALLEYS
-  buttonAlleys.Draw(gScreen);
-  if (buttonAlleys.hasintersection){
-    DrawAlleys();
+  buttonTests.Draw(gScreen);
+  if (buttonTests.hasintersection){
+    DrawTests();
   };
   #endif // ALLEYS
 
@@ -73,7 +75,7 @@ void RendererBase::Draw(Mouse &mouse, Button &buttonExit, Button &buttonAlleys, 
 }
 
 #if ALLEYS
-void RendererBase::DrawAlleys(){
+void RendererBase::DrawTests(){
   // ALLEY. Create Sprites
   Sprite object( gRed, WINDOW_WIDTH/2, WINDOW_HEIGHT/2 );
   Sprite another( gBlue, WINDOW_WIDTH/2-100, WINDOW_HEIGHT/2+20 );

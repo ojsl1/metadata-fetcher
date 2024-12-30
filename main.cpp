@@ -26,9 +26,17 @@ WindowDimensions dims;
 // Resource definitions
 Mix_Chunk *bell;
 Mix_Music *bgm;
-Button buttonAlleys(10, 220, 25, 25, "assets/button-alleysshow.png");
-Button buttonExit(10, 270, 80, 80, "assets/button-exit.png");
+
+// edge padding 10px
+// inner padding 5px
+// button 60x40
+// button wide 125x40
+// window size is 480x320
 Button buttonDrop(10, 10, 80, 80, "assets/dragndrop.png");
+Button buttonMute(10, 180, 0, 0, "assets/button-mute.png");
+Button buttonPause(75, 180, 0, 0, "assets/button-pause.png");
+Button buttonTests(10, 225, 0, 0, "assets/button-tests.png");
+Button buttonExit(10, 270, 0, 0, "assets/button-exit.png");
 
 // Color definitions
 Uint32 gPink;
@@ -73,7 +81,7 @@ void ReadTextChunks(png_structp png, png_infop info){
     std::cout << "-----------------------------------" << std::endl;
   }
 }
-void PrintPNGInfoCPP(const char* filename){
+void PrintPNGInfo(const char* filename){
   // std::ifstream automatically closes the file when it goes out of scope.
   // So no need to fclose(file) repeatedly.
 
@@ -129,72 +137,77 @@ void PrintPNGInfoCPP(const char* filename){
   png_destroy_read_struct(&png, &info, NULL);
 }
 
-void PrintPNGInfo(const char* filename){
-  // Open PNG file
-  FILE* fp = fopen(filename, "rb");
-  if (!fp){
-    std::cerr << "Failed to open file: " << filename << std::endl;
-  }
-
-  // Init libpng structs
-  png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-  if (!png){
-    std::cerr << "png_create_read_struct failed.\n" << std::endl;
-    fclose(fp);
-    return;
-  }
-
-  png_infop info = png_create_info_struct(png);
-  if (!info){
-    std::cerr << "png_create_info_struct failed.\n" << std::endl;
-    png_destroy_read_struct(&png, NULL, NULL);
-    fclose(fp);
-    return;
-  }
-
-  if (setjmp(png_jmpbuf(png))){
-    std::cerr << "libpng error!\n" << std::endl;
-    png_destroy_read_struct(&png, &info, NULL);
-    fclose(fp);
-    return;
-  }
-
-  // Let libpng handle reading from the C-style FILE* streams
-  png_init_io(png, fp);
-
-  // Read the PNG header
-  png_read_info(png, info);
-
-  // Print text metadata
-  ReadTextChunks(png, info);
-      
-  //Cleanup
-  png_destroy_read_struct(&png, &info, NULL);
-  fclose(fp);
-}
-
-void DetectButtonIntersections(Mouse &mouse){
-  // Detect all button intersections
-  buttonAlleys.DetectIntersections(mouse);
+void DetectIntersections(Mouse &mouse){
+  // Interactable sprites need this, sets button.hasintersection accordingly
+  buttonMute.DetectIntersections(mouse);
+  buttonPause.DetectIntersections(mouse);
+  buttonTests.DetectIntersections(mouse);
   buttonExit.DetectIntersections(mouse);
 }
 
-void UpdateMouseInteractions(Mouse &mouse, SDL_Event &e){
-  mouse.Update();
-  mouse.UpdateMouseState(e);// TODO IS THIS FUNCTION BROKEN, WTF IS IT FOR?
-  // TODO mouse.clicked is broken - Use the mouse state for button toggle detection
-  buttonAlleys.DetectClicks(mouse);
-  DetectButtonIntersections(mouse);
+void UpdateInteractions(Mouse &mouse, SDL_Event &e){
+  // MOUSE: Update the getters mouse coords
+  mouse.GetXY();
+
+  // MOUSE: Update button-mouse intersections
+  DetectIntersections(mouse);
 }
 
-void handleMainMenuState(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
+void renderMainMenuState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
+  UpdateInteractions(mouse, e);
+  ren.Draw(mouse,buttonExit,buttonTests,buttonDrop,buttonMute,buttonPause);
+  ren.Present();
+}
+
+void renderStates(RendererBase &ren, Mouse &mouse, SDL_Event &e){
+  switch (currentMenu) {
+    case MenuState::MAIN_MENU:
+        renderMainMenuState(ren,mouse,e);
+        break;
+    case MenuState::OPTIONS:
+        //TODO renderOptionMenuState(...);
+        break;
+    case MenuState::EXIT:
+        break;
+    default:
+        break;
+  }
+}
+
+void EventHandlerMainMenu(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
   switch (e.type){
     case SDL_MOUSEBUTTONUP:
       switch (e.button.button){
         case SDL_BUTTON_LEFT:
           if (buttonExit.hasintersection){
-          currentMenu = MenuState::EXIT;
+            currentMenu = MenuState::EXIT;
+          } else if (buttonMute.hasintersection){
+            if (buttonMute.toggled){
+              Mix_VolumeMusic(20);
+              buttonMute.toggled = false;
+              std::cout << "Mixer unmuted." << std::endl;
+            } else {
+              Mix_VolumeMusic(0);
+              buttonMute.toggled = true;
+              std::cout << "Mixer muted." << std::endl;
+              std::cout << "mouse clicked at xy pos: " << mouse.point.x << "," << mouse.point.y
+                        << " toggled was: " << buttonMute.toggled << std::endl;
+              //std::cout << "got buttonMute wh bounds as: " << buttonMute.w << "," << buttonMute.h << std::endl;
+            }
+          } else if (buttonPause.hasintersection){
+              if (buttonPause.toggled){
+                Mix_ResumeMusic();
+                buttonPause.toggled = false;
+                std::cout << "Mixer resumed." << std::endl;
+              } else {
+                Mix_PauseMusic();
+                buttonPause.toggled = true;
+                std::cout << "Mixer pause." << std::endl;
+              }
           }
+          break;
+
+        default:
         break;
       }
       break;
@@ -204,6 +217,10 @@ void handleMainMenuState(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
         case SDLK_ESCAPE:
           currentMenu = MenuState::EXIT;
           break;
+        case SDLK_m:
+          Mix_VolumeMusic(0);
+          std::cout << "Mixer muted via m." << std::endl; //TODO needs to be toggleable
+          break;
       }
       break;
 
@@ -212,7 +229,7 @@ void handleMainMenuState(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
 
       if (libpng_droppedfile && libpng_droppedfile[0] != '\0') {
           std::cout << "File dropped: " << libpng_droppedfile << std::endl;
-          PrintPNGInfoCPP(libpng_droppedfile);
+          PrintPNGInfo(libpng_droppedfile);
 
           SDL_free(libpng_droppedfile);
       }else{
@@ -223,37 +240,31 @@ void handleMainMenuState(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
   } 
 }
 
-void renderMainMenuState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
-  UpdateMouseInteractions(mouse, e);
-  ren.Draw(mouse,buttonExit,buttonAlleys,buttonDrop);
-  ren.Present();
-}
+void EventHandlerGlobal(RendererBase &ren, Mouse &mouse, SDL_Event &e){
+  // Global event handling for the windows X button
+  if (e.type == SDL_QUIT){
+    currentMenu = MenuState::EXIT;
+    return;
+  }
 
-void updateState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
-// event loop states
+  // Global event handling for Ctrl+q
+  if (e.type == SDL_KEYDOWN){
+    if ((e.key.keysym.sym == SDLK_q || e.key.keysym.sym == SDLK_q) && 
+        (e.key.keysym.mod & KMOD_CTRL)) {
+        currentMenu = MenuState::EXIT;
+        return;
+    }
+  }
+
+  // State-specific event handling
   switch (currentMenu) {
     case MenuState::MAIN_MENU:
-        handleMainMenuState(ren,mouse,e);
+        EventHandlerMainMenu(ren,mouse,e);
         break;
     case MenuState::OPTIONS:
-        //TODO handleOptionMenuState(...);
+        //TODO EventHandlerOptionsMenu(...);
         std::cout << "Not implemented, exiting..." << std::endl;
         currentMenu = MenuState::EXIT;
-        break;
-    case MenuState::EXIT:
-        break;
-    default:
-        break;
-  }
-}
-
-void renderState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
-  switch (currentMenu) {
-    case MenuState::MAIN_MENU:
-        renderMainMenuState(ren,mouse,e);
-        break;
-    case MenuState::OPTIONS:
-        //TODO renderOptionMenuState(...);
         break;
     case MenuState::EXIT:
         break;
@@ -280,10 +291,10 @@ int main (int argc, char *argv[]){
 
     SDL_Event e;
     while (SDL_PollEvent(&e)){
-        updateState(ren,mouse,e); // handle events for the current state
+        EventHandlerGlobal(ren,mouse,e); // handle events for the current state
     }
 
-    renderState(ren,mouse,e); // render the current state
+    renderStates(ren,mouse,e); // render the current state
     ren.cap_framerate(starting_tick);
   }
  

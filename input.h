@@ -11,14 +11,12 @@ class Mouse : public AppObject{
 public:
   // Optional filepath for custom cursor
   Mouse(int w, int h, const char* mouseImagePath = NULL);
-  SDL_Rect GetDrawRect() const;
+  SDL_Rect GetDrawRect() const; //helper to non-constify dRectMouse
   void Draw(SDL_Surface *gScreen) const override;
-  void Update() override; // get mouse state
-  void UpdateMouseState(SDL_Event &e); // Update mouse 
+  void GetXY() override; // getter/updater for mouse coords
+
   ~Mouse();
 
-  int x, y; // Mouse position
-  bool clicked;
   SDL_Rect point;
 
 private:

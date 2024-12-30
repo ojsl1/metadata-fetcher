@@ -17,14 +17,12 @@ public:
   bool toggled;
 
   void DetectIntersections(Mouse &mouse); // Using the forward declared Mouse class
-  void DetectClicks(Mouse &mouse);
 
   void Draw(SDL_Surface *gScreen);
   void DrawScaled(SDL_Surface *gScreen);
 
 private:
-  SDL_Surface *rawButton = NULL;
-  SDL_Surface *scaledButton;
+  SDL_Surface *rawButton;
   SDL_Rect dRectButton;
 };
 
