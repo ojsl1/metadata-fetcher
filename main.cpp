@@ -32,12 +32,16 @@ Mix_Music *bgm;
 // button 60x40
 // button wide 125x40
 // window size is 480x320
+// frame 480x320
+// info frame 200x295
+Button buttonBackground(0, 0, 0, 0, "assets/background.png");
+Button buttonFrame(0, 0, 0, 0, "assets/frame.png");
+Button buttonInfoFrame(240, 10, 0, 0, "assets/frame-dashed.png");
 Button buttonDrop(10, 10, 80, 80, "assets/dragndrop.png");
 Button buttonMute(10, 180, 0, 0, "assets/button-mute.png");
 Button buttonPause(75, 180, 0, 0, "assets/button-pause.png");
 Button buttonTests(10, 225, 0, 0, "assets/button-tests.png");
 Button buttonExit(10, 270, 0, 0, "assets/button-exit.png");
-Button buttonFrame(0, 0, 0, 0, "assets/frame.png");
 
 // Color definitions
 Uint32 gPink;
@@ -164,7 +168,9 @@ void UpdateInteractions(Mouse &mouse, SDL_Event &e){
 
 void renderMainMenuState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
   UpdateInteractions(mouse, e);
-  ren.Draw(mouse,buttonExit,buttonTests,buttonDrop,buttonMute,buttonPause,buttonFrame);
+  ren.Draw(mouse,buttonExit,buttonTests,buttonDrop,
+           buttonMute,buttonPause,buttonFrame,buttonInfoFrame,
+           buttonBackground);
   ren.Present();
 }
 
@@ -185,6 +191,26 @@ void renderStates(RendererBase &ren, Mouse &mouse, SDL_Event &e){
 
 void EventHandlerMainMenu(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
   switch (e.type){
+
+    case SDL_WINDOWEVENT:
+      switch (e.window.event){
+        case SDL_WINDOWEVENT_RESIZED:
+          std::cout << "resize detected: "
+                    << e.window.data1 << "x" << e.window.data2 << std::endl;
+
+          // Reacquire window surface if it becomes invalid
+          gScreen = SDL_GetWindowSurface(gWindow);
+          if (!gScreen){
+            std::cerr << "SDL_GetWindowSurface failed during resize: "
+                      << SDL_GetError() << std::endl;
+          }
+          break;
+
+        default:
+          break;
+      }
+      break;
+
     case SDL_MOUSEBUTTONUP:
       switch (e.button.button){
         case SDL_BUTTON_LEFT:
@@ -286,7 +312,7 @@ int main (int argc, char *argv[]){
   RendererBase ren;
   Audio audio;
 
-  ren.initVideo(WINDOW_WIDTH, WINDOW_HEIGHT);
+  ren.initVideo(680, 320);
   ren.initColors(gScreen);
   audio.initMixer();
 

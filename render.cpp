@@ -53,13 +53,23 @@ void RendererBase::initVideo( int window_width, int window_height ){
 
 void RendererBase::Clear(){
   // Clear the screen (optional, depends on app logic)
+  /*
+  if (!gScreen){
+    std::cout << "gScreen invalid during ren.Clear, unable to clear." << std::endl;
+  }
+  */
+
   SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 50, 255));
 }
 
-void RendererBase::Draw(Mouse &mouse, Button &buttonExit, Button &buttonTests, Button &buttonDrop, Button &buttonMute, Button &buttonPause, Button &buttonFrame){
+void RendererBase::Draw(Mouse &mouse, Button &buttonExit, Button &buttonTests,
+     Button &buttonDrop, Button &buttonMute, Button &buttonPause,
+     Button &buttonFrame, Button &buttonInfoFrame, Button &buttonBackground
+     ){
   Clear();
-  
+  buttonBackground.Draw(gScreen);
   buttonFrame.Draw(gScreen);
+  buttonInfoFrame.Draw(gScreen);
   buttonDrop.DrawScaled(gScreen);
   buttonMute.Draw(gScreen);
   buttonPause.Draw(gScreen);
@@ -73,6 +83,51 @@ void RendererBase::Draw(Mouse &mouse, Button &buttonExit, Button &buttonTests, B
   #endif // ALLEYS
 
   mouse.Draw(gScreen); // draw mouse last so it's always on top
+}
+
+void RendererBase::Present(){
+  // Present the frame/update the new frame, same as SDL_RenderPresent()
+  SDL_UpdateWindowSurface(gWindow);
+ 
+  /*
+  const char* error = SDL_GetError();
+  if (*error != '\0') {
+    std::cerr << "SDL Error during present: " << error << std::endl;
+    SDL_ClearError();
+  }
+  */
+}
+
+void RendererBase::Shutdown(SDL_Window *gWindow, WindowDimensions dims){
+    //SDL_SetWindowSize( gWindow, dims.wSize, dims.hSize ); //enforce size
+    //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
+    SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );
+    std::cout << "Exit Position: " << dims.xPosi << "," << dims.yPosi << std::endl;
+    std::cout << "Exit Size: " << dims.wSize << "," << dims.hSize << " [TODO: Doesnt update after resizing]" << std::endl;
+    std::cout << "FPS: " << FPS << std::endl;
+
+    if (gScreen != NULL) {
+      SDL_FreeSurface(gScreen);
+      gScreen = NULL;
+    }
+   
+    /*
+    if (gFont != NULL) {
+      TTF_CloseFont(gFont);
+      gFont = NULL;
+    }
+    TTF_Quit();
+    */
+
+    if (gWindow != NULL) {
+      SDL_DestroyWindow(gWindow);
+      gWindow = NULL;
+    }
+
+    IMG_Quit();
+    SDL_Quit();
+
+    std::cout << "Exit succesfully" << std::endl;
 }
 
 #if ALLEYS
@@ -111,42 +166,3 @@ void RendererBase::DrawTests(){
   active_sprites.draw(gScreen);
 }
 #endif // ALLEYS
-
-void RendererBase::Present(){
-  /*  renderer_sdl_sw
-  * Update the window surface ie. present the new frame, same as SDL_RenderPresent()
-  */
-  SDL_UpdateWindowSurface(gWindow);
-}
-
-void RendererBase::Shutdown(SDL_Window *gWindow, WindowDimensions dims){
-    //SDL_SetWindowSize( gWindow, dims.wSize, dims.hSize ); //enforce size
-    //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
-    SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );
-    std::cout << "Exit Position: " << dims.xPosi << "," << dims.yPosi << std::endl;
-    std::cout << "Exit Size: " << dims.wSize << "," << dims.hSize << " [TODO: Doesnt update after resizing]" << std::endl;
-    std::cout << "FPS: " << FPS << std::endl;
-
-    if (gScreen != NULL) {
-      SDL_FreeSurface(gScreen);
-      gScreen = NULL;
-    }
-   
-    /*
-    if (gFont != NULL) {
-      TTF_CloseFont(gFont);
-      gFont = NULL;
-    }
-    TTF_Quit();
-    */
-
-    if (gWindow != NULL) {
-      SDL_DestroyWindow(gWindow);
-      gWindow = NULL;
-    }
-
-    IMG_Quit();
-    SDL_Quit();
-
-    std::cout << "Exit succesfully" << std::endl;
-}

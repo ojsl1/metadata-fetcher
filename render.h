@@ -18,7 +18,9 @@ public:
     void initVideo(int window_width, int window_height);
     void initColors(SDL_Surface *gScreen);
     void Clear();
-    void Draw(Mouse &mouse, Button &buttonExit, Button &buttonTests, Button &buttonDrop, Button &buttonMute, Button &buttonPause, Button &buttonFrame);
+    void Draw(Mouse &mouse, Button &buttonExit, Button &buttonTests,
+         Button &buttonDrop, Button &buttonMute, Button &buttonPause,
+         Button &buttonFrame, Button &buttonInfoFrame, Button &buttonBackground);
     void DrawTests();
     void Present(); //for swapping buffers with opengl
     void Shutdown(SDL_Window *gWindow, WindowDimensions dims);
