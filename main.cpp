@@ -195,8 +195,7 @@ void EventHandlerMainMenu(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
     case SDL_WINDOWEVENT:
       switch (e.window.event){
         case SDL_WINDOWEVENT_RESIZED:
-          std::cout << "resize detected: "
-                    << e.window.data1 << "x" << e.window.data2 << std::endl;
+          //std::cout << "resize detected: " << e.window.data1 << "x" << e.window.data2 << std::endl;
 
           // Reacquire window surface if it becomes invalid
           gScreen = SDL_GetWindowSurface(gWindow);
@@ -312,7 +311,7 @@ int main (int argc, char *argv[]){
   RendererBase ren;
   Audio audio;
 
-  ren.initVideo(680, 320);
+  ren.initVideo(480, 320);
   ren.initColors(gScreen);
   audio.initMixer();
 
