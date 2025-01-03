@@ -20,7 +20,7 @@ public:
     void Clear();
     void Draw(Mouse &mouse, Button &buttonExit, Button &buttonTests,
          Button &buttonDrop, Button &buttonMute, Button &buttonPause,
-         Button &buttonFrame, Button &buttonInfoFrame, Button &buttonBackground);
+         Button &buttonBorder, Button &buttonFrame, Button &buttonBg);
     void DrawTests();
     void Present(); //for swapping buffers with opengl
     void Shutdown(SDL_Window *gWindow, WindowDimensions dims);

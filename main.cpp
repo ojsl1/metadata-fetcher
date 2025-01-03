@@ -32,16 +32,29 @@ Mix_Music *bgm;
 // button 60x40
 // button wide 125x40
 // window size is 480x320
-// frame 480x320
-// info frame 200x295
-Button buttonBackground(0, 0, 0, 0, "assets/background.png");
-Button buttonFrame(0, 0, 0, 0, "assets/frame.png");
-Button buttonInfoFrame(240, 10, 0, 0, "assets/frame-dashed.png");
-Button buttonDrop(10, 10, 80, 80, "assets/dragndrop.png");
-Button buttonMute(10, 180, 0, 0, "assets/button-mute.png");
-Button buttonPause(75, 180, 0, 0, "assets/button-pause.png");
-Button buttonTests(10, 225, 0, 0, "assets/button-tests.png");
-Button buttonExit(10, 270, 0, 0, "assets/button-exit.png");
+// border 480x320
+// infoframe 200x29
+
+// Image x,y positions on the spritesheet and w,h dimensions
+SDL_Rect muteRect       = {0,   0,  60,40};
+SDL_Rect pauseRect      = {60,  0,  60,40};
+SDL_Rect exitRect       = {120, 0,  60,40};
+SDL_Rect testsRect      = {180, 0,  60,40};
+
+SDL_Rect dropRect       = {0,   80,   120,198}; // note this uses DrawScaled
+SDL_Rect bgRect         = {0,   280,  480,320};
+SDL_Rect borderRect     = {480, 280,  480,320};
+SDL_Rect infoRect       = {960, 280,  200,295};
+
+// Drawing coordinates; w,h are used only for DrawScaled() images
+Button buttonBg(0, 0, 0, 0, "assets/spritesheet.png", bgRect);
+Button buttonBorder(0, 0, 0, 0, "assets/spritesheet.png", borderRect);
+Button buttonFrame(240, 10, 0, 0, "assets/spritesheet.png", infoRect);
+Button buttonDrop(10, 10, 80, 110, "assets/spritesheet.png", dropRect);
+Button buttonMute(10, 180, 0, 0, "assets/spritesheet.png", muteRect);
+Button buttonPause(75, 180, 0, 0, "assets/spritesheet.png", pauseRect);
+Button buttonTests(10, 225, 0, 0, "assets/spritesheet.png", testsRect);
+Button buttonExit(10, 270, 0, 0, "assets/spritesheet.png", exitRect);
 
 // Color definitions
 Uint32 gPink;
@@ -168,9 +181,9 @@ void UpdateInteractions(Mouse &mouse, SDL_Event &e){
 
 void renderMainMenuState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
   UpdateInteractions(mouse, e);
-  ren.Draw(mouse,buttonExit,buttonTests,buttonDrop,
-           buttonMute,buttonPause,buttonFrame,buttonInfoFrame,
-           buttonBackground);
+  ren.Draw(mouse,buttonExit,buttonTests,buttonDrop,buttonMute,
+           buttonPause,buttonBorder,buttonFrame,
+           buttonBg);
   ren.Present();
 }
 

@@ -12,18 +12,23 @@ void printVectorTodos(){
   // 6: waste of time refactor ideas
   std::vector<std::pair<int, std::string>> todos = {
 
-{1, "GIMP \n transparency for dragndrop image"},
-{1, "BUG \n button.cpp: button.w, butotn.h are broken for foo.Draw sprites as only DrawScaled uses them"},
+{1, "CLEANUP \n rename button class to element"},
+{1, "BUG \n button.cpp: button.w, button.h are broken for foo.Draw sprites as only DrawScaled uses them"},
 {1, "CLEANUP \n github: pure c++ repo"},
 
+{1, "FEATURE \n indicators for when mute/pause are active"},
+{2, "FEATURE \n toggle button-pause sprite using the commented spritesheet draw logic"},
+{4, "FEATURE \n toggle button-pause sprite without a spritesheet"},
+
+// GIMP EXPORT automatic pixel format: file <foo>.png "8-bit colormap" doesn't work.
+// GIMP EXPORT setting pixel format to '8bpc RGBA': file <foo>.png "8-bit/color RGBA" works.
 {2, "COMPATIBILITY \n SDL_ConvertSurface non-32bpp rectangles"},
-{2, "FEATURE \n SDL_Text to render text"},  
-{2, "FEATURE \n button.cpp: spritesheet"},
+
+{2, "FEATURE \n SDL_Text to render text, after it works render the current FPS macro"},  
+
 
 {3, "CLEANUP \n appobject.h: subclasses must implement all the pure virtual functions."},
 
-{3, "FEATURE \n button.cpp: toggle button-pause sprite using the commented spritesheet draw logic"},
-{4, "FEATURE \n button.cpp: toggle button-pause sprite without a spritesheet"},
 
 {3, "WIP button.cpp: implement an sdl_helper function inside SDL_BlitScaled to convert non-32bpp images to 32bpp"},
 {3, "COMPATIBILITY \n make the app runnable without the assets directory, and so it doesnt flood console"},
@@ -47,6 +52,7 @@ void printVectorTodos(){
 {6, "BACKLOG \n std::map<int, std::vector<std::string>> todos"},
 {6, "BACKLOG \n C++11 range-based container iteration for below for loop"},
 {6, "BACKLOG \n C++20 std::ranges for the below for loop"},
+{6, "BACKLOG \n consider windows"}
 
 };
 

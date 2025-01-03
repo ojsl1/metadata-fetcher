@@ -1,31 +1,50 @@
 #include "button.h"
 #include "input.h" // Button::DetectClicks and Button::DetectIntersections depend on mouse class
 
-Button::Button(int x, int y, int w, int h, const char* buttonImagePath)
-  : rawButton(),hasintersection(false),toggled(false)
+Button::Button(int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect)
+  : rawButton(nullptr), hasintersection(false), toggled(false)
     // TODO Without this init list the buttons gets drawn at topleft, why?
 {
     dRectButton = {x,y,w,h};
 
-    if (!buttonImagePath){
-      buttonImagePath = "assets/texture-error.png";
+    if (!spritesheetPath){
+      spritesheetPath = "assets/texture-error.png";
     }
 
-    rawButton = IMG_Load(buttonImagePath);
-    if (!rawButton){
-      SDL_Log("Failed to load image: %s, SDL_Image Error: %s\n", buttonImagePath, IMG_GetError());
-      rawButton = IMG_Load("assets/texture-error.png");
-      if (!rawButton){
-        SDL_Log("Failed to load fallback image: assets/texture-error.png, SDL_Image Error: %s\n", IMG_GetError());
+    spritesheet = IMG_Load(spritesheetPath);
+    if (!spritesheet){
+      SDL_Log("Failed to load spritesheet: %s, SDL_Image Error: %s\n", spritesheetPath, IMG_GetError());
+      spritesheet = IMG_Load("assets/texture-error.png");
+      if (!spritesheet){
+        SDL_Log("Failed to load fallback spritesheet: assets/texture-error.png, SDL_Image Error: %s\n", IMG_GetError());
         return;
       }
+    }
+
+    // Extract the specific image from the spritesheet
+    rawButton = SDL_CreateRGBSurface(0, spriteRect.w, spriteRect.h, 32,
+                                     spritesheet->format->Rmask, spritesheet->format->Gmask,
+                                     spritesheet->format->Bmask, spritesheet->format->Amask);
+    if(!rawButton){
+      SDL_Log("SDL_CreateRGBSurface failed at creating image from spritesheet: ", SDL_GetError());
+      return;
+    }
+
+    //Blit the portion of the spritesheet into the rawButton
+    if (SDL_BlitSurface(spritesheet, &spriteRect, rawButton, NULL) < 0){
+      SDL_Log("Failed to blit the extracted image from spritesheet: %s\n", SDL_GetError());
+      SDL_FreeSurface(rawButton);
+      rawButton = nullptr;
     }
 }
 
 Button::~Button(){
-  if (rawButton){
-    SDL_FreeSurface(rawButton);
-  }
+    if (rawButton){
+      SDL_FreeSurface(rawButton);
+    }
+    if (spritesheet){
+      SDL_FreeSurface(spritesheet);
+    }
 }
 
 void Button::DetectIntersections(Mouse &mouse){
@@ -33,7 +52,9 @@ void Button::DetectIntersections(Mouse &mouse){
 }
 
 void Button::Draw(SDL_Surface *gScreen){
-    SDL_BlitSurface(rawButton, NULL, gScreen, &dRectButton);
+    if (rawButton){
+      SDL_BlitSurface(rawButton, NULL, gScreen, &dRectButton);
+    }
 }
 
 void Button::DrawScaled(SDL_Surface *gScreen){

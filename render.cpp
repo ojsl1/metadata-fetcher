@@ -64,12 +64,12 @@ void RendererBase::Clear(){
 
 void RendererBase::Draw(Mouse &mouse, Button &buttonExit, Button &buttonTests,
      Button &buttonDrop, Button &buttonMute, Button &buttonPause,
-     Button &buttonFrame, Button &buttonInfoFrame, Button &buttonBackground
+     Button &buttonBorder, Button &buttonFrame, Button &buttonBg
      ){
   Clear();
-  buttonBackground.Draw(gScreen);
+  buttonBg.Draw(gScreen);
+  buttonBorder.Draw(gScreen);
   buttonFrame.Draw(gScreen);
-  buttonInfoFrame.Draw(gScreen);
   buttonDrop.DrawScaled(gScreen);
   buttonMute.Draw(gScreen);
   buttonPause.Draw(gScreen);
