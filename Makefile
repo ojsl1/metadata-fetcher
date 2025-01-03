@@ -11,8 +11,8 @@ run: game leanclean
 	./game
 	rm -f game
 
-game: main.o render.o input.o button.o addons.o
-	$(CC) main.o render.o addons.o input.o button.o -o game $(LDFLAGS)
+game: main.o render.o input.o sprite.o addons.o
+	$(CC) main.o render.o addons.o input.o sprite.o -o game $(LDFLAGS)
 
 main.o: main.cpp main.h
 	$(CC) $(CXXFLAGS) main.cpp main.h $(shell pkg-config --cflags sdl2)
@@ -23,8 +23,8 @@ render.o: render.cpp render.h
 input.o: input.cpp input.h
 	$(CC) $(CXXFLAGS) input.cpp $(shell pkg-config --cflags sdl2)
 
-button.o: button.cpp button.h
-	$(CC) $(CXXFLAGS) button.cpp $(shell pkg-config --cflags sdl2)
+sprite.o: sprite.cpp sprite.h
+	$(CC) $(CXXFLAGS) sprite.cpp $(shell pkg-config --cflags sdl2)
 
 addons.o: addons.cpp addons.h
 	$(CC) $(CXXFLAGS) addons.cpp $(shell pkg-config --cflags sdl2)

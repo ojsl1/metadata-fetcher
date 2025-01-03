@@ -1,7 +1,7 @@
 #include "main.h" // globals
 #include "render.h"
 #include "input.h"
-#include "button.h"
+#include "sprite.h"
 #include "addons.h"
 #include "audio.h"
 #include "png.h"
@@ -29,8 +29,8 @@ Mix_Music *bgm;
 
 // edge padding 10px
 // inner padding 5px
-// button 60x40
-// button wide 125x40
+// sprite 60x40
+// sprite wide 125x40
 // window size is 480x320
 // border 480x320
 // infoframe 200x29
@@ -47,14 +47,14 @@ SDL_Rect borderRect     = {480, 280,  480,320};
 SDL_Rect infoRect       = {960, 280,  200,295};
 
 // Drawing coordinates; w,h are used only for DrawScaled() images
-Button buttonBg(0, 0, 0, 0, "assets/spritesheet.png", bgRect);
-Button buttonBorder(0, 0, 0, 0, "assets/spritesheet.png", borderRect);
-Button buttonFrame(240, 10, 0, 0, "assets/spritesheet.png", infoRect);
-Button buttonDrop(10, 10, 80, 110, "assets/spritesheet.png", dropRect);
-Button buttonMute(10, 180, 0, 0, "assets/spritesheet.png", muteRect);
-Button buttonPause(75, 180, 0, 0, "assets/spritesheet.png", pauseRect);
-Button buttonTests(10, 225, 0, 0, "assets/spritesheet.png", testsRect);
-Button buttonExit(10, 270, 0, 0, "assets/spritesheet.png", exitRect);
+Sprite spriteBg(0, 0, 0, 0, "assets/spritesheet.png", bgRect);
+Sprite spriteBorder(0, 0, 0, 0, "assets/spritesheet.png", borderRect);
+Sprite spriteFrame(240, 10, 0, 0, "assets/spritesheet.png", infoRect);
+Sprite spriteDrop(10, 10, 80, 110, "assets/spritesheet.png", dropRect);
+Sprite spriteMute(10, 180, 0, 0, "assets/spritesheet.png", muteRect);
+Sprite spritePause(75, 180, 0, 0, "assets/spritesheet.png", pauseRect);
+Sprite spriteTests(10, 225, 0, 0, "assets/spritesheet.png", testsRect);
+Sprite spriteExit(10, 270, 0, 0, "assets/spritesheet.png", exitRect);
 
 // Color definitions
 Uint32 gPink;
@@ -164,26 +164,26 @@ void PrintPNGInfo(const char* filename){
 }
 
 void DetectIntersections(Mouse &mouse){
-  // Interactable sprites need this, sets button.hasintersection accordingly
-  buttonMute.DetectIntersections(mouse);
-  buttonPause.DetectIntersections(mouse);
-  buttonTests.DetectIntersections(mouse);
-  buttonExit.DetectIntersections(mouse);
+  // Interactable sprites need this, sets sprite.hasintersection accordingly
+  spriteMute.DetectIntersections(mouse);
+  spritePause.DetectIntersections(mouse);
+  spriteTests.DetectIntersections(mouse);
+  spriteExit.DetectIntersections(mouse);
 }
 
 void UpdateInteractions(Mouse &mouse, SDL_Event &e){
   // MOUSE: Update the getters mouse coords
   mouse.GetXY();
 
-  // MOUSE: Update button-mouse intersections
+  // MOUSE: Update sprite-mouse intersections
   DetectIntersections(mouse);
 }
 
 void renderMainMenuState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
   UpdateInteractions(mouse, e);
-  ren.Draw(mouse,buttonExit,buttonTests,buttonDrop,buttonMute,
-           buttonPause,buttonBorder,buttonFrame,
-           buttonBg);
+  ren.Draw(mouse,spriteExit,spriteTests,spriteDrop,spriteMute,
+           spritePause,spriteBorder,spriteFrame,
+           spriteBg);
   ren.Present();
 }
 
@@ -226,29 +226,29 @@ void EventHandlerMainMenu(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
     case SDL_MOUSEBUTTONUP:
       switch (e.button.button){
         case SDL_BUTTON_LEFT:
-          if (buttonExit.hasintersection){
+          if (spriteExit.hasintersection){
             currentMenu = MenuState::EXIT;
-          } else if (buttonMute.hasintersection){
-            if (buttonMute.toggled){
+          } else if (spriteMute.hasintersection){
+            if (spriteMute.toggled){
               Mix_VolumeMusic(20);
-              buttonMute.toggled = false;
+              spriteMute.toggled = false;
               std::cout << "Mixer unmuted." << std::endl;
             } else {
               Mix_VolumeMusic(0);
-              buttonMute.toggled = true;
+              spriteMute.toggled = true;
               std::cout << "Mixer muted." << std::endl;
               std::cout << "mouse clicked at xy pos: " << mouse.point.x << "," << mouse.point.y
-                        << " toggled was: " << buttonMute.toggled << std::endl;
-              //std::cout << "got buttonMute wh bounds as: " << buttonMute.w << "," << buttonMute.h << std::endl;
+                        << " toggled was: " << spriteMute.toggled << std::endl;
+              //std::cout << "got spriteMute wh bounds as: " << spriteMute.w << "," << spriteMute.h << std::endl;
             }
-          } else if (buttonPause.hasintersection){
-              if (buttonPause.toggled){
+          } else if (spritePause.hasintersection){
+              if (spritePause.toggled){
                 Mix_ResumeMusic();
-                buttonPause.toggled = false;
+                spritePause.toggled = false;
                 std::cout << "Mixer resumed." << std::endl;
               } else {
                 Mix_PauseMusic();
-                buttonPause.toggled = true;
+                spritePause.toggled = true;
                 std::cout << "Mixer pause." << std::endl;
               }
           }
@@ -288,7 +288,7 @@ void EventHandlerMainMenu(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
 }
 
 void EventHandlerGlobal(RendererBase &ren, Mouse &mouse, SDL_Event &e){
-  // Global event handling for the windows X button
+  // Global event handling for the windows X sprite
   if (e.type == SDL_QUIT){
     currentMenu = MenuState::EXIT;
     return;

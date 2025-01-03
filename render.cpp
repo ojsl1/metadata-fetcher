@@ -62,22 +62,22 @@ void RendererBase::Clear(){
   SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 50, 255));
 }
 
-void RendererBase::Draw(Mouse &mouse, Button &buttonExit, Button &buttonTests,
-     Button &buttonDrop, Button &buttonMute, Button &buttonPause,
-     Button &buttonBorder, Button &buttonFrame, Button &buttonBg
+void RendererBase::Draw(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
+     Sprite &spriteDrop, Sprite &spriteMute, Sprite &spritePause,
+     Sprite &spriteBorder, Sprite &spriteFrame, Sprite &spriteBg
      ){
   Clear();
-  buttonBg.Draw(gScreen);
-  buttonBorder.Draw(gScreen);
-  buttonFrame.Draw(gScreen);
-  buttonDrop.DrawScaled(gScreen);
-  buttonMute.Draw(gScreen);
-  buttonPause.Draw(gScreen);
-  buttonExit.Draw(gScreen);
+  spriteBg.Draw(gScreen);
+  spriteBorder.Draw(gScreen);
+  spriteFrame.Draw(gScreen);
+  spriteDrop.DrawScaled(gScreen);
+  spriteMute.Draw(gScreen);
+  spritePause.Draw(gScreen);
+  spriteExit.Draw(gScreen);
 
   #if ALLEYS
-  buttonTests.Draw(gScreen);
-  if (buttonTests.hasintersection){
+  spriteTests.Draw(gScreen);
+  if (spriteTests.hasintersection){
     DrawTests();
   };
   #endif // ALLEYS
@@ -132,37 +132,37 @@ void RendererBase::Shutdown(SDL_Window *gWindow, WindowDimensions dims){
 
 #if ALLEYS
 void RendererBase::DrawTests(){
-  // ALLEY. Create Sprites
-  Sprite object( gRed, WINDOW_WIDTH/2, WINDOW_HEIGHT/2 );
-  Sprite another( gBlue, WINDOW_WIDTH/2-100, WINDOW_HEIGHT/2+20 );
+  // ALLEY. Create SpriteTests
+  SpriteTest object( gRed, WINDOW_WIDTH/2, WINDOW_HEIGHT/2 );
+  SpriteTest another( gBlue, WINDOW_WIDTH/2-100, WINDOW_HEIGHT/2+20 );
 
-  // ALLEY. Create Block sprites
+  // ALLEY. Create Block spritetests
   Block block1( gPink, 120, 30 );
   Block block2( gPink, 100, 15 );
   block1.set_image( "assets/cosmox2.png" );
   block2.set_image( "assets/avatar.bmp" );
 
   /*
-  TODO: ALLEY. Trying to blit cursor along with other sprites
+  TODO: ALLEY. Trying to blit cursor along with other spritetests
   Block block3mouse( blue, 130, 40 );
   block3mouse.set_image( "assets/mouse.png" );
-  SpriteGroup pointers;
+  SpriteTestGroup pointers;
   pointers.add( &block3mouse );
   pointers.draw( gScreen ); // draw to mouse not to screen
   */
 
-  // ALLEY. Create a SpriteGroup & add previously created Blocks to it
-  SpriteGroup active_sprites;
-  active_sprites.add( &block2 );
-  active_sprites.add( &block1 );
-  active_sprites.add( &another );
-  active_sprites.add( &object );
+  // ALLEY. Create a SpriteTestGroup & add previously created Blocks to it
+  SpriteTestGroup active_spritetests;
+  active_spritetests.add( &block2 );
+  active_spritetests.add( &block1 );
+  active_spritetests.add( &another );
+  active_spritetests.add( &object );
   object.draw( gScreen );
 
-  // ALLEY. Test if SpriteGroup contains a specified sprite_object
-  //std::cout << active_sprites.has( another ) << std::endl; // TODO: Print only once instead of spamming
+  // ALLEY. Test if SpriteTestGroup contains a specified spritetest_object
+  //std::cout << active_spritetests.has( another ) << std::endl; // TODO: Print only once instead of spamming
 
-  // ALLEY. Blit the whole SpriteGroup
-  active_sprites.draw(gScreen);
+  // ALLEY. Blit the whole SpriteTestGroup
+  active_spritetests.draw(gScreen);
 }
 #endif // ALLEYS

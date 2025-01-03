@@ -25,7 +25,7 @@ private:
   SDL_Rect dRectMouse; // The size of the scaled cursor
 };
    
-  //TODO: cant privatize as button.cpp reads from point via Button::DetectIntersections()
+  //TODO: cant privatize as button.cpp reads from point via Element::DetectIntersections()
   // implement a getter for getting the values:
   /*
   SDL_Rect point
