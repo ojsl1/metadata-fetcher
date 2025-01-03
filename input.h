@@ -3,11 +3,11 @@
 #pragma once
 
 #include "main.h" // globals
-#include "appobject.h"
+#include "element.h"
 #include "render.h"
 #include <iostream>
 
-class Mouse : public AppObject{
+class Mouse : public Element{
 public:
   // Optional filepath for custom cursor
   Mouse(int w, int h, const char* mouseImagePath = NULL);

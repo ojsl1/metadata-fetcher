@@ -1,16 +1,15 @@
-#ifndef PHYSICS_H
-#define PHYSICS_H
-
+#ifndef ELEMENT_H
+#define ELEMENT_H
 
 //OOP: Base class
-class AppObject {
+class Element {
 protected:
   float posX, posY;
   bool isActive;
 
 public:
   //TODO:
-  AppObject() : posX(0), posY(0), isActive(true) {}
+  Element() : posX(0), posY(0), isActive(true) {}
 
   //TODO: Position handling
   void setPosition(float newX, float newY) { posX = newX; posY = newY; }
@@ -30,7 +29,7 @@ public:
   virtual void onHover() {}
 
   //TODO: Ensure a virtual destructor for polymorphism
-  virtual ~AppObject() = default;
+  virtual ~Element() = default;
 };
 
-#endif // PHYSICS_H
+#endif // ELEMENT_H
