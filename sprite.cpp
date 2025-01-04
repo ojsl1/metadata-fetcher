@@ -2,9 +2,7 @@
 #include "input.h" // Sprite::DetectClicks and Sprite::DetectIntersections depend on mouse class
 
 Sprite::Sprite(int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect)
-  : rawSprite(nullptr), hasintersection(false), toggled(false)
-    // TODO Without this init list the sprites gets drawn at topleft, why?
-{
+  : rawSprite(nullptr), alternateSprite(nullptr), hasintersection(false), toggled(false) {
     dRectSprite = {x,y,w,h};
 
     if (!spritesheetPath){
@@ -21,20 +19,35 @@ Sprite::Sprite(int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect
       }
     }
 
-    // Extract the specific image from the spritesheet
+    // Create rawSprite
     rawSprite = SDL_CreateRGBSurface(0, spriteRect.w, spriteRect.h, 32,
                                      spritesheet->format->Rmask, spritesheet->format->Gmask,
                                      spritesheet->format->Bmask, spritesheet->format->Amask);
-    if(!rawSprite){
-      SDL_Log("SDL_CreateRGBSurface failed at creating image from spritesheet: %s", SDL_GetError());
-      return;
+    if(rawSprite){
+      //Copy the portion of the spritesheet into rawSprite
+      if (SDL_BlitSurface(spritesheet, &spriteRect, rawSprite, nullptr) < 0){
+        SDL_Log("Failed to blit the extracted image from spritesheet: %s\n", SDL_GetError());
+        SDL_FreeSurface(rawSprite);
+        rawSprite = nullptr;
+      }
+    } else {
+      SDL_Log("SDL_CreateRGBSurface failed at creating rawSprite from spritesheet: %s\n", SDL_GetError());
     }
 
-    //Blit the portion of the spritesheet into the rawSprite
-    if (SDL_BlitSurface(spritesheet, &spriteRect, rawSprite, NULL) < 0){
-      SDL_Log("Failed to blit the extracted image from spritesheet: %s\n", SDL_GetError());
-      SDL_FreeSurface(rawSprite);
-      rawSprite = nullptr;
+    // Create alternateSprite
+    SDL_Rect alternateRect = {spriteRect.x, spriteRect.y + spriteRect.h, spriteRect.w, spriteRect.h};
+    alternateSprite = SDL_CreateRGBSurface(0, alternateRect.w, alternateRect.h, 32,
+                                           spritesheet->format->Rmask, spritesheet->format->Gmask,
+                                           spritesheet->format->Bmask, spritesheet->format->Amask);
+    if(alternateSprite){
+      //Copy the alternate portion of the spritesheet into alternateSprite
+      if (SDL_BlitSurface(spritesheet, &alternateRect, alternateSprite, nullptr) < 0){
+        SDL_Log("Failed to blit the alternateSprite from spritesheet: %s\n", SDL_GetError());
+        SDL_FreeSurface(alternateSprite);
+        rawSprite = nullptr;
+      }
+    } else {
+      SDL_Log("Failed to create alternateSprite: %s\n", SDL_GetError());
     }
 }
 
@@ -54,6 +67,10 @@ void Sprite::Toggle(){
     }
 }
 
+void Sprite::SetAlternateSprite(SDL_Surface *alternate){
+    alternateSprite = alternate;
+}
+
 void Sprite::SetToggleCallback(std::function<void(bool)> callback){
     toggleCallback = callback;
 }
@@ -63,8 +80,9 @@ void Sprite::DetectIntersections(Mouse &mouse){
 }
 
 void Sprite::Draw(SDL_Surface *gScreen){
-    if (rawSprite){
-      SDL_BlitSurface(rawSprite, NULL, gScreen, &dRectSprite);
+    SDL_Surface *currentSprite = toggled && alternateSprite ? alternateSprite : rawSprite;
+    if (currentSprite){
+      SDL_BlitSurface(currentSprite, NULL, gScreen, &dRectSprite);
     }
 }
 
