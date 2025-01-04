@@ -1,5 +1,6 @@
 #ifndef MAIN_H
 #define MAIN_H // MAIN.H "GLOBALS.H"
+#pragma once
 
 #include <SDL.h>
 #include <SDL_image.h>

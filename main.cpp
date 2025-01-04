@@ -11,9 +11,9 @@
 #include <vector>
 
 enum class MenuState {
-    MAIN_MENU,
-    OPTIONS,
-    EXIT,
+  MAIN_MENU,
+  OPTIONS,
+  EXIT,
 };
 
 // System definitions

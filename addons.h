@@ -1,7 +1,7 @@
 #ifndef ADDONS_H
 #define ADDONS_H
+#pragma once
 
-#include "addons.h"
 #include <vector>
 #include <iostream>
 
