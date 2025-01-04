@@ -27,35 +27,6 @@ WindowDimensions dims;
 Mix_Chunk *bell;
 Mix_Music *bgm;
 
-// edge padding 10px
-// inner padding 5px
-// sprite 60x40
-// sprite wide 125x40
-// window size is 480x320
-// border 480x320
-// infoframe 200x29
-
-// Image x,y positions on the spritesheet and w,h dimensions
-SDL_Rect muteRect       = {0,   0,  60,40};
-SDL_Rect pauseRect      = {60,  0,  60,40};
-SDL_Rect exitRect       = {120, 0,  60,40};
-SDL_Rect testsRect      = {180, 0,  60,40};
-
-SDL_Rect dropRect       = {0,   80,   120,198}; // note this uses DrawScaled
-SDL_Rect bgRect         = {0,   280,  480,320};
-SDL_Rect borderRect     = {480, 280,  480,320};
-SDL_Rect infoRect       = {960, 280,  200,295};
-
-// Drawing coordinates; w,h are used only for DrawScaled() images
-Sprite spriteBg(0, 0, 0, 0, "assets/spritesheet.png", bgRect);
-Sprite spriteBorder(0, 0, 0, 0, "assets/spritesheet.png", borderRect);
-Sprite spriteFrame(240, 10, 0, 0, "assets/spritesheet.png", infoRect);
-Sprite spriteDrop(10, 10, 80, 110, "assets/spritesheet.png", dropRect);
-Sprite spriteMute(10, 180, 0, 0, "assets/spritesheet.png", muteRect);
-Sprite spritePause(75, 180, 0, 0, "assets/spritesheet.png", pauseRect);
-Sprite spriteTests(10, 225, 0, 0, "assets/spritesheet.png", testsRect);
-Sprite spriteExit(10, 270, 0, 0, "assets/spritesheet.png", exitRect);
-
 // Color definitions
 Uint32 gPink;
 Uint32 gRed;
@@ -63,6 +34,50 @@ Uint32 gBeige;
 Uint32 gBlue;
 Uint32 gDarkblue;
 Uint32 gDarkgreen;
+
+// edge padding 10px
+// inner padding 5px
+// buttons 60x40
+// sprite wide 125x40
+// for window size see int main
+// infoframe 200x295
+
+// Bracketed coordinates are the drawing x,y, where w,h, are only used with DrawScaled.
+// Braced coordinates are the raw location and size on the spritesheet: x,y,w,h
+Sprite spriteBg(0, 0, 0, 0, "assets/spritesheet.png", {0,280,480,320});
+Sprite spriteBorder(0, 0, 0, 0, "assets/spritesheet.png", {480,280,480,320});
+Sprite spriteFrame(240, 10, 0, 0, "assets/spritesheet.png", {960,280,200,295});
+Sprite spriteDrop(10, 10, 80, 140, "assets/spritesheet.png", {0,80,120,198});
+
+Sprite spriteMute(10, 180, 0, 0, "assets/spritesheet.png", {0,0,60,40});
+Sprite spritePause(75, 180, 0, 0, "assets/spritesheet.png", {60,0,60,40});
+Sprite spriteExit(10, 270, 0, 0, "assets/spritesheet.png", {120,0,60,40});
+Sprite spriteTests(10, 225, 0, 0, "assets/spritesheet.png", {180,0,60,40});
+
+void initSprites(){
+  spriteMute.SetToggleCallback([](bool toggled){
+      if(toggled){
+        Mix_VolumeMusic(0);
+        std::cout << "Mixer muted." << std::endl;
+        //std::cout << "mouse clicked at xy pos: " << mouse.point.x << "," << mouse.point.y
+        //          << " toggled was: " << spriteMute.toggled << std::endl;
+        //std::cout << "got spriteMute wh bounds as: " << spriteMute.w << "," << spriteMute.h << std::endl;
+      } else {
+        Mix_VolumeMusic(20);
+        std::cout << "Mixer unmuted." << std::endl;
+      }
+  });
+  
+  spritePause.SetToggleCallback([](bool toggled){
+      if(toggled){
+        Mix_PauseMusic();
+        std::cout << "Mixer paused." << std::endl;
+      } else {
+        Mix_ResumeMusic();
+        std::cout << "Mixer resumed." << std::endl;
+      }
+  });
+}
 
 void ReadTextChunks(png_structp png, png_infop info){
   int num_text = 0;
@@ -229,28 +244,9 @@ void EventHandlerMainMenu(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
           if (spriteExit.hasintersection){
             currentMenu = MenuState::EXIT;
           } else if (spriteMute.hasintersection){
-            if (spriteMute.toggled){
-              Mix_VolumeMusic(20);
-              spriteMute.toggled = false;
-              std::cout << "Mixer unmuted." << std::endl;
-            } else {
-              Mix_VolumeMusic(0);
-              spriteMute.toggled = true;
-              std::cout << "Mixer muted." << std::endl;
-              std::cout << "mouse clicked at xy pos: " << mouse.point.x << "," << mouse.point.y
-                        << " toggled was: " << spriteMute.toggled << std::endl;
-              //std::cout << "got spriteMute wh bounds as: " << spriteMute.w << "," << spriteMute.h << std::endl;
-            }
+              spriteMute.Toggle();
           } else if (spritePause.hasintersection){
-              if (spritePause.toggled){
-                Mix_ResumeMusic();
-                spritePause.toggled = false;
-                std::cout << "Mixer resumed." << std::endl;
-              } else {
-                Mix_PauseMusic();
-                spritePause.toggled = true;
-                std::cout << "Mixer pause." << std::endl;
-              }
+              spritePause.Toggle();
           }
           break;
 
@@ -326,6 +322,7 @@ int main (int argc, char *argv[]){
 
   ren.initVideo(480, 320);
   ren.initColors(gScreen);
+  initSprites();
   audio.initMixer();
 
   Uint32 starting_tick;

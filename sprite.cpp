@@ -26,7 +26,7 @@ Sprite::Sprite(int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect
                                      spritesheet->format->Rmask, spritesheet->format->Gmask,
                                      spritesheet->format->Bmask, spritesheet->format->Amask);
     if(!rawSprite){
-      SDL_Log("SDL_CreateRGBSurface failed at creating image from spritesheet: ", SDL_GetError());
+      SDL_Log("SDL_CreateRGBSurface failed at creating image from spritesheet: %s", SDL_GetError());
       return;
     }
 
@@ -45,6 +45,17 @@ Sprite::~Sprite(){
     if (spritesheet){
       SDL_FreeSurface(spritesheet);
     }
+}
+
+void Sprite::Toggle(){
+    toggled = !toggled;
+    if (toggleCallback){
+      toggleCallback(toggled);
+    }
+}
+
+void Sprite::SetToggleCallback(std::function<void(bool)> callback){
+    toggleCallback = callback;
 }
 
 void Sprite::DetectIntersections(Mouse &mouse){
