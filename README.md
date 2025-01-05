@@ -1,10 +1,10 @@
 # Metadata Fetcher
-This is a GUI tool for quickly fetching text metadata from PNG images, just dragndrop the image into the GUI and the text will get printed into the console (WIP eventually into the gui). It was mainly made for work with Stable Diffusion.
+This is a GUI tool for quickly fetching text metadata from PNG images, just dragndrop the image into the GUI and the text will get printed into the console (WIP eventually into the gui). It was mainly made for work with Stable Diffusion, which is why it doesnt use hardware acceleration and runs on the CPU.
 
 ## Building and running
 This hasn't been and wont be tested on non-Linux systems.
 
-You need at least: `sdl2`, `sdl2_image`, `sdl2_mixer`.
+You need at least: `sdl2`, `sdl2_image`, `sdl2_mixer`, `sdl2_ttf`.
 
 ```
 $ git clone https://github.com/ojsl1/metadata-fetcher.git

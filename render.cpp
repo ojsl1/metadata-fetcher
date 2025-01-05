@@ -3,6 +3,7 @@
 
 SDL_Window *gWindow = nullptr;
 SDL_Surface *gScreen = nullptr;
+TTF_Font *gFont = nullptr;
 
 void RendererBase::cap_framerate ( Uint32 starting_tick ){
     if ( ( 1000 / FPS ) > SDL_GetTicks() - starting_tick ){
@@ -22,7 +23,8 @@ void RendererBase::initColors(SDL_Surface *gScreen){
 void RendererBase::initVideo( int window_width, int window_height ){
     SDL_Init( SDL_INIT_EVERYTHING );
     IMG_Init( IMG_INIT_PNG );
-    
+    TTF_Init();
+
     // Create the window
     gWindow = SDL_CreateWindow( "Metadata fetcher",
                                 SDL_WINDOWPOS_UNDEFINED,
@@ -111,13 +113,10 @@ void RendererBase::Shutdown(SDL_Window *gWindow, WindowDimensions dims){
       gScreen = NULL;
     }
    
-    /*
     if (gFont != NULL) {
       TTF_CloseFont(gFont);
       gFont = NULL;
     }
-    TTF_Quit();
-    */
 
     if (gWindow != NULL) {
       SDL_DestroyWindow(gWindow);
@@ -126,6 +125,7 @@ void RendererBase::Shutdown(SDL_Window *gWindow, WindowDimensions dims){
 
     IMG_Quit();
     SDL_Quit();
+    TTF_Quit();
 
     std::cout << "Exit succesfully" << std::endl;
 }
