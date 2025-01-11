@@ -4,6 +4,7 @@
 #include "sprite.h"
 #include "addons.h"
 #include "audio.h"
+#include "font.h"
 #include "png.h"
 
 #include <iostream>
@@ -38,21 +39,24 @@ Uint32 gDarkgreen;
 // edge padding 10px
 // inner padding 5px
 // buttons 60x40
-// sprite wide 125x40
+// button_wide 125x40
 // for window size see int main
 // infoframe 200x295
 
-// Bracketed coordinates are the drawing x,y, where w,h, are only used with DrawScaled.
-// Braced coordinates are the raw location and size on the spritesheet: x,y,w,h
-Sprite spriteBg(0, 0, 0, 0, "assets/spritesheet.png", {0,280,480,320});
-Sprite spriteBorder(0, 0, 0, 0, "assets/spritesheet.png", {480,280,480,320});
-Sprite spriteFrame(240, 10, 0, 0, "assets/spritesheet.png", {960,280,200,295});
-Sprite spriteDrop(10, 10, 80, 140, "assets/spritesheet.png", {0,80,120,198});
+//Sprites:
+//  drawing coords+size, resource, spritesheet coords+size
+//Note: only DrawScaled uses drawing size values.
+Sprite spriteBg(0, 0, 320, 480, "assets/spritesheet.png", {0,280,480,320});
+Sprite spriteBorder(0, 0, 320, 480, "assets/spritesheet.png", {480,280,480,320});
+Sprite spriteFrame(10, 10, 300, 410, "assets/spritesheet.png", {960,280,200,295});
+Sprite spriteDrop(120, 180, 80, 140, "assets/spritesheet.png", {0,80,120,198});
+Sprite spritePause(10, 430, 0, 0, "assets/spritesheet.png", {60,0,60,40});
+Sprite spriteMute(90, 430, 0, 0, "assets/spritesheet.png", {0,0,60,40});
+Sprite spriteTests(170, 430, 0, 0, "assets/spritesheet.png", {180,0,60,40});
+Sprite spriteExit(250, 430, 0, 0, "assets/spritesheet.png", {120,0,60,40});
 
-Sprite spriteMute(10, 180, 0, 0, "assets/spritesheet.png", {0,0,60,40});
-Sprite spritePause(75, 180, 0, 0, "assets/spritesheet.png", {60,0,60,40});
-Sprite spriteExit(10, 270, 0, 0, "assets/spritesheet.png", {120,0,60,40});
-Sprite spriteTests(10, 225, 0, 0, "assets/spritesheet.png", {180,0,60,40});
+// Fonts
+Font arial;
 
 void initSprites(){
   spriteMute.SetToggleCallback([](bool toggled){
@@ -114,6 +118,7 @@ void ReadTextChunks(png_structp png, png_infop info){
     std::cout << "-----------------------------------" << std::endl;
   }
 }
+
 void PrintPNGInfo(const char* filename){
   // std::ifstream automatically closes the file when it goes out of scope.
   // So no need to fclose(file) repeatedly.
@@ -198,7 +203,7 @@ void renderMainMenuState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
   UpdateInteractions(mouse, e);
   ren.Draw(mouse,spriteExit,spriteTests,spriteDrop,spriteMute,
            spritePause,spriteBorder,spriteFrame,
-           spriteBg);
+           spriteBg,arial);
   ren.Present();
 }
 
@@ -320,7 +325,7 @@ int main (int argc, char *argv[]){
   RendererBase ren;
   Audio audio;
 
-  ren.initVideo(480, 320);
+  ren.initVideo(320,480);
   ren.initColors(gScreen);
   initSprites();
   audio.initMixer();
@@ -328,8 +333,12 @@ int main (int argc, char *argv[]){
   Uint32 starting_tick;
   currentMenu = MenuState::MAIN_MENU;
 
-  Mouse mouse(24, 24, "assets/mouse00.png"); // TODO moving this out of main next to the other resources doesnt apply SDL_ShowCursor(false)
-  
+  arial.Load("assets/arial.ttf", 24);
+
+  // TODO moving below mouse definition out of main next to
+  // other resources doesnt apply SDL_ShowCursor(false)
+  Mouse mouse(24, 24, "assets/mouse00.png");
+
   while (currentMenu != MenuState::EXIT){
     starting_tick = SDL_GetTicks();
 
@@ -342,6 +351,7 @@ int main (int argc, char *argv[]){
     ren.cap_framerate(starting_tick);
   }
  
+  arial.Shutdown();
   audio.Shutdown(bell, bgm);
   ren.Shutdown(gWindow, dims);
   return 0;

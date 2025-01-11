@@ -9,6 +9,7 @@
 
 #include "input.h" // forward declare class for Draw();
 #include "sprite.h" // forward declare class for Draw();
+#include "font.h"
 class Mouse;
 class Sprite;
 
@@ -20,7 +21,9 @@ public:
     void Clear();
     void Draw(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
          Sprite &spriteDrop, Sprite &spriteMute, Sprite &spritePause,
-         Sprite &spriteBorder, Sprite &spriteFrame, Sprite &spriteBg);
+         Sprite &spriteBorder, Sprite &spriteFrame, Sprite &spriteBg,
+         Font &arial
+         );
     void DrawTests();
     void Present(); //for swapping buffers with opengl
     void Shutdown(SDL_Window *gWindow, WindowDimensions dims);

@@ -7,11 +7,14 @@
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
 
-#define WINDOW_WIDTH 480
-#define WINDOW_HEIGHT 320
 #define FPS 15
 #define ALLEYS 1
 #define DEBUG 0
+
+#if ALLEYS
+  #define WINDOW_WIDTH 320
+  #define WINDOW_HEIGHT 480
+#endif
 
 struct WindowDimensions{
     int wSize;

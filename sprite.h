@@ -1,5 +1,5 @@
-#ifndef BUTTON_H
-#define BUTTON_H
+#ifndef SPRITE_H
+#define SPRITE_H
 
 class Mouse; // forward declaring Mouse class
 
@@ -25,12 +25,10 @@ public:
   bool toggled; // Current toggled state
 
 private:
-
   SDL_Surface *rawSprite; // Specific image extracted from the spritesheet
   SDL_Surface *alternateSprite; // Alternate image for toggled states
   SDL_Surface *spritesheet;
   SDL_Rect dRectSprite; // The specific images position and size
   std::function<void(bool)> toggleCallback; // Callback for toggle action
 };
-
-#endif // BUTTON_H
+#endif // SPRITE_H

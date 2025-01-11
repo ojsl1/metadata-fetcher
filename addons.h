@@ -15,17 +15,24 @@ void printVectorTodos(){
   // 6: waste of time refactor ideas
   std::vector<std::pair<int, std::string>> todos = {
 
-{1, "GITHUB \n pure c++ repo"},
+{1, "BUG \n resizing window resizes the DrawScaled images, are they dependant on ui reso?"},
+{1, "GUI \n resize window and look at border thicknesses, they are wrong..."},
+{2, "BUGS \n font.h:fix the overlaods"},
+{2, "BUGS \n sprite.h: move the sprite parameters from the constructor into the draw call"
+    "ie. from main.cpp to render.cpp inside the RendererBase::Draw"},
 
-{2, "FEATURE \n SDL_Text to render text, after it works render the current FPS macro"},  
+{2, "BUGS \n fix compiler Wreorder warnings"},
+{2, "FEATURE \n SDL_Text render FPS every frame"},  
+{3, "GITHUB \n pure c++ repo, see newest 'Style' commit, before that C was 1.3%"},
 
 // GIMP EXPORT automatic pixel format: file <foo>.png "8-bit colormap" doesn't work.
 // GIMP EXPORT setting pixel format to '8bpc RGBA': file <foo>.png "8-bit/color RGBA" works.
 {2, "COMPATIBILITY \n SDL_ConvertSurface non-32bpp rectangles into 32bpp"},
 
+{2, "REFACTOR \n SDL_Renderer for hardware acceleration, afterwards checkRendererType(SDL_Renderer *ren)"},
 
 {1, "CLEANUP \n sprite.cpp: aspect ratio-locked scaler to constructor, instead of the freesize w,h variables"},
-{2, "CLEANUP \n sprite.cpp: sprite.w and sprite.h more explicitly only for DrawScaled rects"},
+{2, "CLEANUP \n sprite.cpp: sprite.w and sprite.h values as percentages not pixels, 100percent being the raw px value"},
 {3, "CLEANUP \n sprite.cpp using sprite.w and sprite.h with calculating alternateSprite location?"},
 
 {3, "CLEANUP \n element.h: subclasses must implement all the pure virtual functions."},
@@ -53,7 +60,32 @@ void printVectorTodos(){
 {6, "BACKLOG \n std::map<int, std::vector<std::string>> todos"},
 {6, "BACKLOG \n C++11 range-based container iteration for below for loop"},
 {6, "BACKLOG \n C++20 std::ranges for the below for loop"},
-{6, "BACKLOG \n consider windows"}
+
+{6, "CLEANUP \n Currently all header files that require SDL libs source them through 'render.h' -> 'main.h'."
+    "Delete this superfluous step and directly source SDL libs through main.h."
+    "For the affected header files this will require adding includes for the standard libs that are also in render.h"
+    "(as of now just iostream and vector)."},
+
+{6, "BACKLOG \n Element::Sprite::Mouse, Element::Sprite::Button"},
+{6, "BACKLOG \n class polymorphism"},
+
+{6, "REFACTOR \n classes with union keywords, for better memory management"},
+{6, "raii, sfinae, odr keywords, inline keywords"},
+
+{6, "FEATURE \n Iterate over filenames image000...image991 and draw them one by one with some delay between"},
+
+{6, "BACKLOG \n RendererBase::renderer_sdl_sw, renderer_sdl_hw, renderer_opengl, renderer_vk"},
+
+{6, "OPENGL \n renderer_opengl, vect2,"
+"Replace all SDL_Rects with vertex buffers (VBO) and vertex array objects (VAO)"
+  "If some SDL_Rects were texctured, load textures into opengl, bind them and adjust texture coords"
+  "If some SDL_Rects were colored, pass color data into a separate buffer or through uniform variables within your shader"
+"Simple vertex and fragment shaders: For positioning and transformations pass a matrix to the shader"
+  "Pass a matrix to the shader for position and transformation operations (scaling/translating/rotating)"
+"Reduce number of draw calls when calling lots of rects by batching them into a single vbo"
+  "Dynamically update the buffer or use instancing for rendering multiple rects in a single call"},
+
+{6, "BACKLOG \n consider windows"},
 
 };
 

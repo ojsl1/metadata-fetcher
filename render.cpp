@@ -3,7 +3,6 @@
 
 SDL_Window *gWindow = nullptr;
 SDL_Surface *gScreen = nullptr;
-TTF_Font *gFont = nullptr;
 
 void RendererBase::cap_framerate ( Uint32 starting_tick ){
     if ( ( 1000 / FPS ) > SDL_GetTicks() - starting_tick ){
@@ -21,9 +20,22 @@ void RendererBase::initColors(SDL_Surface *gScreen){
 }
 
 void RendererBase::initVideo( int window_width, int window_height ){
-    SDL_Init( SDL_INIT_EVERYTHING );
-    IMG_Init( IMG_INIT_PNG );
-    TTF_Init();
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
+      std::cerr << "SDL_Init failed: " << SDL_GetError() << std::endl;
+      return;
+    }
+
+    /*
+    if (IMG_Init(IMG_INIT_PNG) != 0){
+      std::cerr << "IMT_Init failed: " << IMG_GetError() << std::endl;
+      return;
+    }
+    */
+
+    if (TTF_Init() != 0){
+      std::cerr << "TTF_Init failed: " << TTF_GetError() << std::endl;
+      return;
+    }
 
     // Create the window
     gWindow = SDL_CreateWindow( "Metadata fetcher",
@@ -54,28 +66,26 @@ void RendererBase::initVideo( int window_width, int window_height ){
 }
 
 void RendererBase::Clear(){
-  // Clear the screen (optional, depends on app logic)
-  /*
   if (!gScreen){
     std::cout << "gScreen invalid during ren.Clear, unable to clear." << std::endl;
   }
-  */
-
   SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 50, 255));
 }
 
 void RendererBase::Draw(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
      Sprite &spriteDrop, Sprite &spriteMute, Sprite &spritePause,
-     Sprite &spriteBorder, Sprite &spriteFrame, Sprite &spriteBg
-     ){
+     Sprite &spriteBorder, Sprite &spriteFrame, Sprite &spriteBg,
+     Font &arial){
   Clear();
-  spriteBg.Draw(gScreen);
-  spriteBorder.Draw(gScreen);
-  spriteFrame.Draw(gScreen);
+  spriteBg.DrawScaled(gScreen);
+  spriteBorder.DrawScaled(gScreen);
+  spriteFrame.DrawScaled(gScreen);
   spriteDrop.DrawScaled(gScreen);
   spriteMute.Draw(gScreen);
   spritePause.Draw(gScreen);
   spriteExit.Draw(gScreen);
+
+  arial.Draw(gScreen,80,200, "Drop Image Here", {0,0,0,0});
 
   #if ALLEYS
   spriteTests.Draw(gScreen);
@@ -90,14 +100,6 @@ void RendererBase::Draw(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
 void RendererBase::Present(){
   // Present the frame/update the new frame, same as SDL_RenderPresent()
   SDL_UpdateWindowSurface(gWindow);
- 
-  /*
-  const char* error = SDL_GetError();
-  if (*error != '\0') {
-    std::cerr << "SDL Error during present: " << error << std::endl;
-    SDL_ClearError();
-  }
-  */
 }
 
 void RendererBase::Shutdown(SDL_Window *gWindow, WindowDimensions dims){
@@ -112,11 +114,6 @@ void RendererBase::Shutdown(SDL_Window *gWindow, WindowDimensions dims){
       SDL_FreeSurface(gScreen);
       gScreen = NULL;
     }
-   
-    if (gFont != NULL) {
-      TTF_CloseFont(gFont);
-      gFont = NULL;
-    }
 
     if (gWindow != NULL) {
       SDL_DestroyWindow(gWindow);
@@ -125,7 +122,6 @@ void RendererBase::Shutdown(SDL_Window *gWindow, WindowDimensions dims){
 
     IMG_Quit();
     SDL_Quit();
-    TTF_Quit();
 
     std::cout << "Exit succesfully" << std::endl;
 }
@@ -133,14 +129,14 @@ void RendererBase::Shutdown(SDL_Window *gWindow, WindowDimensions dims){
 #if ALLEYS
 void RendererBase::DrawTests(){
   // ALLEY. Create SpriteTests
-  SpriteTest object( gRed, WINDOW_WIDTH/2, WINDOW_HEIGHT/2 );
+  SpriteTest object( gRed, WINDOW_WIDTH/2-20, WINDOW_HEIGHT/2-20 );
   SpriteTest another( gBlue, WINDOW_WIDTH/2-100, WINDOW_HEIGHT/2+20 );
 
   // ALLEY. Create Block spritetests
-  Block block1( gPink, 120, 30 );
-  Block block2( gPink, 100, 15 );
+  Block block1( gPink, WINDOW_WIDTH/4, WINDOW_HEIGHT/8 );
+  Block block2( gPink, WINDOW_WIDTH/2+60, WINDOW_HEIGHT/2-40 );
   block1.set_image( "assets/cosmox2.png" );
-  block2.set_image( "assets/avatar.bmp" );
+  block2.set_image( "assets/avatar2.webp" );
 
   /*
   TODO: ALLEY. Trying to blit cursor along with other spritetests
@@ -153,8 +149,8 @@ void RendererBase::DrawTests(){
 
   // ALLEY. Create a SpriteTestGroup & add previously created Blocks to it
   SpriteTestGroup active_spritetests;
-  active_spritetests.add( &block2 );
   active_spritetests.add( &block1 );
+  active_spritetests.add( &block2 );
   active_spritetests.add( &another );
   active_spritetests.add( &object );
   object.draw( gScreen );
