@@ -36,7 +36,7 @@ Sprite::Sprite(int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect
   }
 
   // Create alternateSprite
-  SDL_Rect alternateRect = {spriteRect.x, spriteRect.y + spriteRect.h, spriteRect.w, spriteRect.h};
+  SDL_Rect alternateRect = {spriteRect.x, (spriteRect.y + spriteRect.h), spriteRect.w, spriteRect.h};
   alternateSprite = SDL_CreateRGBSurface(0, alternateRect.w, alternateRect.h, 32,
                                          spritesheet->format->Rmask, spritesheet->format->Gmask,
                                          spritesheet->format->Bmask, spritesheet->format->Amask);

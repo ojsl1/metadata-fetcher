@@ -9,6 +9,13 @@ class Mouse; // forward declaring Mouse class
 #include <functional>
 
 class Sprite{
+private:
+  SDL_Surface *rawSprite; // Specific image extracted from the spritesheet
+  SDL_Surface *alternateSprite; // Alternate image for toggled states
+  SDL_Surface *spritesheet;
+  SDL_Rect dRectSprite; // The specific images position and size
+  std::function<void(bool)> toggleCallback; // Callback for toggle action
+
 public:
   // x,y coords (origo is topleft); w,h size, filepath
   Sprite(int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect);
@@ -24,11 +31,5 @@ public:
   bool hasintersection; // WIP cant privatize main.cpp reads from this via playSprite.hasintersection
   bool toggled; // Current toggled state
 
-private:
-  SDL_Surface *rawSprite; // Specific image extracted from the spritesheet
-  SDL_Surface *alternateSprite; // Alternate image for toggled states
-  SDL_Surface *spritesheet;
-  SDL_Rect dRectSprite; // The specific images position and size
-  std::function<void(bool)> toggleCallback; // Callback for toggle action
 };
 #endif // SPRITE_H
