@@ -61,12 +61,9 @@ void Font::Draw(SDL_Surface *gScreen, int x, int y, const std::string &message, 
   //Alternatively: for antialiased text use TTF_RenderText_Blended:
   //SDL_Surface *textSurface = TTF_RenderText_Blended(font_, message.c_str(), color_);
 
-  // TODO is this actually needed
-  //font_ = SDL_ConvertSurfaceFormat(font_, SDL_PIXELFORMAT_RGBA8888, 0);
-
   SDL_Surface *textSurface = TTF_RenderText_Solid(font_, message.c_str(), color_);
   if(!textSurface){
-    std::cerr << "TTF_RenderText_Solid failed, failed to create surface: " << TTF_GetError() << std::endl;
+    std::cerr << "TTF_RenderText_Solid failed: " << TTF_GetError() << std::endl;
     return;
   }
 

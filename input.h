@@ -10,7 +10,7 @@
 class Mouse : public Element{
 public:
   // Optional filepath for custom cursor
-  Mouse(int w, int h, const char* mouseImagePath = NULL);
+  Mouse(int w, int h, const char* mouseImagePath = nullptr);
   SDL_Rect GetDrawRect() const; //helper to non-constify dRectMouse
   void Draw(SDL_Surface *gScreen) const override;
   void GetXY() override; // getter/updater for mouse coords
@@ -20,19 +20,9 @@ public:
   SDL_Rect point;
 
 private:
-  SDL_Surface *rawMouse = NULL;
-  SDL_Surface *scaledMouse = NULL;
+  SDL_Surface *rawMouse = nullptr;
+  SDL_Surface *scaledMouse = nullptr;
   SDL_Rect dRectMouse; // The size of the scaled cursor
 };
-   
-  //TODO: cant privatize as button.cpp reads from point via Element::DetectIntersections()
-  // implement a getter for getting the values:
-  /*
-  SDL_Rect point
-
-  SDL_Rect getPoint() const {
-    return point;
-  }
-  */
 
 #endif // INPUT_H

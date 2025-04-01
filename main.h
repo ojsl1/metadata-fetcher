@@ -7,7 +7,7 @@
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
 
-#define FPS 15
+#define FPSCAP 15
 #define ALLEYS 1
 #define DEBUG 0
 
@@ -26,6 +26,7 @@ struct WindowDimensions{
 // Global variable declarations
 extern SDL_Window *gWindow;
 extern SDL_Surface *gScreen;
+extern float fps;
 
 extern Uint32 gPink;
 extern Uint32 gRed;

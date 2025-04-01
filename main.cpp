@@ -2,6 +2,7 @@
 #include "render.h"
 #include "input.h"
 #include "sprite.h"
+#include "character.h"
 #include "addons.h"
 #include "audio.h"
 #include "font.h"
@@ -11,24 +12,21 @@
 #include <fstream>
 #include <vector>
 
-enum class MenuState {
+enum class AppState {
   MAIN_MENU,
   OPTIONS,
   EXIT,
 };
 
-// System definitions
-MenuState currentMenu = MenuState::MAIN_MENU;
-double delta;
-
-// Debug definitions
+// System
+AppState currentMenu = AppState::MAIN_MENU;
 WindowDimensions dims;
-
-// Resource definitions
+float fps = 0.0f;
+// Resources
+Font arial;
 Mix_Chunk *bell;
 Mix_Music *bgm;
-
-// Color definitions
+// Colors
 Uint32 gPink;
 Uint32 gRed;
 Uint32 gBeige;
@@ -40,23 +38,24 @@ Uint32 gDarkgreen;
 // inner padding 5px
 // buttons 60x40
 // button_wide 125x40
-// for window size see int main
 // infoframe 200x295
+// window size see int main 320x480
 
-//Sprites:
-//  drawing coords+size, resource, spritesheet coords+size
-//Note: only DrawScaled uses drawing size values.
-Sprite spriteBg(0, 0, 320, 480, "assets/spritesheet.png", {0,280,480,320});
-Sprite spriteBorder(0, 0, 320, 480, "assets/spritesheet.png", {480,280,480,320});
-Sprite spriteFrame(10, 10, 300, 410, "assets/spritesheet.png", {960,280,200,295});
-Sprite spriteDrop(120, 180, 80, 140, "assets/spritesheet.png", {0,80,120,198});
-Sprite spritePause(10, 430, 0, 0, "assets/spritesheet.png", {60,0,60,40});
-Sprite spriteMute(90, 430, 0, 0, "assets/spritesheet.png", {0,0,60,40});
-Sprite spriteTests(170, 430, 0, 0, "assets/spritesheet.png", {180,0,60,40});
-Sprite spriteExit(250, 430, 0, 0, "assets/spritesheet.png", {120,0,60,40});
+//x,y,w,h
+// ("name", drawcoords, drawsize, "filepath", spritesheet coordinates)
+//NB: Only DrawScaled can use custom drawing size
+Sprite spriteBg("Background", 0, 0, 320, 480, "assets/spritesheet.png", {0,280,480,320});
+Sprite spriteBorder("Border", 0, 0, 320, 480, "assets/spritesheet.png", {480,280,480,320});
+Sprite spriteFrame("Frame", 10, 10, 300, 410, "assets/spritesheet.png", {960,280,200,295});
+Sprite spriteDrop("Drop", 120, 180, 80, 140, "assets/spritesheet.png", {0,80,120,198});
 
-// Fonts
-Font arial;
+Sprite spritePause("Pause", 10, 430, 0, 0, "assets/spritesheet.png", {60,0,60,40});
+Sprite spriteMute("Mute", 90, 430, 0, 0, "assets/spritesheet.png", {0,0,60,40});
+Sprite spriteTests("Tests", 170, 430, 0, 0, "assets/spritesheet.png", {180,0,60,40});
+Sprite spriteExit("Exit", 250, 430, 0, 0, "assets/spritesheet.png", {120,0,60,40});
+
+Character player("Marisa", 0, 240, 192, 192, "assets/marisa-antinomy-sheet.png", {1,648,192,192},15);
+
 
 void initSprites(){
   spriteMute.SetToggleCallback([](bool toggled){
@@ -85,7 +84,7 @@ void initSprites(){
 
 void ReadTextChunks(png_structp png, png_infop info){
   int num_text = 0;
-  png_textp text_data = NULL;
+  png_textp text_data = nullptr;
   
   // Retrieve the text chunks (tEXt, zTXt, iTXt)
   num_text = png_get_text(png, info, &text_data, &num_text);
@@ -119,10 +118,12 @@ void ReadTextChunks(png_structp png, png_infop info){
   }
 }
 
+/* @brief
+ *
+ * @comment std::ifstream automatically closes the file when it goes out of scope.
+ * So no need to fclose(file) repeatedly.
+ */
 void PrintPNGInfo(const char* filename){
-  // std::ifstream automatically closes the file when it goes out of scope.
-  // So no need to fclose(file) repeatedly.
-
   // Open the PNG file using std::ifstream
   std::ifstream file(filename, std::ios::binary);
   if (!file){
@@ -134,7 +135,7 @@ void PrintPNGInfo(const char* filename){
   std::vector<unsigned char> buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
   // Init libpng structs
-  png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
   if (!png){
     std::cerr << "png_create_read_struct failed.\n" << std::endl;
     return;
@@ -143,13 +144,13 @@ void PrintPNGInfo(const char* filename){
   png_infop info = png_create_info_struct(png);
   if (!info){
     std::cerr << "png_create_info_struct failed.\n" << std::endl;
-    png_destroy_read_struct(&png, NULL, NULL);
+    png_destroy_read_struct(&png, nullptr, nullptr);
     return;
   }
 
   if (setjmp(png_jmpbuf(png))){
     std::cerr << "libpng error!\n" << std::endl;
-    png_destroy_read_struct(&png, &info, NULL);
+    png_destroy_read_struct(&png, &info, nullptr);
     return;
   }
 
@@ -175,12 +176,12 @@ void PrintPNGInfo(const char* filename){
   png_uint_32 width, height;
   int bit_depth, color_type;
 
-  png_get_IHDR(png, info, &width, &height, &bit_depth, &color_type, NULL, NULL, NULL);
+  png_get_IHDR(png, info, &width, &height, &bit_depth, &color_type, nullptr, nullptr, nullptr);
   std::cout << "PNG Info " << "Width: " << width << ", Height: " << height
             << ", Bit Depth: " << bit_depth << std::endl;
       
   //Cleanup
-  png_destroy_read_struct(&png, &info, NULL);
+  png_destroy_read_struct(&png, &info, nullptr);
 }
 
 void DetectIntersections(Mouse &mouse){
@@ -199,23 +200,24 @@ void UpdateInteractions(Mouse &mouse, SDL_Event &e){
   DetectIntersections(mouse);
 }
 
-void renderMainMenuState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
+void renderMainAppState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
   UpdateInteractions(mouse, e);
-  ren.Draw(mouse,spriteExit,spriteTests,spriteDrop,spriteMute,
+  ren.Clear();
+  ren.Render(mouse,spriteExit,spriteTests,spriteDrop,spriteMute,
            spritePause,spriteBorder,spriteFrame,
-           spriteBg,arial);
-  ren.Present();
+           spriteBg,arial,player);
+  ren.Update();
 }
 
-void renderStates(RendererBase &ren, Mouse &mouse, SDL_Event &e){
+void renderState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
   switch (currentMenu) {
-    case MenuState::MAIN_MENU:
-        renderMainMenuState(ren,mouse,e);
+    case AppState::MAIN_MENU:
+        renderMainAppState(ren,mouse,e);
         break;
-    case MenuState::OPTIONS:
-        //TODO renderOptionMenuState(...);
+    case AppState::OPTIONS:
+        //TODO renderOptionAppState(...);
         break;
-    case MenuState::EXIT:
+    case AppState::EXIT:
         break;
     default:
         break;
@@ -247,7 +249,7 @@ void EventHandlerMainMenu(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
       switch (e.button.button){
         case SDL_BUTTON_LEFT:
           if (spriteExit.hasintersection){
-            currentMenu = MenuState::EXIT;
+            currentMenu = AppState::EXIT;
           } else if (spriteMute.hasintersection){
               spriteMute.Toggle();
           } else if (spritePause.hasintersection){
@@ -263,7 +265,7 @@ void EventHandlerMainMenu(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
     case SDL_KEYDOWN:
       switch (e.key.keysym.sym){
         case SDLK_ESCAPE:
-          currentMenu = MenuState::EXIT;
+          currentMenu = AppState::EXIT;
           break;
         case SDLK_m:
           Mix_VolumeMusic(0);
@@ -291,7 +293,7 @@ void EventHandlerMainMenu(RendererBase &ren, Mouse &mouse, const SDL_Event &e) {
 void EventHandlerGlobal(RendererBase &ren, Mouse &mouse, SDL_Event &e){
   // Global event handling for the windows X sprite
   if (e.type == SDL_QUIT){
-    currentMenu = MenuState::EXIT;
+    currentMenu = AppState::EXIT;
     return;
   }
 
@@ -299,61 +301,143 @@ void EventHandlerGlobal(RendererBase &ren, Mouse &mouse, SDL_Event &e){
   if (e.type == SDL_KEYDOWN){
     if ((e.key.keysym.sym == SDLK_q || e.key.keysym.sym == SDLK_q) && 
         (e.key.keysym.mod & KMOD_CTRL)) {
-        currentMenu = MenuState::EXIT;
+        currentMenu = AppState::EXIT;
         return;
     }
   }
 
   // State-specific event handling
   switch (currentMenu) {
-    case MenuState::MAIN_MENU:
+    case AppState::MAIN_MENU:
         EventHandlerMainMenu(ren,mouse,e);
         break;
-    case MenuState::OPTIONS:
+    case AppState::OPTIONS:
         //TODO EventHandlerOptionsMenu(...);
         std::cout << "Not implemented, exiting..." << std::endl;
-        currentMenu = MenuState::EXIT;
+        currentMenu = AppState::EXIT;
         break;
-    case MenuState::EXIT:
+    case AppState::EXIT:
         break;
     default:
         break;
   }
 }
 
-int main (int argc, char *argv[]){
-  RendererBase ren;
-  Audio audio;
+/**
+ * @brief Calculates the FPS at regular intervals.
+ *
+ * Computes the frame rate by counting the number of frames rendered 
+ * within a specified time window (100 ms). It resets the counter and updates the 
+ * reference time to ensure steady measurement interval.
+ *
+ * @param lastTime Reference to the last recorded time (in milliseconds).
+ * @param frameCount Reference to the frame count within the interval.
+ * @param fps Reference to the FPS value to be updated.
+ *
+ * @comment The logic ensures that `lastTime` is only updated when an FPS calculation occurs, 
+ * preventing constant resets and allowing a stable frame rate measurement.
+ */
+void calc_framerate(Uint32 &lastTime, Uint32 &frameCount, float &fps){
+  Uint32 currentTime = SDL_GetTicks();
 
+  if (currentTime - lastTime >= 100){ // every 100ms
+    fps = frameCount / ((currentTime - lastTime) / 1000.0f);
+    frameCount = 0; // reset framecounter for the next iteration
+    lastTime = currentTime; // update reference time
+  }
+}
+
+/**
+ * @brief Caps the frame rate to a specified FPS limit.
+ *
+ * Ensures that the frame rate does not exceed the FPSCAP, specified in main.h,
+ * by calculating the time taken for the current frame and introducing a delay 
+ * if necessary. The delay ensures that the frame rate remains within the desired 
+ * limit, preventing the application from running too fast.
+ *
+ * @param currentTime Reference to the current time (ms) when the frame rendering
+ * started.
+ *
+ * @comment The logic compares the time taken for the current frame with the target 
+ * FPS limit, and introduces a delay if the frame was rendered too quickly, ensuring 
+ * the frame rate is capped at `FPSCAP`.
+ */
+void cap_framerate(Uint32 &currentTime){
+  Uint32 frameTime = SDL_GetTicks() - currentTime;
+  if (frameTime < (1000 / FPSCAP)) {
+    SDL_Delay((1000 / FPSCAP) - frameTime);
+  }
+}
+
+int main (int argc, char *argv[]){
+  std::cerr << "Initializing renderer..." << std::endl;
+  RendererBase ren;
   ren.initVideo(320,480);
   ren.initColors(gScreen);
-  initSprites();
+
+  std::cerr << "Initializing audio subsystem..." << std::endl;
+  Audio audio;
   audio.initMixer();
 
-  Uint32 starting_tick;
-  currentMenu = MenuState::MAIN_MENU;
+  std::cerr << "Initializing sprite states..." << std::endl;
+  initSprites();
 
+  std::cerr << "Loading media..." << std::endl;
   arial.Load("assets/arial.ttf", 24);
 
   // TODO moving below mouse definition out of main next to
   // other resources doesnt apply SDL_ShowCursor(false)
   Mouse mouse(24, 24, "assets/mouse00.png");
 
-  while (currentMenu != MenuState::EXIT){
-    starting_tick = SDL_GetTicks();
+  //Main loop flag
+  currentMenu = AppState::MAIN_MENU;
 
-    SDL_Event e;
+  //Event handler
+  SDL_Event e;
+
+  //Time tracking
+  Uint32 lastTime = SDL_GetTicks(); //Initialize lasttime (ms)
+  Uint32 frameCount = 0;
+
+  //Output environment info
+  std::cerr << "FPSCAP is set to: " << FPSCAP << std::endl;
+  
+  //While app is running
+  while (currentMenu != AppState::EXIT){
+    frameCount++;
+    Uint32 currentTime = SDL_GetTicks(); // current loop iteration time (ms)
+    
+    //Calculate deltatime ie.tickratee for animations:
+    //ie. how long it took for last loop iter to reach this iter
+    double deltaTime = static_cast<double>(currentTime - lastTime);
+
+    //Handle event queue
     while (SDL_PollEvent(&e)){
-        EventHandlerGlobal(ren,mouse,e); // handle events for the current state
+        EventHandlerGlobal(ren,mouse,e);
     }
 
-    renderStates(ren,mouse,e); // render the current state
-    ren.cap_framerate(starting_tick);
+    const Uint8* keys = SDL_GetKeyboardState(NULL);
+    if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W]) player.move(0, -1);
+    if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S]) player.move(0, 1);
+    if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A]) player.move(-2, 0);
+    if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D]) player.move(2, 0);
+    if (keys[SDL_SCANCODE_E]){
+      player.slash();
+    }else{
+      player.update(deltaTime);
+    }
+
+    calc_framerate(lastTime,frameCount,fps);
+
+
+    //Order: UpdateInteractions->Clear->Render->Update
+    renderState(ren,mouse,e);
+
+    cap_framerate(currentTime);
   }
- 
+
   arial.Shutdown();
   audio.Shutdown(bell, bgm);
   ren.Shutdown(gWindow, dims);
   return 0;
 }
-

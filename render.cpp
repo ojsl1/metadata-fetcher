@@ -1,14 +1,9 @@
 #include "main.h" // globals
 #include "render.h"
+#include "character.h"
 
 SDL_Window *gWindow = nullptr;
 SDL_Surface *gScreen = nullptr;
-
-void RendererBase::cap_framerate ( Uint32 starting_tick ){
-    if ( ( 1000 / FPS ) > SDL_GetTicks() - starting_tick ){
-      SDL_Delay( 1000 / FPS - ( SDL_GetTicks() - starting_tick ) );
-    }
-};
 
 void RendererBase::initColors(SDL_Surface *gScreen){
     gPink = SDL_MapRGB(gScreen->format, 232, 111, 148);
@@ -47,7 +42,7 @@ void RendererBase::initVideo( int window_width, int window_height ){
                                 //SDL_WINDOW_FULLSCREEN_DESKTOP
                                 );
 
-    if ( gWindow == NULL ){
+    if ( gWindow == nullptr ){
       std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
       SDL_Quit();
       return;
@@ -57,7 +52,7 @@ void RendererBase::initVideo( int window_width, int window_height ){
     SDL_SetWindowBordered(gWindow, SDL_TRUE);
     
     gScreen = SDL_GetWindowSurface(gWindow);
-    if ( gScreen == NULL ){
+    if ( gScreen == nullptr ){
       std::cerr << "SDL_ GetWindowSurface Error: " << SDL_GetError() << std::endl;
       SDL_DestroyWindow(gWindow);
       SDL_Quit();
@@ -69,14 +64,13 @@ void RendererBase::Clear(){
   if (!gScreen){
     std::cout << "gScreen invalid during ren.Clear, unable to clear." << std::endl;
   }
-  SDL_FillRect(gScreen, NULL, SDL_MapRGB(gScreen->format, 255, 50, 255));
+  SDL_FillRect(gScreen, nullptr, SDL_MapRGB(gScreen->format, 255, 50, 255));
 }
 
-void RendererBase::Draw(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
+void RendererBase::Render(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
      Sprite &spriteDrop, Sprite &spriteMute, Sprite &spritePause,
      Sprite &spriteBorder, Sprite &spriteFrame, Sprite &spriteBg,
-     Font &arial){
-  Clear();
+     Font &arial, Character &player){
   spriteBg.DrawScaled(gScreen);
   spriteBorder.DrawScaled(gScreen);
   spriteFrame.DrawScaled(gScreen);
@@ -85,7 +79,12 @@ void RendererBase::Draw(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
   spritePause.Draw(gScreen);
   spriteExit.Draw(gScreen);
 
-  arial.Draw(gScreen,80,200, "Drop Image Here", {0,0,0,0});
+  //Render FPS counter
+  std::ostringstream fpsText;
+  fpsText << "FPS: " << static_cast<float>(fps);
+  arial.Draw(gScreen,50,50, fpsText.str(), {0,0,0});
+
+  arial.Draw(gScreen,80,200, "Drop Image Here", {0,0,0});
 
   #if ALLEYS
   spriteTests.Draw(gScreen);
@@ -93,11 +92,13 @@ void RendererBase::Draw(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
     DrawTests();
   };
   #endif // ALLEYS
+  
+  player.Draw(gScreen);
 
   mouse.Draw(gScreen); // draw mouse last so it's always on top
 }
 
-void RendererBase::Present(){
+void RendererBase::Update(){
   // Present the frame/update the new frame, same as SDL_RenderPresent()
   SDL_UpdateWindowSurface(gWindow);
 }
@@ -107,17 +108,16 @@ void RendererBase::Shutdown(SDL_Window *gWindow, WindowDimensions dims){
     //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
     SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );
     std::cout << "Exit Position: " << dims.xPosi << "," << dims.yPosi << std::endl;
-    std::cout << "Exit Size: " << dims.wSize << "," << dims.hSize << " [TODO: Doesnt update after resizing]" << std::endl;
-    std::cout << "FPS: " << FPS << std::endl;
+    std::cout << "Exit Size: " << dims.wSize << "," << dims.hSize << " [FIXME: Doesnt update after resizing]" << std::endl;
 
-    if (gScreen != NULL) {
+    if (gScreen != nullptr) {
       SDL_FreeSurface(gScreen);
-      gScreen = NULL;
+      gScreen = nullptr;
     }
 
-    if (gWindow != NULL) {
+    if (gWindow != nullptr) {
       SDL_DestroyWindow(gWindow);
-      gWindow = NULL;
+      gWindow = nullptr;
     }
 
     IMG_Quit();

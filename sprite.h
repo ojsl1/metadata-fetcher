@@ -1,27 +1,32 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-class Mouse; // forward declaring Mouse class
-
 #include "main.h" // globals
 #include "render.h"
 #include <iostream>
 #include <functional>
 
+class Mouse; //Forward declare for Sprite::DetectIntersections
+
+
 class Sprite{
 private:
-  SDL_Surface *rawSprite; // Specific image extracted from the spritesheet
-  SDL_Surface *alternateSprite; // Alternate image for toggled states
-  SDL_Surface *spritesheet;
-  SDL_Rect dRectSprite; // The specific images position and size
+  std::string name;
   std::function<void(bool)> toggleCallback; // Callback for toggle action
 
+protected:
+  SDL_Surface *spritesheet;
+  SDL_Surface *rawSprite; // Specific image extracted from the spritesheet
+  SDL_Surface *alternateSprite; // Alternate image for toggled states
+  SDL_Rect dRectSprite; // The specific images position and size
+  int x, y;             // origo topleft; public so character class can get its coordinates
+
 public:
-  // x,y coords (origo is topleft); w,h size, filepath
-  Sprite(int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect);
+  // x,y coords; w,h size; filepath;
+  Sprite(const std::string &spriteName, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect);
   ~Sprite();
   
-  void Draw(SDL_Surface *gScreen);
+  void virtual Draw(SDL_Surface *gScreen);
   void DrawScaled(SDL_Surface *gScreen);
   void Toggle(); // Toggles between states
   void DetectIntersections(Mouse &mouse); // Using the forward declared Mouse class
@@ -30,6 +35,10 @@ public:
 
   bool hasintersection; // WIP cant privatize main.cpp reads from this via playSprite.hasintersection
   bool toggled; // Current toggled state
+  
+  int getX() const { return dRectSprite.x; }
+  int getY() const { return dRectSprite.y; }
 
 };
+
 #endif // SPRITE_H

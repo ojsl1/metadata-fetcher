@@ -10,22 +10,26 @@
 #include "input.h" // forward declare class for Draw();
 #include "sprite.h" // forward declare class for Draw();
 #include "font.h"
+
+#include <sstream> //fps
+
+class Font;
 class Mouse;
 class Sprite;
+class Character;
 
 class RendererBase{
 public:
-    void cap_framerate(Uint32 starting_tick);
     void initVideo(int window_width, int window_height);
     void initColors(SDL_Surface *gScreen);
     void Clear();
-    void Draw(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
+    void Render(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
          Sprite &spriteDrop, Sprite &spriteMute, Sprite &spritePause,
          Sprite &spriteBorder, Sprite &spriteFrame, Sprite &spriteBg,
-         Font &arial
+         Font &arial, Character &player
          );
     void DrawTests();
-    void Present(); //for swapping buffers with opengl
+    void Update();
     void Shutdown(SDL_Window *gWindow, WindowDimensions dims);
 };
 
@@ -43,7 +47,7 @@ public:
     SpriteTest( Uint32 color, int x, int y, int w = 48, int h = 64 ){
         image = SDL_CreateRGBSurface( 0, w, h, 32, 0, 0, 0, 0 );
 
-        SDL_FillRect( image, NULL, color );
+        SDL_FillRect( image, nullptr, color );
 
         rect = image->clip_rect;
 
@@ -63,7 +67,7 @@ public:
   }
 
   void draw( SDL_Surface *destination ){
-      SDL_BlitSurface( image, NULL, destination, &rect );
+      SDL_BlitSurface( image, nullptr, destination, &rect );
   }
   
   SDL_Surface* get_image(  ) const {
@@ -197,14 +201,14 @@ public:
         rect.y = y - origin_y;
     }
 
-    void set_image( const char filename[] = NULL ){
-        if ( filename != NULL ){
-            SDL_Surface *loaded_image = NULL;
+    void set_image( const char filename[] = nullptr ){
+        if ( filename != nullptr ){
+            SDL_Surface *loaded_image = nullptr;
 
             //loaded_image = SDL_LoadBMP( filename );
             loaded_image = IMG_Load( filename );
 
-            if ( loaded_image != NULL ){
+            if ( loaded_image != nullptr ){
               // have to  reset the image variable, because it is the selfimage of the object
               // ie. the SpriteTest object itself needs to know the image we already loaded
                 image = loaded_image;

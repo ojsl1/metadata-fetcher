@@ -1,9 +1,8 @@
 #include "sprite.h"
 #include "input.h" // Sprite::DetectClicks and Sprite::DetectIntersections depend on mouse class
 
-Sprite::Sprite(int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect)
-  : rawSprite(nullptr), alternateSprite(nullptr), hasintersection(false), toggled(false)
-{
+Sprite::Sprite(const std::string &spriteName, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect)
+  : name(spriteName), rawSprite(nullptr), alternateSprite(nullptr), x(x), y(y), hasintersection(false), toggled(false){
   dRectSprite = {x,y,w,h};
 
   if (!spritesheetPath){
@@ -54,10 +53,19 @@ Sprite::Sprite(int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect
 
 Sprite::~Sprite(){
   if (rawSprite){
+    std::cerr << "Freeing rawSprite [" << name << "] -> Address: " << rawSprite << std::endl;
     SDL_FreeSurface(rawSprite);
+    rawSprite = nullptr;
   }
   if (spritesheet){
+    std::cerr << "Freeing spritesheet [" << name << "] -> Address: " << spritesheet << std::endl;
     SDL_FreeSurface(spritesheet);
+    spritesheet = nullptr;
+  }
+  if (alternateSprite){
+    std::cerr << "Freeing alternateSprite [" << name << "] -> Address: " << alternateSprite << std::endl;
+    SDL_FreeSurface(alternateSprite);
+    alternateSprite = nullptr;
   }
 }
 
@@ -82,9 +90,8 @@ void Sprite::DetectIntersections(Mouse &mouse){
 
 void Sprite::Draw(SDL_Surface *gScreen){
   SDL_Surface *currentSprite = toggled && alternateSprite ? alternateSprite : rawSprite;
-  if (currentSprite){
-    SDL_BlitSurface(currentSprite, NULL, gScreen, &dRectSprite);
-  }
+  if (!currentSprite || !gScreen) return;
+  SDL_BlitSurface(currentSprite, nullptr, gScreen, &dRectSprite);  
 }
 
 void Sprite::DrawScaled(SDL_Surface *gScreen){
@@ -139,7 +146,7 @@ void Sprite::DrawScaled(SDL_Surface *gScreen){
    //SDL_Rect scaleRect = {0, 0, dRectSprite.w, dRectSprite.h}; // x,y,w,h
 
   // Scale rawSprite on scaledSpriteLocal.
-  if (SDL_BlitScaled(rawSprite, NULL, scaledSpriteLocal, NULL) < 0){
+  if (SDL_BlitScaled(rawSprite, nullptr, scaledSpriteLocal, nullptr) < 0){
       // NB: scaledSpriteLocal is 32bpp, the images have to also be 32bpp.
       SDL_Log("SDL_BlitScaled failed: %s\n", SDL_GetError()); // e.g. "Blit combination not supported"
       SDL_FreeSurface(scaledSpriteLocal);
@@ -147,7 +154,7 @@ void Sprite::DrawScaled(SDL_Surface *gScreen){
   }
 
   // Blit scaledSpriteLocal onto the screen.
-  if (SDL_BlitSurface(scaledSpriteLocal, NULL, gScreen, &dRectSprite) < 0){
+  if (SDL_BlitSurface(scaledSpriteLocal, nullptr, gScreen, &dRectSprite) < 0){
       std::cout << "rawSprite BitsPerPixel: " << rawSprite->format->BitsPerPixel << std::endl;
       std::cout << "scaledSprite BitsPerPixel: " << scaledSpriteLocal->format->BitsPerPixel << std::endl;
       SDL_Log("SDL_BlitSurface failed: %s\n", SDL_GetError());

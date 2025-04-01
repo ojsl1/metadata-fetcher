@@ -1,7 +1,7 @@
 #include "input.h"
 
 Mouse::Mouse(int w, int h, const char* mouseImagePath)
-  : rawMouse(NULL),scaledMouse(NULL)
+  : rawMouse(nullptr),scaledMouse(nullptr)
 {
     dRectMouse = {0,0,w,h}; // x,y,w,h //TODO add debugging for non-zero x,y values
     point = {0,0,1,1}; // x,y,w,h
@@ -33,18 +33,19 @@ Mouse::Mouse(int w, int h, const char* mouseImagePath)
 
     if (!scaledMouse){
       SDL_Log("SDL_CreateRGBSurface failed: %s", SDL_GetError());
+      scaledMouse = nullptr;
       return;
     }
 
     // Scale the rawMouse on the scaledMouse surface
-    SDL_BlitScaled(rawMouse, NULL, scaledMouse, &dRectMouse);
+    SDL_BlitScaled(rawMouse, nullptr, scaledMouse, &dRectMouse);
     
     SDL_ShowCursor(SDL_DISABLE);
 }
 
 void Mouse::Draw(SDL_Surface *gScreen) const {
     SDL_Rect finalRect = GetDrawRect();
-    SDL_BlitSurface(scaledMouse, NULL, gScreen, &finalRect);
+    SDL_BlitSurface(scaledMouse, nullptr, gScreen, &finalRect);
 }
 
 /**
@@ -66,10 +67,13 @@ void Mouse::GetXY(){
 
 Mouse::~Mouse(){
   if (rawMouse){
+    std::cerr << "Freeing rawMouse [] -> Address: " << rawMouse << std::endl;
     SDL_FreeSurface(rawMouse);
+    rawMouse = nullptr;
   }
-
   if (scaledMouse){
+    std::cerr << "Freeing scaledMouse [] -> Address: " << scaledMouse << std::endl;
     SDL_FreeSurface(scaledMouse);
+    scaledMouse = nullptr;
   }
 }
