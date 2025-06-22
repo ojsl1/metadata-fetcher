@@ -77,6 +77,10 @@ void RendererBase::Render(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
   spriteDrop.DrawScaled(gScreen);
   spriteMute.Draw(gScreen);
   spritePause.Draw(gScreen);
+  spriteTests.Draw(gScreen);
+  if (spriteTests.hasintersection){
+    //DrawTests();
+  }
   spriteExit.Draw(gScreen);
 
   //Render FPS counter
@@ -85,13 +89,6 @@ void RendererBase::Render(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
   arial.Draw(gScreen,50,50, fpsText.str(), {0,0,0});
 
   arial.Draw(gScreen,80,200, "Drop Image Here", {0,0,0});
-
-  #if ALLEYS
-  spriteTests.Draw(gScreen);
-  if (spriteTests.hasintersection){
-    DrawTests();
-  };
-  #endif // ALLEYS
   
   player.Draw(gScreen);
 
@@ -125,40 +122,3 @@ void RendererBase::Shutdown(SDL_Window *gWindow, WindowDimensions dims){
 
     std::cout << "Exit succesfully" << std::endl;
 }
-
-#if ALLEYS
-void RendererBase::DrawTests(){
-  // ALLEY. Create SpriteTests
-  SpriteTest object( gRed, WINDOW_WIDTH/2-20, WINDOW_HEIGHT/2-20 );
-  SpriteTest another( gBlue, WINDOW_WIDTH/2-100, WINDOW_HEIGHT/2+20 );
-
-  // ALLEY. Create Block spritetests
-  Block block1( gPink, WINDOW_WIDTH/4, WINDOW_HEIGHT/8 );
-  Block block2( gPink, WINDOW_WIDTH/2+60, WINDOW_HEIGHT/2-40 );
-  block1.set_image( "assets/cosmox2.png" );
-  block2.set_image( "assets/avatar2.webp" );
-
-  /*
-  TODO: ALLEY. Trying to blit cursor along with other spritetests
-  Block block3mouse( blue, 130, 40 );
-  block3mouse.set_image( "assets/mouse.png" );
-  SpriteTestGroup pointers;
-  pointers.add( &block3mouse );
-  pointers.draw( gScreen ); // draw to mouse not to screen
-  */
-
-  // ALLEY. Create a SpriteTestGroup & add previously created Blocks to it
-  SpriteTestGroup active_spritetests;
-  active_spritetests.add( &block1 );
-  active_spritetests.add( &block2 );
-  active_spritetests.add( &another );
-  active_spritetests.add( &object );
-  object.draw( gScreen );
-
-  // ALLEY. Test if SpriteTestGroup contains a specified spritetest_object
-  //std::cout << active_spritetests.has( another ) << std::endl; // TODO: Print only once instead of spamming
-
-  // ALLEY. Blit the whole SpriteTestGroup
-  active_spritetests.draw(gScreen);
-}
-#endif // ALLEYS
