@@ -1,0 +1,100 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-g",
+      "-c",
+      "-Wall",
+      "-I/usr/include/SDL2",
+      "-D_GNU_SOURCE=1",
+      "-D_REENTRANT",
+      "main.cpp"
+    ],
+    "directory": "/home/saukko/Dropbox/devel/projects/first-sdl-game",
+    "file": "/home/saukko/Dropbox/devel/projects/first-sdl-game/main.cpp"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-g",
+      "-c",
+      "-Wall",
+      "-I/usr/include/SDL2",
+      "-D_GNU_SOURCE=1",
+      "-D_REENTRANT",
+      "main.h"
+    ],
+    "directory": "/home/saukko/Dropbox/devel/projects/first-sdl-game",
+    "file": "/home/saukko/Dropbox/devel/projects/first-sdl-game/main.h"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-g",
+      "-c",
+      "-Wall",
+      "-I/usr/include/SDL2",
+      "-D_GNU_SOURCE=1",
+      "-D_REENTRANT",
+      "render.cpp"
+    ],
+    "directory": "/home/saukko/Dropbox/devel/projects/first-sdl-game",
+    "file": "/home/saukko/Dropbox/devel/projects/first-sdl-game/render.cpp"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-g",
+      "-c",
+      "-Wall",
+      "-I/usr/include/SDL2",
+      "-D_GNU_SOURCE=1",
+      "-D_REENTRANT",
+      "input.cpp"
+    ],
+    "directory": "/home/saukko/Dropbox/devel/projects/first-sdl-game",
+    "file": "/home/saukko/Dropbox/devel/projects/first-sdl-game/input.cpp"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-g",
+      "-c",
+      "-Wall",
+      "-I/usr/include/SDL2",
+      "-D_GNU_SOURCE=1",
+      "-D_REENTRANT",
+      "sprite.cpp"
+    ],
+    "directory": "/home/saukko/Dropbox/devel/projects/first-sdl-game",
+    "file": "/home/saukko/Dropbox/devel/projects/first-sdl-game/sprite.cpp"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-g",
+      "-c",
+      "-Wall",
+      "-I/usr/include/SDL2",
+      "-D_GNU_SOURCE=1",
+      "-D_REENTRANT",
+      "character.cpp"
+    ],
+    "directory": "/home/saukko/Dropbox/devel/projects/first-sdl-game",
+    "file": "/home/saukko/Dropbox/devel/projects/first-sdl-game/character.cpp"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-g",
+      "-c",
+      "-Wall",
+      "-I/usr/include/SDL2",
+      "-D_GNU_SOURCE=1",
+      "-D_REENTRANT",
+      "font.cpp"
+    ],
+    "directory": "/home/saukko/Dropbox/devel/projects/first-sdl-game",
+    "file": "/home/saukko/Dropbox/devel/projects/first-sdl-game/font.cpp"
+  }
+]

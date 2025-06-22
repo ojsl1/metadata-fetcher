@@ -7,7 +7,7 @@
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
 
-#define FPSCAP 15
+#define FPSCAP 60
 #define ALLEYS 1
 #define DEBUG 0
 
@@ -23,7 +23,7 @@ struct WindowDimensions{
     int yPosi;
 };
 
-// Global variable declarations
+// Global declarations
 extern SDL_Window *gWindow;
 extern SDL_Surface *gScreen;
 extern float fps;

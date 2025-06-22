@@ -26,13 +26,13 @@ inline void Audio::initMixer(){
 }
 
 inline void Audio::Shutdown(Mix_Chunk* bell, Mix_Music* bgm){
-    if (bell != NULL) {
+    if (bell != nullptr) {
       Mix_FreeChunk(bell);
-      bell = NULL;
+      bell = nullptr;
     }
-    if (bgm != NULL) {
+    if (bgm != nullptr) {
       Mix_FreeMusic(bgm);
-      bgm = NULL;
+      bgm = nullptr;
     }
     Mix_CloseAudio();
 }

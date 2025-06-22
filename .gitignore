@@ -1,7 +1,8 @@
 # Ghostwriter files
 widgets.qss
 
-# Make and debug files
+# Make, debug and editor files
+.cache/
 *.log
 *.o
 *.gch

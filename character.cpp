@@ -1,17 +1,78 @@
 #include "character.h"
 
+
 Character::Character(const std::string &spriteName, int x, int y, int w, int h,
                      const char *spritesheetPath, SDL_Rect spriteRect, int totalFrames)
   : Sprite(spriteName, x, y, w, h, spritesheetPath, spriteRect), // calling constructs from base class
-    frameWidth(w), frameHeight(h), frameCount(totalFrames), framePadding(1),
-    currentFrame(0), animationSpeed(400), lastUpdate(0), speed(2) {
+    currentState(AnimationState::IDLE), currentFrame(0), lastUpdate(0), speed(2) {
 
-  srcRect = { spriteRect.x, spriteRect.y, frameWidth, frameHeight };
+  /*
+   * struct AnimationData
+  int startX;             // x pos in spritesheet
+  int startY;             // y pos in spritesheet
+  int frameWidth;
+  int frameHeight;
+  int frameCount;
+  Uint32 animationSpeed;  // ms per frame
+  int framePadding;       // padding between frames(1px)
+  */
+  animations = {
+    {AnimationState::INTRO,             {1,0,0,0,0,400,1}},
+    {AnimationState::INTRO_A,           {1,0,0,0,0,400,1}},
+    {AnimationState::INTRO_B,           {1,0,0,0,0,400,1}},
+    {AnimationState::TURN,              {1,0,0,0,0,400,1}},
+    {AnimationState::INTRO_KOISHI,      {1,0,0,0,0,400,1}},
+    {AnimationState::IDLE,              {1,648,192,192,15,400,1}},
+    {AnimationState::MOVE_FORWARD,      {1,882,224,192,5,400,1}},
+    {AnimationState::MOVE_BACK,         {1,0,0,0,0,400,1}},
+    {AnimationState::DASH_FORWARD,      {1,0,0,0,0,400,1}},
+    {AnimationState::DASH_BACKWARD,     {1,0,0,0,0,400,1}},
+    {AnimationState::MOVE_DOWN_UP,      {1,0,0,0,0,400,1}},
+    {AnimationState::ATTACK_A,          {1,0,0,0,0,400,1}},
+    {AnimationState::DASH_ATTACK_A,     {1,0,0,0,0,400,1}},
+    {AnimationState::ATTACK_B,          {1,0,0,0,0,400,1}},
+    {AnimationState::DASH_ATTACK_B,     {1,0,0,0,0,400,1}},
+    {AnimationState::ATTACK_UP_B,       {1,4344,288,320,11,400,1}},
+    {AnimationState::ATTACK_FORWARD_B,  {1,0,0,0,0,400,1}},
+    {AnimationState::ATTACK_DOWN_B,     {1,0,0,0,0,400,1}},
+    {AnimationState::MAGIC_ATTACK_A,    {1,0,0,0,0,400,1}},
+    {AnimationState::MAGIC_ATTACK_B,    {1,0,0,0,0,400,1}},
+    {AnimationState::SPECIAL_ATTACK_A,  {1,0,0,0,0,400,1}},
+    {AnimationState::SPECIAL_ATTACK_B,  {1,0,0,0,0,400,1}},
+    {AnimationState::SPECIAL_ATTACK_C,  {1,0,0,0,0,400,1}},
+    {AnimationState::SPECIAL_ATTACK_D,  {1,0,0,0,0,400,1}},
+    {AnimationState::SPECIAL_ATTACK_E,  {1,0,0,0,0,400,1}},
+    {AnimationState::SPECIAL_ATTACK_F,  {1,0,0,0,0,400,1}},
+    {AnimationState::GRAB,							{1,0,0,0,0,400,1}},
+    {AnimationState::MISS,							{1,0,0,0,0,400,1}},
+    {AnimationState::HIT,								{1,0,0,0,0,400,1}},
+    {AnimationState::SPELL_CALL,				{1,0,0,0,0,400,1}},
+    {AnimationState::SPELL_A,						{1,0,0,0,0,400,1}},
+    {AnimationState::SPELL_B,						{1,0,0,0,0,400,1}},
+    {AnimationState::SPELL_B2,					{1,0,0,0,0,400,1}},
+    {AnimationState::SPELL_B3,					{1,0,0,0,0,400,1}},
+    {AnimationState::LAST_WORD,					{1,0,0,0,0,400,1}},
+    {AnimationState::LAST_WORD_B,				{1,0,0,0,0,400,1}},
+    {AnimationState::GUARD,							{1,0,0,0,0,400,1}},
+    {AnimationState::MAGIC_GUARD,				{1,0,0,0,0,400,1}},
+    {AnimationState::GUARD_BREAK,				{1,0,0,0,0,400,1}},
+    {AnimationState::DIZZY,							{1,0,0,0,0,400,1}},
+    {AnimationState::HIT_LOW,						{1,0,0,0,0,400,1}},
+    {AnimationState::HIT_HIGH,					{1,0,0,0,0,400,1}},
+    {AnimationState::WALL_BOUNCE,				{1,0,0,0,0,400,1}},
+    {AnimationState::SPINNING,					{1,0,0,0,0,400,1}},
+    {AnimationState::DOWNED,						{1,0,0,0,0,400,1}},
+    {AnimationState::WIN_POSE_A,				{1,0,0,0,0,400,1}},
+    {AnimationState::WIN_POSE_B,				{1,0,0,0,0,400,1}},
+    {AnimationState::TIME_OVER,					{1,0,0,0,0,400,1}},
+  };
 
   //Convert spritesheet to 32bpp
+  
   if (spritesheet) {
     SDL_Surface* optimizedSurface = SDL_ConvertSurfaceFormat(spritesheet, SDL_PIXELFORMAT_RGBA32, 0);
     if (!optimizedSurface) {
+      //24bpp images dont have an Amask
       SDL_Log("Failed to convert spritesheet to 32-bit format: %s", SDL_GetError());
     } else {
       SDL_FreeSurface(spritesheet);
@@ -19,6 +80,7 @@ Character::Character(const std::string &spriteName, int x, int y, int w, int h,
       SDL_Log("Successfully converted spritesheet to 32-bit format.");
     }
   }
+  
 
   //DEBUG: Verify the conversion worked
   SDL_Log("Spritesheet BPP: %d", spritesheet->format->BitsPerPixel);
@@ -97,17 +159,55 @@ Character::Character(const std::string &spriteName, int x, int y, int w, int h,
   SDL_Log("Most common color (likely background): R=%d, G=%d, B=%d, Hex: 0x%X", r, g, b, mostCommonColor);
   */
 
+  // DEBUG: iterate over the unordered_map animation states and print keys of each state
+  /*
+  for (const auto &pair : animations) {
+      std::cout << "State: " << static_cast<int>(pair.first)
+                << ", Speed: " << pair.second.animationSpeed
+                << ", FrameCount: " << pair.second.frameCount
+                << std::endl;
+  }
+  */
 }
 
 void Character::update(double deltaTime){
-  lastUpdate += deltaTime;
-  if (lastUpdate >= animationSpeed){
-      //loop animation frames
-      currentFrame = (currentFrame + 1) % frameCount;
-      //shift to next frame, taking padding into account
-      srcRect.x = (frameWidth * currentFrame) + (framePadding * (currentFrame + 1));
-      lastUpdate = 0;
+  AnimationData &anim = animations[currentState];
+
+  // Check if the animation state has changed from previous frame
+  if (currentState != lastState) {
+    srcRect.y = anim.startY;
+    srcRect.w = anim.frameWidth;
+    srcRect.h = anim.frameHeight;
+    currentFrame = 0;          // Reset the frame to 0 when animation changes
+    lastState = currentState;  // Update lastState for future comparisons
   }
+  
+  // Update the animation timer
+  lastUpdate += deltaTime;
+
+  //Animation playback logic
+  //TODO couldnt this be in Character::playAnimation or do we have to check for it every frame(?)
+  if (animationPlaying){
+      // TODO the example has `static_cast<int>(deltaTime);` instead, why
+      animationTimer -= deltaTime; //countdown timer for playing a temporary animation
+      if (animationTimer <= 0){
+          currentState = oldState; //revert to previous state
+          animationPlaying = false; //end temporary animation
+      }
+  }
+
+  //Animation frame logic, ensure no division by zero
+  if (lastUpdate >= anim.animationSpeed && anim.frameCount > 0){
+      //loop through frames
+      currentFrame = (currentFrame + 1) % anim.frameCount;
+      lastUpdate = 0; //reset the timer
+  }
+
+  // TODO WHAT: if this is inside above "Animation Frame Logic" loop and before lastUpdate=0; the frames become "unsynchronized", why(?)
+  // TODO WHY: why do so many docs have the below inside above Animation Frame Logic loop(?)
+  //
+  //Compute srcRect.x based on the current frame, taking padding(s) into account so animation doesnt become unsynchronized.
+  srcRect.x = (anim.frameWidth * currentFrame) + (anim.framePadding * (currentFrame + 1));
 }
 
 void Character::move(int dx, int dy){
@@ -115,22 +215,14 @@ void Character::move(int dx, int dy){
   dRectSprite.y += dy * speed;
 }
 
-void Character::slash(){
-  std::cout << "start" << std::endl;
-  
-  int originalY = dRectSprite.y; // Save the original position
-
-  // Assuming attack animation is on the next row in the sprite sheet
-  int attackRowHeight = srcRect.frameHeight; 
-  dRectSprite.y += attackRowHeight;
-
-  // Display the attack animation (you can modify this for frame-based updates)
-  SDL_BlitSurface(spritesheet, &srcRect, gScreen, &dRectSprite);
-
-  // Reset srcRect.y after a short delay (can be handled with a timer in game loop)
-  SDL_Delay(100);  // Adjust delay as needed
-  dRectSprite.y = originalY; // Restore original position
-  std::cout << "end" << std::endl;
+void Character::playAnimation(AnimationState newState, int durationMs){
+  //if below is true Character::Update starts animation playback logic
+  if (currentState != newState) {
+      oldState = currentState;
+      currentState = newState;
+      animationTimer = durationMs;
+      animationPlaying = true;
+  }
 }
 
 void Character::Draw(SDL_Surface *gScreen){

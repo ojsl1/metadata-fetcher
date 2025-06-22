@@ -9,11 +9,10 @@
 
 class Mouse : public Element{
 public:
-  // Optional filepath for custom cursor
   Mouse(int w, int h, const char* mouseImagePath = nullptr);
-  SDL_Rect GetDrawRect() const; //helper to non-constify dRectMouse
+  SDL_Rect GetDrawRect() const;
   void Draw(SDL_Surface *gScreen) const override;
-  void GetXY() override; // getter/updater for mouse coords
+  void GetXY() override;
 
   ~Mouse();
 
@@ -22,7 +21,7 @@ public:
 private:
   SDL_Surface *rawMouse = nullptr;
   SDL_Surface *scaledMouse = nullptr;
-  SDL_Rect dRectMouse; // The size of the scaled cursor
+  SDL_Rect dRectMouse;
 };
 
 #endif // INPUT_H

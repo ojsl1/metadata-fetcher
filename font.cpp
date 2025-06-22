@@ -51,7 +51,7 @@ void Font::Draw(SDL_Surface *gScreen, int x, int y, const std::string &message, 
   Draw(gScreen, x, y, message, dstRect, color_);
 }
 
-// Overload #3 Fully parameterized with bounding box and alignment 
+// Overload #3 with bounding box and alignment 
 void Font::Draw(SDL_Surface *gScreen, int x, int y, const std::string &message, SDL_Rect dstRect, SDL_Color color_){
   if(!font_){
     std::cerr << "No font loaded, cannot render text!.\n";

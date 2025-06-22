@@ -323,6 +323,19 @@ void EventHandlerGlobal(RendererBase &ren, Mouse &mouse, SDL_Event &e){
   }
 }
 
+void handleRtInput(Character &player){
+  //State based input for player movement and continuous controls
+  const Uint8* keys = SDL_GetKeyboardState(NULL);
+
+  if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W]) player.move(0, -1);
+  if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S]) player.move(0, 1);
+  if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A]) player.move(-2, 0);
+  if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D]) player.move(2, 0);
+  if (keys[SDL_SCANCODE_E]) player.playAnimation(AnimationState::ATTACK_UP_B, 5000);
+
+
+}
+
 /**
  * @brief Calculates the FPS at regular intervals.
  *
@@ -411,24 +424,15 @@ int main (int argc, char *argv[]){
     //ie. how long it took for last loop iter to reach this iter
     double deltaTime = static_cast<double>(currentTime - lastTime);
 
-    //Handle event queue
+    //Event queue
     while (SDL_PollEvent(&e)){
-        EventHandlerGlobal(ren,mouse,e);
+        EventHandlerGlobal(ren,mouse,e); //one time events
     }
 
-    const Uint8* keys = SDL_GetKeyboardState(NULL);
-    if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W]) player.move(0, -1);
-    if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S]) player.move(0, 1);
-    if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A]) player.move(-2, 0);
-    if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D]) player.move(2, 0);
-    if (keys[SDL_SCANCODE_E]){
-      player.slash();
-    }else{
-      player.update(deltaTime);
-    }
+    handleRtInput(player); //use sdl_getkeyboardstate
+    player.update(deltaTime);
 
     calc_framerate(lastTime,frameCount,fps);
-
 
     //Order: UpdateInteractions->Clear->Render->Update
     renderState(ren,mouse,e);

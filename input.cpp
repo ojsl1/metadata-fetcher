@@ -3,9 +3,12 @@
 Mouse::Mouse(int w, int h, const char* mouseImagePath)
   : rawMouse(nullptr),scaledMouse(nullptr)
 {
-    dRectMouse = {0,0,w,h}; // x,y,w,h //TODO add debugging for non-zero x,y values
-    point = {0,0,1,1}; // x,y,w,h
+    // For storing the dimensions of the scaled cursor
+    //TODO DEBUG for non-zero x,y values
+    dRectMouse = {0,0,w,h}; // x,y,w,h
 
+    point = {0,0,1,1}; // x,y,w,h
+    
     if (!mouseImagePath){
       mouseImagePath = "assets/mouse-fallback.png";
     }
@@ -50,8 +53,8 @@ void Mouse::Draw(SDL_Surface *gScreen) const {
 
 /**
  * @brief Convert const SDL_Rect into a non-const SDL_Rect.
- * @param dRectMouse is the only reason this helper function exists.
- * @details SDL_BlitSurface somehow modifies its fourth argument, thus requiring it to be non-const.
+ * @details SDL_BlitSurface somehow modifies its fourth argument,
+ * thus requiring it to be non-const. This is only used by dRectMouse.
  */
 SDL_Rect Mouse::GetDrawRect() const {
   return SDL_Rect{ dRectMouse.x, dRectMouse.y, dRectMouse.w, dRectMouse.h };

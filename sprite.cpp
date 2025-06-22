@@ -3,6 +3,8 @@
 
 Sprite::Sprite(const std::string &spriteName, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect)
   : name(spriteName), rawSprite(nullptr), alternateSprite(nullptr), x(x), y(y), hasintersection(false), toggled(false){
+
+  // For storing the dimensions of sprites
   dRectSprite = {x,y,w,h};
 
   if (!spritesheetPath){
@@ -69,6 +71,9 @@ Sprite::~Sprite(){
   }
 }
 
+/**
+ * @brief Toggle between states.
+ */
 void Sprite::Toggle(){
   toggled = !toggled;
   if (toggleCallback){
@@ -76,10 +81,17 @@ void Sprite::Toggle(){
   }
 }
 
+/**
+ * @brief Set the alternate surface.
+ */
 void Sprite::SetAlternateSprite(SDL_Surface *alternate){
   alternateSprite = alternate;
 }
 
+/**
+ * @brief Set a callback for toggle actions.
+ * @param TODO
+ */
 void Sprite::SetToggleCallback(std::function<void(bool)> callback){
   toggleCallback = callback;
 }

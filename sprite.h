@@ -16,10 +16,10 @@ private:
 
 protected:
   SDL_Surface *spritesheet;
-  SDL_Surface *rawSprite; // Specific image extracted from the spritesheet
-  SDL_Surface *alternateSprite; // Alternate image for toggled states
-  SDL_Rect dRectSprite; // The specific images position and size
-  int x, y;             // origo topleft; public so character class can get its coordinates
+  SDL_Surface *rawSprite;
+  SDL_Surface *alternateSprite; // Alternate sprite for 2-state sprites
+  SDL_Rect dRectSprite;
+  int x, y; // origo topleft; public so character class can get its coordinates
 
 public:
   // x,y coords; w,h size; filepath;
@@ -28,10 +28,10 @@ public:
   
   void virtual Draw(SDL_Surface *gScreen);
   void DrawScaled(SDL_Surface *gScreen);
-  void Toggle(); // Toggles between states
-  void DetectIntersections(Mouse &mouse); // Using the forward declared Mouse class
-  void SetToggleCallback(std::function<void(bool)> callback); // Set a callback for toggle actions
-  void SetAlternateSprite(SDL_Surface *alternate); // Set the alternate surface
+  void Toggle();
+  void DetectIntersections(Mouse &mouse);
+  void SetToggleCallback(std::function<void(bool)> callback);
+  void SetAlternateSprite(SDL_Surface *alternate);
 
   bool hasintersection; // WIP cant privatize main.cpp reads from this via playSprite.hasintersection
   bool toggled; // Current toggled state

@@ -7,11 +7,11 @@
 #include <vector>
 #endif
 
-#include "input.h" // forward declare class for Draw();
-#include "sprite.h" // forward declare class for Draw();
-#include "font.h"
+#include "input.h"  // forward declare Mouse class for Draw()
+#include "sprite.h" // forward declare Sprite class for Draw()
+#include "font.h"   // forward declare Font class for Draw()
 
-#include <sstream> //fps
+#include <sstream>  //fpsText uses this
 
 class Font;
 class Mouse;
