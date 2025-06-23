@@ -1,6 +1,8 @@
 CC=g++
-CXXFLAGS=-g -c -Wall
+CXXFLAGS=-g -c -Wall $(INCLUDES)
 LDFLAGS=$(shell pkg-config --libs sdl2) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lpng
+
+INCLUDES=-Iinclude
 
 ifeq ($(strip $(LDFLAGS)),)
 	# fallback if pkg-config is not available or does not provide flags
@@ -15,7 +17,7 @@ game: main.o render.o input.o sprite.o character.o font.o
 	$(CC) main.o render.o input.o sprite.o character.o font.o -o game $(LDFLAGS)
 
 main.o: main.cpp main.h
-	$(CC) $(CXXFLAGS) main.cpp main.h $(shell pkg-config --cflags sdl2)
+	$(CC) $(CXXFLAGS) main.cpp $(shell pkg-config --cflags sdl2)
    
 render.o: render.cpp render.h
 	$(CC) $(CXXFLAGS) render.cpp $(shell pkg-config --cflags sdl2)
@@ -31,9 +33,6 @@ character.o: character.cpp character.h
 
 font.o: font.cpp font.h
 	$(CC) $(CXXFLAGS) font.cpp $(shell pkg-config --cflags sdl2)
-
-addons.o: addons.cpp addons.h
-	$(CC) $(CXXFLAGS) addons.cpp $(shell pkg-config --cflags sdl2)
 
 setup:
 	bash setup.sh

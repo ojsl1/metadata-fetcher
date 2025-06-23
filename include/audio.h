@@ -1,9 +1,12 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
+#include <../main.h>
+
 class Audio{
 public:
     void initMixer();
+    void playMusic();
     void Shutdown(Mix_Chunk* bell, Mix_Music* bgm);
     Mix_Chunk *bell = NULL;
     Mix_Music *bgm = NULL;
@@ -18,8 +21,10 @@ inline void Audio::initMixer(){
 
     Mix_PlayChannel( -1, bell, 0);
     Mix_VolumeChunk( bell, 10 );
-    SDL_Delay(1700);
+    //SDL_Delay(1700);
+}
 
+inline void Audio::playMusic(){
     Mix_PlayMusic( bgm, -1 );
     Mix_VolumeMusic( 20 );
     //Mix_FadeInMusic( music1, 0, 5000 );

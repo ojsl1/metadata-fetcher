@@ -3,8 +3,8 @@
 #include "input.h"
 #include "sprite.h"
 #include "character.h"
-#include "addons.h"
-#include "audio.h"
+#include "include/addons.h"
+#include "include/audio.h"
 #include "font.h"
 #include "png.h"
 
@@ -415,6 +415,8 @@ int main (int argc, char *argv[]){
   //Output environment info
   std::cerr << "FPSCAP is set to: " << FPSCAP << std::endl;
   
+  audio.playMusic(); //TODO start paused
+
   //While app is running
   while (currentMenu != AppState::EXIT){
     frameCount++;

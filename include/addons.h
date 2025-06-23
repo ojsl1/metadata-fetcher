@@ -1,6 +1,5 @@
 #ifndef ADDONS_H
 #define ADDONS_H
-#pragma once
 
 #include <vector>
 #include <iostream>
@@ -15,6 +14,10 @@ void printTodos(){
   // 6: waste of time refactor ideas
   std::vector<std::pair<int, std::string>> todos = {
 
+// GAME TODOS
+{0, "BUG \n CANT MOVE (SOFTWARE) MOUSE WHILE MOVING MARISA!!"},
+{0, "BUG \n deltaTime is not synchronized with the animation frames, leading to playAnimations looping too many times"},
+{1, "BUG \n marisa: some sequences are of different w/h sizes than the idle animation, leading marisa to be offcenter"},
 
 {0, "CLEANup \n now that colorkeying works move all the debug if-else to obsidian sdl notes"},
 {1, "FEATURE \n what did i create the player.getX and player.getY for, collision detection?"},
@@ -31,17 +34,17 @@ void printTodos(){
 
 {1, "BUG \n cap_framerate() overshoots capping, ie. 144->167 400->420"},
 
-{1, "BUG? \n marisa: moving on x-axis is broken, when character.cpp:L13 is enabled"},
-{1, "FEATURE \n walk/attack marisa animations"},
+{1, "rename all draw calls to render calls, see fe. render.cpp:Render()"},
 
-{1, "continue the lazy foo tutorial whence u added the main.cpp:24 consts, "},
-{1, "rename all draw calls to render calls, see fe. render.cpp:Render(), "},
 
+ // METADATA TODOS
 {1, "FEATURE \n render dragged image to gSreen"},
 
 {1, "FEATURE \n render libpng metadata with Font:Render"},
 {2, "FEATURE \n make the rendered metadata copyable to clipboard(s)"},
 
+
+// WASTE OF TIME TODOS
 {2, "FEATURE \n create a translucent box for fps a la simply love rendering stats"},
 
 {2, "FEATURE \n resourcemanager.cpp"},
@@ -50,6 +53,8 @@ void printTodos(){
 
 {5, "SDL3 \n https://github.com/libsdl-org/SDL/blob/main/docs/README-migration.md"},
 
+// Unsorted (dump)
+{1, "?? \n Abstract pure virtual class methods for runtime polymorphism"},
 
 // Maybe important features
 // GIMP EXPORT automatic pixel format: file <foo>.png "8-bit colormap" doesn't work.
