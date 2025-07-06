@@ -1,11 +1,8 @@
 #ifndef INPUT_H
 #define INPUT_H
-#pragma once
 
-#include "main.h" // globals
-#include "element.h"
 #include "render.h"
-#include <iostream>
+#include "include/element.h"
 
 class Mouse : public Element{
 public:

@@ -1,7 +1,8 @@
 #ifndef ELEMENT_H
 #define ELEMENT_H
 
-//OOP: Base class
+#include "main.h" // sdl
+
 class Element {
 protected:
   float posX, posY;

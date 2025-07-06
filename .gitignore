@@ -1,12 +1,13 @@
-# Ghostwriter files
-widgets.qss
-
-# Make, debug and editor files
+# Make and debug files
 .cache/
 *.log
 *.o
 *.gch
 vgcore.*
+
+# Editor files
+*.json
+*.qss
 
 # External resources
 sounds/

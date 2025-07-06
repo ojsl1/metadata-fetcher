@@ -1,13 +1,11 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "main.h" // globals
 #include "render.h"
-#include <iostream>
+#include <string>
 #include <functional>
 
 class Mouse; //Forward declare for Sprite::DetectIntersections
-
 
 class Sprite{
 private:
@@ -19,7 +17,7 @@ protected:
   SDL_Surface *rawSprite;
   SDL_Surface *alternateSprite; // Alternate sprite for 2-state sprites
   SDL_Rect dRectSprite;
-  int x, y; // origo topleft; public so character class can get its coordinates
+  int x, y; // origo topleft
 
 public:
   // x,y coords; w,h size; filepath;
