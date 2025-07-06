@@ -10,6 +10,12 @@
 #define FPSCAP 60
 #define DEBUG 0
 
+enum class AppState {
+  MAIN_MENU,
+  MINIGAME,
+  EXIT,
+};
+
 struct WindowDimensions{
     int wSize;
     int hSize;
@@ -20,6 +26,7 @@ struct WindowDimensions{
 // Global declarations
 extern SDL_Window *gWindow;
 extern SDL_Surface *gScreen;
+extern AppState currentMenu;
 extern float fps;
 
 extern Uint32 gPink;

@@ -1,6 +1,7 @@
-#include "main.h" // globals
+#include "main.h" // sdl
 #include "render.h"
 #include "character.h"
+#include <sstream> //fpsText uses this
 
 SDL_Window *gWindow = nullptr;
 SDL_Surface *gScreen = nullptr;
@@ -71,28 +72,39 @@ void RendererBase::Render(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
      Sprite &spriteDrop, Sprite &spriteMute, Sprite &spritePause,
      Sprite &spriteBorder, Sprite &spriteFrame, Sprite &spriteBg,
      Font &arial, Character &player){
-  spriteBg.DrawScaled(gScreen);
-  spriteBorder.DrawScaled(gScreen);
-  spriteFrame.DrawScaled(gScreen);
-  spriteDrop.DrawScaled(gScreen);
-  spriteMute.Draw(gScreen);
-  spritePause.Draw(gScreen);
-  spriteTests.Draw(gScreen);
-  if (spriteTests.hasintersection){
-    //DrawTests();
+  if (!main){
+      arial.Draw(gScreen,80,200, "Unimplemented", {0,0,0});
   }
-  spriteExit.Draw(gScreen);
+  if (main){
+      spriteBg.DrawScaled(gScreen);
+      spriteBorder.DrawScaled(gScreen);
+      spriteFrame.DrawScaled(gScreen);
+      spriteDrop.DrawScaled(gScreen);
+      spriteMute.Draw(gScreen);
+      spritePause.Draw(gScreen);
+      spriteTests.Draw(gScreen);
+      if (spriteTests.hasintersection){
+        DrawTests();
+      }
+      spriteExit.Draw(gScreen);
 
-  //Render FPS counter
-  std::ostringstream fpsText;
-  fpsText << "FPS: " << static_cast<float>(fps);
-  arial.Draw(gScreen,50,50, fpsText.str(), {0,0,0});
+      //Render FPS counter
+      std::ostringstream fpsText;
+      fpsText << "FPS: " << static_cast<float>(fps);
+      arial.Draw(gScreen,50,50, fpsText.str(), {0,0,0});
 
-  arial.Draw(gScreen,80,200, "Drop Image Here", {0,0,0});
-  
-  player.Draw(gScreen);
+      arial.Draw(gScreen,80,200, "Drop Image Here", {0,0,0});
+      
+      player.Draw(gScreen);
+  }
 
   mouse.Draw(gScreen); // draw mouse last so it's always on top
+}
+
+void RendererBase::DrawTests(){
+  std::cerr << "UNIMPLEMENTED: Enter Race (1978) minigame" << std::endl;
+  std::cerr << "TODO: get game assets and draw them in if(!main){}" << std::endl;
+  currentMenu = AppState::MINIGAME;
 }
 
 void RendererBase::Update(){

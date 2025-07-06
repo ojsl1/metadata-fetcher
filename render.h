@@ -1,17 +1,11 @@
 #ifndef RENDER_H
 #define RENDER_H
-#include "main.h" // globals
 
-#if ALLEYS
-#include <iostream>
-#include <vector>
-#endif
+#include "main.h" // sdl
 
-#include "input.h"  // forward declare Mouse class for Draw()
-#include "sprite.h" // forward declare Sprite class for Draw()
-#include "font.h"   // forward declare Font class for Draw()
-
-#include <sstream>  //fpsText uses this
+#include "input.h"  // forward declare Mouse class for Render()
+#include "sprite.h" // forward declare Sprite class for Render()
+#include "font.h"   // forward declare Font class for Render()
 
 class Font;
 class Mouse;
@@ -31,6 +25,8 @@ public:
     void DrawTests();
     void Update();
     void Shutdown(SDL_Window *gWindow, WindowDimensions dims);
+
+    bool main = true;
 };
 
 #endif // RENDER_H

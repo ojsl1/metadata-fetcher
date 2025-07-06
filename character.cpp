@@ -1,70 +1,59 @@
 #include "character.h"
 
-
 Character::Character(const std::string &spriteName, int x, int y, int w, int h,
                      const char *spritesheetPath, SDL_Rect spriteRect, int totalFrames)
-  : Sprite(spriteName, x, y, w, h, spritesheetPath, spriteRect), // calling constructs from base class
-    currentState(AnimationState::IDLE), currentFrame(0), lastUpdate(0), speed(2) {
+  : Sprite(spriteName, x, y, w, h, spritesheetPath, spriteRect), // from base class
+    currentState(AnimationState::IDLE), idleState(AnimationState::IDLE), currentFrame(0), lastUpdate(0), speed(2) {
 
-  /*
-   * struct AnimationData
-  int startX;             // x pos in spritesheet
-  int startY;             // y pos in spritesheet
-  int frameWidth;
-  int frameHeight;
-  int frameCount;
-  Uint32 animationSpeed;  // ms per frame
-  int framePadding;       // padding between frames(1px)
-  */
   animations = {
-    {AnimationState::INTRO,             {1,0,0,0,0,400,1}},
-    {AnimationState::INTRO_A,           {1,0,0,0,0,400,1}},
-    {AnimationState::INTRO_B,           {1,0,0,0,0,400,1}},
-    {AnimationState::TURN,              {1,0,0,0,0,400,1}},
-    {AnimationState::INTRO_KOISHI,      {1,0,0,0,0,400,1}},
-    {AnimationState::IDLE,              {1,648,192,192,15,400,1}},
-    {AnimationState::MOVE_FORWARD,      {1,882,224,192,5,400,1}},
-    {AnimationState::MOVE_BACK,         {1,0,0,0,0,400,1}},
-    {AnimationState::DASH_FORWARD,      {1,0,0,0,0,400,1}},
-    {AnimationState::DASH_BACKWARD,     {1,0,0,0,0,400,1}},
-    {AnimationState::MOVE_DOWN_UP,      {1,0,0,0,0,400,1}},
-    {AnimationState::ATTACK_A,          {1,0,0,0,0,400,1}},
-    {AnimationState::DASH_ATTACK_A,     {1,0,0,0,0,400,1}},
-    {AnimationState::ATTACK_B,          {1,0,0,0,0,400,1}},
-    {AnimationState::DASH_ATTACK_B,     {1,0,0,0,0,400,1}},
-    {AnimationState::ATTACK_UP_B,       {1,4344,288,320,11,400,1}},
-    {AnimationState::ATTACK_FORWARD_B,  {1,0,0,0,0,400,1}},
-    {AnimationState::ATTACK_DOWN_B,     {1,0,0,0,0,400,1}},
-    {AnimationState::MAGIC_ATTACK_A,    {1,0,0,0,0,400,1}},
-    {AnimationState::MAGIC_ATTACK_B,    {1,0,0,0,0,400,1}},
-    {AnimationState::SPECIAL_ATTACK_A,  {1,0,0,0,0,400,1}},
-    {AnimationState::SPECIAL_ATTACK_B,  {1,0,0,0,0,400,1}},
-    {AnimationState::SPECIAL_ATTACK_C,  {1,0,0,0,0,400,1}},
-    {AnimationState::SPECIAL_ATTACK_D,  {1,0,0,0,0,400,1}},
-    {AnimationState::SPECIAL_ATTACK_E,  {1,0,0,0,0,400,1}},
-    {AnimationState::SPECIAL_ATTACK_F,  {1,0,0,0,0,400,1}},
-    {AnimationState::GRAB,							{1,0,0,0,0,400,1}},
-    {AnimationState::MISS,							{1,0,0,0,0,400,1}},
-    {AnimationState::HIT,								{1,0,0,0,0,400,1}},
-    {AnimationState::SPELL_CALL,				{1,0,0,0,0,400,1}},
-    {AnimationState::SPELL_A,						{1,0,0,0,0,400,1}},
-    {AnimationState::SPELL_B,						{1,0,0,0,0,400,1}},
-    {AnimationState::SPELL_B2,					{1,0,0,0,0,400,1}},
-    {AnimationState::SPELL_B3,					{1,0,0,0,0,400,1}},
-    {AnimationState::LAST_WORD,					{1,0,0,0,0,400,1}},
-    {AnimationState::LAST_WORD_B,				{1,0,0,0,0,400,1}},
-    {AnimationState::GUARD,							{1,0,0,0,0,400,1}},
-    {AnimationState::MAGIC_GUARD,				{1,0,0,0,0,400,1}},
-    {AnimationState::GUARD_BREAK,				{1,0,0,0,0,400,1}},
-    {AnimationState::DIZZY,							{1,0,0,0,0,400,1}},
-    {AnimationState::HIT_LOW,						{1,0,0,0,0,400,1}},
-    {AnimationState::HIT_HIGH,					{1,0,0,0,0,400,1}},
-    {AnimationState::WALL_BOUNCE,				{1,0,0,0,0,400,1}},
-    {AnimationState::SPINNING,					{1,0,0,0,0,400,1}},
-    {AnimationState::DOWNED,						{1,0,0,0,0,400,1}},
-    {AnimationState::WIN_POSE_A,				{1,0,0,0,0,400,1}},
-    {AnimationState::WIN_POSE_B,				{1,0,0,0,0,400,1}},
-    {AnimationState::TIME_OVER,					{1,0,0,0,0,400,1}},
+    {AnimationState::INTRO,             {1,0,0,0,0,400,1,0}},
+    {AnimationState::INTRO_A,           {1,0,0,0,10,400,1,0}},
+    {AnimationState::INTRO_B,           {1,0,0,0,10,400,1,0}},
+    {AnimationState::TURN,              {1,0,0,0,3,400,1,0}},
+    {AnimationState::INTRO_KOISHI,      {1,0,0,0,0,400,1,0}},
+    {AnimationState::IDLE,              {1,648,192,192,15,400,1,0}},
+    {AnimationState::MOVE_FORWARD,      {1,882,224,192,5,400,1,0}},
+    {AnimationState::MOVE_BACK,         {1,1309,192,224,13,400,1,0}},
+    {AnimationState::DASH_FORWARD,      {1,0,0,0,0,400,1,0}},
+    {AnimationState::DASH_BACKWARD,     {1,0,0,0,0,400,1,0}},
+    {AnimationState::MOVE_DOWN_UP,      {1,0,0,0,0,400,1,0}},
+    {AnimationState::ATTACK_A,          {1,0,0,0,8,400,1,0}},
+    {AnimationState::DASH_ATTACK_A,     {1,0,0,0,11,400,1,0}},
+    {AnimationState::ATTACK_B,          {1,3553,352,320,8,400,1,0}},
+    {AnimationState::DASH_ATTACK_B,     {1,0,0,0,14,400,1,0}},
+    {AnimationState::ATTACK_UP_B,       {1,4344,288,320,11,400,1,0}},
+    {AnimationState::ATTACK_FORWARD_B,  {1,0,0,0,7,400,1,0}},
+    {AnimationState::ATTACK_DOWN_B,     {1,0,0,0,11,400,1,0}},
+    {AnimationState::MAGIC_ATTACK_A,    {1,0,0,0,7,400,1,0}},
+    {AnimationState::MAGIC_ATTACK_B,    {1,0,0,0,13,400,1,0}},
+    {AnimationState::SPECIAL_ATTACK_A,  {1,0,0,0,0,400,1,0}},
+    {AnimationState::SPECIAL_ATTACK_B,  {1,0,0,0,0,400,1,0}},
+    {AnimationState::SPECIAL_ATTACK_C,  {1,0,0,0,9,400,1,0}},
+    {AnimationState::SPECIAL_ATTACK_D,  {1,0,0,0,14,400,1,0}},
+    {AnimationState::SPECIAL_ATTACK_E,  {1,0,0,0,0,400,1,0}},
+    {AnimationState::SPECIAL_ATTACK_F,  {1,0,0,0,12,400,1,0}},
+    {AnimationState::GRAB,							{1,0,0,0,1,400,1,0}},
+    {AnimationState::MISS,							{1,0,0,0,4,400,1,0}},
+    {AnimationState::HIT,								{1,0,0,0,1,400,1,0}},
+    {AnimationState::SPELL_CALL,				{1,0,0,0,8,400,1,0}},
+    {AnimationState::SPELL_A,						{1,0,0,0,16,400,1,0}},
+    {AnimationState::SPELL_B,						{1,0,0,0,8,400,1,0}},
+    {AnimationState::SPELL_B2,					{1,0,0,0,8,400,1,0}},
+    {AnimationState::SPELL_B3,					{1,0,0,0,1,400,1,0}},
+    {AnimationState::LAST_WORD,					{1,0,0,0,12,400,1,0}},
+    {AnimationState::LAST_WORD_B,				{1,0,0,0,1,400,1,0}},
+    {AnimationState::GUARD,							{1,0,0,0,4,400,1,0}},
+    {AnimationState::MAGIC_GUARD,				{1,0,0,0,5,400,1,0}},
+    {AnimationState::GUARD_BREAK,				{1,0,0,0,8,400,1,0}},
+    {AnimationState::DIZZY,							{1,0,0,0,6,400,1,0}},
+    {AnimationState::HIT_LOW,						{1,0,0,0,5,400,1,0}},
+    {AnimationState::HIT_HIGH,					{1,0,0,0,5,400,1,0}},
+    {AnimationState::WALL_BOUNCE,				{1,0,0,0,5,400,1,0}},
+    {AnimationState::SPINNING,					{1,0,0,0,4,400,1,0}},
+    {AnimationState::DOWNED,						{1,0,0,0,19,400,1,0}},
+    {AnimationState::WIN_POSE_A,				{1,0,0,0,13,400,1,0}},
+    {AnimationState::WIN_POSE_B,				{1,0,0,0,11,400,1,0}},
+    {AnimationState::TIME_OVER,					{1,0,0,0,13,400,1,0}},
   };
 
   //Convert spritesheet to 32bpp
@@ -174,12 +163,31 @@ void Character::update(double deltaTime){
   AnimationData &anim = animations[currentState];
 
   // Check if the animation state has changed from previous frame
-  if (currentState != lastState) {
+  if (currentState != lastState){
+
+    // Calculate possible width/height change
+    int deltaW = anim.frameWidth - dRectSprite.w;
+    int deltaH = anim.frameHeight - dRectSprite.h;
+    // shift half the difference (Assuming spritesheet uses center anchor)
+    // BUG 1. before updating dRectSprite.w/h = anim.frameWidth/Height, the w/h values get clipped when playAnimation() is called out of bounds
+    // BUG 2. the values getting clipped when out of bounds also affect below shifting leading to below
+    // BUG 3. every sequential playAnimation() moves the sprite towards the origo untill the sprite is completely within bounds, ie. when the w/h values are what they originally were
+    dRectSprite.x -= deltaW / 2;
+    dRectSprite.y -= deltaH / 2;
+
     srcRect.y = anim.startY;
     srcRect.w = anim.frameWidth;
     srcRect.h = anim.frameHeight;
-    currentFrame = 0;          // Reset the frame to 0 when animation changes
-    lastState = currentState;  // Update lastState for future comparisons
+
+    std::cout << "dRect: " << dRectSprite.w << ", " << dRectSprite.h << std::endl;
+    dRectSprite.w = anim.frameWidth;
+    dRectSprite.h = anim.frameHeight;
+
+    //BUG why is below resetting needed, it still works without it no?
+    //BUG might be causing random unsynced frames without it
+    //currentFrame = 0;          // Reset the frame to 0 when animation changes
+
+    lastState = currentState;  // change lastState back for future comparisons
   }
   
   // Update the animation timer
@@ -191,7 +199,7 @@ void Character::update(double deltaTime){
       // TODO the example has `static_cast<int>(deltaTime);` instead, why
       animationTimer -= deltaTime; //countdown timer for playing a temporary animation
       if (animationTimer <= 0){
-          currentState = oldState; //revert to previous state
+          currentState = idleState; //revert to idle state
           animationPlaying = false; //end temporary animation
       }
   }
@@ -203,6 +211,7 @@ void Character::update(double deltaTime){
       lastUpdate = 0; //reset the timer
   }
 
+  // TODO AFTER implementing anchoring does moving the below still create unsynch problems?
   // TODO WHAT: if this is inside above "Animation Frame Logic" loop and before lastUpdate=0; the frames become "unsynchronized", why(?)
   // TODO WHY: why do so many docs have the below inside above Animation Frame Logic loop(?)
   //
@@ -218,7 +227,6 @@ void Character::move(int dx, int dy){
 void Character::playAnimation(AnimationState newState, int durationMs){
   //if below is true Character::Update starts animation playback logic
   if (currentState != newState) {
-      oldState = currentState;
       currentState = newState;
       animationTimer = durationMs;
       animationPlaying = true;

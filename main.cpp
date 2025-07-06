@@ -1,9 +1,8 @@
-#include "main.h" // globals
+#include "main.h" // sdl
 #include "render.h"
 #include "input.h"
 #include "sprite.h"
 #include "character.h"
-#include "include/addons.h"
 #include "include/audio.h"
 #include "font.h"
 #include "png.h"
@@ -11,12 +10,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-
-enum class AppState {
-  MAIN_MENU,
-  OPTIONS,
-  EXIT,
-};
 
 // System
 AppState currentMenu = AppState::MAIN_MENU;
@@ -214,8 +207,8 @@ void renderState(RendererBase &ren, Mouse &mouse, SDL_Event &e){
     case AppState::MAIN_MENU:
         renderMainAppState(ren,mouse,e);
         break;
-    case AppState::OPTIONS:
-        //TODO renderOptionAppState(...);
+    case AppState::MINIGAME:
+        renderMainAppState(ren,mouse,e);
         break;
     case AppState::EXIT:
         break;
@@ -311,10 +304,15 @@ void EventHandlerGlobal(RendererBase &ren, Mouse &mouse, SDL_Event &e){
     case AppState::MAIN_MENU:
         EventHandlerMainMenu(ren,mouse,e);
         break;
-    case AppState::OPTIONS:
-        //TODO EventHandlerOptionsMenu(...);
-        std::cout << "Not implemented, exiting..." << std::endl;
-        currentMenu = AppState::EXIT;
+    case AppState::MINIGAME:
+        static bool printed=false;
+          if(!printed){
+          std::cerr << "TODO: EventHandlerMainMenu() -> EventHandlerMinigame()" << std::endl;
+          std::cerr << "TODO: switching appstate -> dealloc sprites, bgm, bell etc properly" << '\n';
+          printed=true;
+          }
+        EventHandlerMainMenu(ren,mouse,e);
+        ren.main = false;
         break;
     case AppState::EXIT:
         break;
@@ -329,9 +327,11 @@ void handleRtInput(Character &player){
 
   if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W]) player.move(0, -1);
   if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S]) player.move(0, 1);
-  if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A]) player.move(-2, 0);
-  if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D]) player.move(2, 0);
-  if (keys[SDL_SCANCODE_E]) player.playAnimation(AnimationState::ATTACK_UP_B, 5000);
+  if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A]) { player.move(-2, 0); player.playAnimation(AnimationState::MOVE_BACK, 500); };
+  if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D]) { player.move(2, 0); player.playAnimation(AnimationState::MOVE_FORWARD, 500); };
+  if (keys[SDL_SCANCODE_Q]) player.playAnimation(AnimationState::ATTACK_UP_B, 4000);
+  if (keys[SDL_SCANCODE_E]) player.playAnimation(AnimationState::ATTACK_B, 4000);
+  if (keys[SDL_SCANCODE_1]) player.playAnimation(AnimationState::IDLE, 5000);
 
 
 }
@@ -415,7 +415,8 @@ int main (int argc, char *argv[]){
   //Output environment info
   std::cerr << "FPSCAP is set to: " << FPSCAP << std::endl;
   
-  audio.playMusic(); //TODO start paused
+  audio.playMusic();
+  spritePause.Toggle();
 
   //While app is running
   while (currentMenu != AppState::EXIT){

@@ -1,7 +1,6 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
-#include "main.h" // globals
 #include "sprite.h"
 
 enum class AnimationState {
@@ -63,13 +62,14 @@ struct AnimationData {
   int frameCount;
   Uint32 animationSpeed;
   int framePadding;
+  bool isTransientSequence; //for differentiating animations that use multiple different states
 };
 
 class Character : public Sprite{
 private:
   AnimationData anim;
   AnimationState currentState;
-  AnimationState oldState;
+  AnimationState idleState;
   AnimationState newState;
   AnimationState lastState;
   int currentFrame;             // Current animation frame
