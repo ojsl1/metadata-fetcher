@@ -2,8 +2,11 @@
 #define CHARACTER_H
 
 #include "sprite.h"
+#include <string>
+#include <unordered_map>
 
 enum class AnimationState {
+  NONE,
   INTRO,
   INTRO_A,
   INTRO_B,
@@ -54,41 +57,42 @@ enum class AnimationState {
   TIME_OVER,
 };
 
-struct AnimationData {
-  int startX;
-  int startY;
-  int frameWidth;
-  int frameHeight;
-  int frameCount;
-  Uint32 animationSpeed;
-  int framePadding;
-  bool isTransientSequence; //for differentiating animations that use multiple different states
-};
-
-class Character : public Sprite{
-private:
-  AnimationData anim;
-  AnimationState currentState;
-  AnimationState idleState;
-  AnimationState newState;
-  AnimationState lastState;
-  int currentFrame;             // Current animation frame
-  Uint32 lastUpdate;            // time since last frame update
-  SDL_Rect srcRect;
-  int speed;                    // movement speed
-  bool animationPlaying = false;
-  int animationTimer = 0;
-
+class Character : public Sprite
+{
 public:
-  std::unordered_map<AnimationState, AnimationData> animations;
+  struct AnimationData {
+    int frameWidth;
+    int frameHeight;
+    int frameCount;
+    int framePadding;
+    Uint32 animationSpeed;
+    double speed; // pixels/second
+    int startX;
+    int startY;
+    std::string spritesheetPath;
+    bool transient; //for differentiating animations that use multiple different states
+  };
 
-  Character(const std::string &spriteName, int x, int y, int w, int h,
-            const char *spritesheetPath, SDL_Rect spriteRect, int totalFrames);
+  using AnimMap = std::unordered_map<AnimationState, AnimationData>;
+
+  static AnimMap loadAnimationConfig(const std::string &fileName, const std::string &characterName);
+
+  Character(const std::string &spriteName, int x, int y, const AnimMap &anims);
 
   void update(double deltaTime);
   void move(int dx, int dy);
   void playAnimation(AnimationState, int);
-  void Draw(SDL_Surface *gScreen) override;
+  void Draw(AppContext gApp) override;
+
+private:
+  AnimMap animations;
+  AnimationData anim;// is this OLD pre-AnimMap CRUFT still needed?
+  AnimationState currentState = AnimationState::IDLE;
+  AnimationState idleState, newState, lastState;
+  int currentFrame;             // Current animation frame
+  Uint32 lastUpdate;            // time since last frame update
+  bool animationPlaying = false;
+  int animationTimer = 0;
 };
 
 #endif // CHARACTER_H

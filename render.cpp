@@ -1,21 +1,20 @@
 #include "main.h" // sdl
 #include "render.h"
-#include "character.h"
-#include <sstream> //fpsText uses this
+#include <sstream> // for fpsText
 
-SDL_Window *gWindow = nullptr;
-SDL_Surface *gScreen = nullptr;
-
-void RendererBase::initColors(SDL_Surface *gScreen){
-    gPink = SDL_MapRGB(gScreen->format, 232, 111, 148);
-    gRed = SDL_MapRGB(gScreen->format, 250, 0, 0);
-    gBeige = SDL_MapRGB(gScreen->format, 255, 255, 115);
-    gBlue = SDL_MapRGB(gScreen->format, 0, 0, 255);
-    gDarkblue = SDL_MapRGB(gScreen->format, 111, 114, 120);
-    gDarkgreen = SDL_MapRGB(gScreen->format, 100, 120, 100);
+void RendererBase::initColors(AppContext gApp)
+{
+    // Init these elsewhere outside of render
+    gApp.pink = SDL_MapRGB(gApp.screen->format, 232, 111, 148);
+    gApp.red = SDL_MapRGB(gApp.screen->format, 250, 0, 0);
+    gApp.beige = SDL_MapRGB(gApp.screen->format, 255, 255, 115);
+    gApp.blue = SDL_MapRGB(gApp.screen->format, 0, 0, 255);
+    gApp.darkblue = SDL_MapRGB(gApp.screen->format, 111, 114, 120);
+    gApp.darkgreen = SDL_MapRGB(gApp.screen->format, 100, 120, 100);
 }
 
-void RendererBase::initVideo( int window_width, int window_height ){
+void RendererBase::initVideo( int window_width, int window_height )
+{
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
       std::cerr << "SDL_Init failed: " << SDL_GetError() << std::endl;
       return;
@@ -34,7 +33,7 @@ void RendererBase::initVideo( int window_width, int window_height ){
     }
 
     // Create the window
-    gWindow = SDL_CreateWindow( "Metadata fetcher",
+    gApp.windowHandle = SDL_CreateWindow( "Metadata fetcher",
                                 SDL_WINDOWPOS_UNDEFINED,
                                 SDL_WINDOWPOS_UNDEFINED,
                                 window_width, // window_width
@@ -43,90 +42,103 @@ void RendererBase::initVideo( int window_width, int window_height ){
                                 //SDL_WINDOW_FULLSCREEN_DESKTOP
                                 );
 
-    if ( gWindow == nullptr ){
+    if ( gApp.windowHandle == nullptr ){
       std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
       SDL_Quit();
       return;
     }
 
     //Note: this disables SDL_WINDOW_FULLSCREEN_DESKTOP
-    SDL_SetWindowBordered(gWindow, SDL_TRUE);
+    SDL_SetWindowBordered(gApp.windowHandle, SDL_TRUE);
     
-    gScreen = SDL_GetWindowSurface(gWindow);
-    if ( gScreen == nullptr ){
+    gApp.screen = SDL_GetWindowSurface(gApp.windowHandle);
+    if ( gApp.screen == nullptr ){
       std::cerr << "SDL_ GetWindowSurface Error: " << SDL_GetError() << std::endl;
-      SDL_DestroyWindow(gWindow);
+      SDL_DestroyWindow(gApp.windowHandle);
       SDL_Quit();
       return;
     }
 }
 
-void RendererBase::Clear(){
-  if (!gScreen){
-    std::cout << "gScreen invalid during ren.Clear, unable to clear." << std::endl;
+void RendererBase::Clear()
+{
+  if (!gApp.screen){
+    std::cout << "gApp.screen invalid during ren.Clear, unable to clear." << std::endl;
   }
-  SDL_FillRect(gScreen, nullptr, SDL_MapRGB(gScreen->format, 255, 50, 255));
+  SDL_FillRect(gApp.screen, nullptr, SDL_MapRGB(gApp.screen->format, 255, 50, 255));
 }
 
 void RendererBase::Render(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
      Sprite &spriteDrop, Sprite &spriteMute, Sprite &spritePause,
      Sprite &spriteBorder, Sprite &spriteFrame, Sprite &spriteBg,
-     Font &arial, Character &player){
-  if (!main){
-      arial.Draw(gScreen,80,200, "Unimplemented", {0,0,0});
-  }
-  if (main){
-      spriteBg.DrawScaled(gScreen);
-      spriteBorder.DrawScaled(gScreen);
-      spriteFrame.DrawScaled(gScreen);
-      spriteDrop.DrawScaled(gScreen);
-      spriteMute.Draw(gScreen);
-      spritePause.Draw(gScreen);
-      spriteTests.Draw(gScreen);
-      if (spriteTests.hasintersection){
-        DrawTests();
-      }
-      spriteExit.Draw(gScreen);
+     Sprite &spritePlaceholder,
+     Font &arial, Character &player, Character &player2)
+{
+  if (gApp.mode == AppState::MAIN_MENU){
+      spriteBg.DrawScaled(gApp);
+      spriteBorder.DrawScaled(gApp);
+      spriteFrame.DrawScaled(gApp);
+      spriteDrop.DrawScaled(gApp);
+      spriteMute.Draw(gApp);
+      spritePause.Draw(gApp);
+      spriteTests.Draw(gApp);
+      spriteExit.Draw(gApp);
 
-      //Render FPS counter
-      std::ostringstream fpsText;
-      fpsText << "FPS: " << static_cast<float>(fps);
-      arial.Draw(gScreen,50,50, fpsText.str(), {0,0,0});
-
-      arial.Draw(gScreen,80,200, "Drop Image Here", {0,0,0});
+      arial.Draw(gApp,80,200, "Drop Image Here", {0,0,0});
       
-      player.Draw(gScreen);
+      player.Draw(gApp);
   }
 
-  mouse.Draw(gScreen); // draw mouse last so it's always on top
+  if (gApp.mode == AppState::MINIGAME){
+      spritePlaceholder.DrawScaled(gApp);
+
+      player2.Draw(gApp);
+
+      int x1 = 50;
+      int y1 = 70;
+
+      arial.Draw(gApp,x1,y1, "RACE (1978)", {0,0,0});
+      arial.Draw(gApp,x1,y1+30, "UNIMPLEMENTED", {10,0,0});
+  }
+
+  //Render FPS counter
+  std::ostringstream fpsText;
+  fpsText << "FPS: " << static_cast<float>(gApp.fps);
+  arial.Draw(gApp,10,10, fpsText.str(), {0,0,0});
+
+  //Render droppedfile metadata
+  int x = 50;
+  int y = 70;
+  for (const std::string& line : gApp.pngInfo.lines) {
+    arial.Draw(gApp, x, y, line, {0,0,0});
+    y+= 25;
+  }
+
+  mouse.Draw(gApp); // draw mouse last so it's always on top
 }
 
-void RendererBase::DrawTests(){
-  std::cerr << "UNIMPLEMENTED: Enter Race (1978) minigame" << std::endl;
-  std::cerr << "TODO: get game assets and draw them in if(!main){}" << std::endl;
-  currentMenu = AppState::MINIGAME;
-}
-
-void RendererBase::Update(){
+void RendererBase::Update()
+{
   // Present the frame/update the new frame, same as SDL_RenderPresent()
-  SDL_UpdateWindowSurface(gWindow);
+  SDL_UpdateWindowSurface(gApp.windowHandle);
 }
 
-void RendererBase::Shutdown(SDL_Window *gWindow, WindowDimensions dims){
-    //SDL_SetWindowSize( gWindow, dims.wSize, dims.hSize ); //enforce size
-    //SDL_SetWindowPosition( gWindow, dims.xPosi, dims.yPosi ); //enforce position
-    SDL_GetWindowPosition( gWindow, &dims.xPosi, &dims.yPosi );
-    std::cout << "Exit Position: " << dims.xPosi << "," << dims.yPosi << std::endl;
-    std::cout << "Exit Size: " << dims.wSize << "," << dims.hSize << " [FIXME: Doesnt update after resizing]" << std::endl;
+void RendererBase::Shutdown(AppContext gApp)
+{
+    //SDL_SetWindowPosition( gApp.windowHandle, gApp.window.x, gApp.window.y ); //enforce position
+    //SDL_SetWindowSize( gApp.windowHandle, gApp.window.w, gApp.window.h ); //enforce size
+    SDL_GetWindowPosition( gApp.windowHandle, &gApp.window.x, &gApp.window.y );
+    std::cout << "Exit Position: " << gApp.window.x << "," << gApp.window.y << std::endl;
+    std::cout << "Exit Size: " << gApp.window.w << "," << gApp.window.h << " [FIXME: Doesnt update after resizing]" << std::endl;
 
-    if (gScreen != nullptr) {
-      SDL_FreeSurface(gScreen);
-      gScreen = nullptr;
+    if (gApp.screen != nullptr) {
+      SDL_FreeSurface(gApp.screen);
+      gApp.screen = nullptr;
     }
 
-    if (gWindow != nullptr) {
-      SDL_DestroyWindow(gWindow);
-      gWindow = nullptr;
+    if (gApp.windowHandle != nullptr) {
+      SDL_DestroyWindow(gApp.windowHandle);
+      gApp.windowHandle = nullptr;
     }
 
     IMG_Quit();

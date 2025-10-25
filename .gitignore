@@ -13,6 +13,7 @@ vgcore.*
 sounds/
 resources/
 assets/
+tests/
 
 *.png
 *.txt

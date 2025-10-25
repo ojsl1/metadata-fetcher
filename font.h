@@ -3,7 +3,6 @@
 
 #include "main.h" // sdl
 #include <string>
-#include <iostream>
 
 class Font{
 public:
@@ -14,9 +13,9 @@ public:
   void Free();
   void Shutdown();
 
-  void Draw(SDL_Surface *gScreen, int x, int y, const std::string &message);
-  void Draw(SDL_Surface *gScreen, int x, int y, const std::string &message, SDL_Color color_);
-  void Draw(SDL_Surface *gScreen, int x, int y, const std::string &message, SDL_Rect dstRect, SDL_Color color_);
+  void Draw(AppContext gApp, int x, int y, const std::string &message);
+  void Draw(AppContext gApp, int x, int y, const std::string &message, SDL_Color color_);
+  void Draw(AppContext gApp, int x, int y, const std::string &message, SDL_Rect dstRect, SDL_Color color_);
 
 private:
     TTF_Font *font_;

@@ -14,14 +14,14 @@ Mouse::Mouse(int w, int h, const char* mouseImagePath)
     }
 
     rawMouse = IMG_Load(mouseImagePath);
-        if (!rawMouse ){
-          SDL_Log("Failed to load image: %s, SDL_Image Error: %s", mouseImagePath, IMG_GetError());
-          rawMouse = IMG_Load("assets/mouse-fallback.png");
-          if (!rawMouse){
-            SDL_Log("Failed to load fallback image: assets/mouse-fallback.png, SDL_Image Error: %s", IMG_GetError());
-            return;
-          }
-        }
+    if (!rawMouse ){
+      SDL_Log("Failed to load image: %s, SDL_Image Error: %s", mouseImagePath, IMG_GetError());
+      rawMouse = IMG_Load("assets/mouse-fallback.png");
+      if (!rawMouse){
+        SDL_Log("Failed to load fallback image: assets/mouse-fallback.png, SDL_Image Error: %s", IMG_GetError());
+        return;
+      }
+    }
 
     // The size of the rectangle the cursor will be drawn on
     scaledMouse = SDL_CreateRGBSurface(
@@ -46,9 +46,9 @@ Mouse::Mouse(int w, int h, const char* mouseImagePath)
     SDL_ShowCursor(SDL_DISABLE);
 }
 
-void Mouse::Draw(SDL_Surface *gScreen) const {
+void Mouse::Draw(AppContext gApp) const {
     SDL_Rect finalRect = GetDrawRect();
-    SDL_BlitSurface(scaledMouse, nullptr, gScreen, &finalRect);
+    SDL_BlitSurface(scaledMouse, nullptr, gApp.screen, &finalRect);
 }
 
 /**

@@ -1,12 +1,10 @@
 #include "sprite.h"
-#include "input.h" // Sprite::DetectClicks and Sprite::DetectIntersections depend on mouse class
+#include "input.h" // Sprite::DetectClicks and Sprite::DetectCollisions depend on mouse class
 
 Sprite::Sprite(const std::string &spriteName, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect)
-  : name(spriteName), rawSprite(nullptr), alternateSprite(nullptr), x(x), y(y), hasintersection(false), toggled(false){
-
-  // For storing the dimensions of sprites
-  dRectSprite = {x,y,w,h};
-
+  : srcRect(spriteRect), hascollisions(false), toggled(false), rawSprite(nullptr), alternateSprite(nullptr), dRectSprite{x,y,w,h},
+    x(x), y(y), name(spriteName)
+{
   if (!spritesheetPath){
     spritesheetPath = "assets/texture-error.png";
   }
@@ -96,19 +94,19 @@ void Sprite::SetToggleCallback(std::function<void(bool)> callback){
   toggleCallback = callback;
 }
 
-void Sprite::DetectIntersections(Mouse &mouse){
-  hasintersection = SDL_HasIntersection(&dRectSprite, &mouse.point);
+void Sprite::DetectCollisions(Mouse &mouse){
+  hascollisions = SDL_HasIntersection(&dRectSprite, &mouse.point);
 }
 
-void Sprite::Draw(SDL_Surface *gScreen){
+void Sprite::Draw(AppContext gApp){
   SDL_Surface *currentSprite = toggled && alternateSprite ? alternateSprite : rawSprite;
-  if (!currentSprite || !gScreen) return;
-  SDL_BlitSurface(currentSprite, nullptr, gScreen, &dRectSprite);  
+  if (!currentSprite || !gApp.screen) return;
+  SDL_BlitSurface(currentSprite, nullptr, gApp.screen, &dRectSprite);  
 }
 
-void Sprite::DrawScaled(SDL_Surface *gScreen){
-  if (!rawSprite || !gScreen){
-      SDL_Log("Invalid input surface (rawSprite or gScreen is null)\n");
+void Sprite::DrawScaled(AppContext gApp){
+  if (!rawSprite || !gApp.screen){
+      SDL_Log("Invalid input surface (rawSprite or screen is null)\n");
       return;
   }
 
@@ -166,7 +164,7 @@ void Sprite::DrawScaled(SDL_Surface *gScreen){
   }
 
   // Blit scaledSpriteLocal onto the screen.
-  if (SDL_BlitSurface(scaledSpriteLocal, nullptr, gScreen, &dRectSprite) < 0){
+  if (SDL_BlitSurface(scaledSpriteLocal, nullptr, gApp.screen, &dRectSprite) < 0){
       std::cout << "rawSprite BitsPerPixel: " << rawSprite->format->BitsPerPixel << std::endl;
       std::cout << "scaledSprite BitsPerPixel: " << scaledSpriteLocal->format->BitsPerPixel << std::endl;
       SDL_Log("SDL_BlitSurface failed: %s\n", SDL_GetError());

@@ -1,41 +1,43 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "render.h"
+#include "main.h"
 #include <string>
 #include <functional>
 
-class Mouse; //Forward declare for Sprite::DetectIntersections
+class Mouse; //Forward declare for Sprite::DetectCollisions
 
-class Sprite{
-private:
-  std::string name;
-  std::function<void(bool)> toggleCallback; // Callback for toggle action
-
-protected:
+class Sprite
+{
+public:
+  SDL_Rect srcRect;
   SDL_Surface *spritesheet;
+  // x,y coords; w,h size; filepath;
+  Sprite(const std::string &spriteName, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect);
+  ~Sprite();
+  
+  void virtual Draw(AppContext gApp);
+  void DrawScaled(AppContext gApp);
+  void Toggle();
+  void DetectCollisions(Mouse &mouse);
+  void SetToggleCallback(std::function<void(bool)> callback);
+  void SetAlternateSprite(SDL_Surface *alternate);
+
+  bool hascollisions; // WIP cant privatize main.cpp reads from this via playSprite.hasCollision
+  bool toggled; // Current toggled state
+  
+  int getX() const { return dRectSprite.x; }
+  int getY() const { return dRectSprite.y; }
+  
+protected:
   SDL_Surface *rawSprite;
   SDL_Surface *alternateSprite; // Alternate sprite for 2-state sprites
   SDL_Rect dRectSprite;
   int x, y; // origo topleft
 
-public:
-  // x,y coords; w,h size; filepath;
-  Sprite(const std::string &spriteName, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect);
-  ~Sprite();
-  
-  void virtual Draw(SDL_Surface *gScreen);
-  void DrawScaled(SDL_Surface *gScreen);
-  void Toggle();
-  void DetectIntersections(Mouse &mouse);
-  void SetToggleCallback(std::function<void(bool)> callback);
-  void SetAlternateSprite(SDL_Surface *alternate);
-
-  bool hasintersection; // WIP cant privatize main.cpp reads from this via playSprite.hasintersection
-  bool toggled; // Current toggled state
-  
-  int getX() const { return dRectSprite.x; }
-  int getY() const { return dRectSprite.y; }
+private:
+  std::string name;
+  std::function<void(bool)> toggleCallback; // Callback for toggle action
 
 };
 

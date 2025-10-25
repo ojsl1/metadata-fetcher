@@ -1,4 +1,5 @@
 #include "font.h"
+#include "main.h"
 
 Font::Font()
   : font_(nullptr)
@@ -30,7 +31,7 @@ bool Font::Load(const char *filePath, int fontSize){
   font_ = TTF_OpenFont(filePath, fontSize);
   if(!font_){
     std::cerr << "TTF_OpenFont failed: " << TTF_GetError() << std::endl;
-    SDL_DestroyWindow(gWindow); // TODO this isn't needed if below are removed
+    SDL_DestroyWindow(gApp.windowHandle); // TODO this isn't needed if below are removed
     TTF_Quit(); // TODO quit elsewhere, it doesnt belong here
     SDL_Quit(); // TODO quit elsewhere
     return 1;
@@ -39,20 +40,20 @@ bool Font::Load(const char *filePath, int fontSize){
 }
 
 // Overload #1 with default color
-void Font::Draw(SDL_Surface *gScreen, int x, int y, const std::string &message){
-  color_ = {000,000,000,000};
+void Font::Draw(AppContext gApp, int x, int y, const std::string &message){
+  color_ = {0,0,0,255};
   dstRect = {x,y,0,0};
-  Draw(gScreen, x, y, message, dstRect, color_);
+  Draw(gApp, x, y, message, dstRect, color_);
 }
 
 // Overload #2 with custom color
-void Font::Draw(SDL_Surface *gScreen, int x, int y, const std::string &message, SDL_Color color_){
+void Font::Draw(AppContext gApp, int x, int y, const std::string &message, SDL_Color color_){
   dstRect = {x,y,0,0};
-  Draw(gScreen, x, y, message, dstRect, color_);
+  Draw(gApp, x, y, message, dstRect, color_);
 }
 
 // Overload #3 with bounding box and alignment 
-void Font::Draw(SDL_Surface *gScreen, int x, int y, const std::string &message, SDL_Rect dstRect, SDL_Color color_){
+void Font::Draw(AppContext gApp, int x, int y, const std::string &message, SDL_Rect dstRect, SDL_Color color_){
   if(!font_){
     std::cerr << "No font loaded, cannot render text!.\n";
     return;
@@ -70,7 +71,7 @@ void Font::Draw(SDL_Surface *gScreen, int x, int y, const std::string &message, 
   dstRect.x = x;
   dstRect.y = y;
 
-  if (SDL_BlitSurface(textSurface, nullptr, gScreen, &dstRect) < 0){
+  if (SDL_BlitSurface(textSurface, nullptr, gApp.screen, &dstRect) < 0){
       SDL_Log("SDL_BlitSurface failed: %s", SDL_GetError());
   }
 

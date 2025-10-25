@@ -1,166 +1,129 @@
 #include "character.h"
+#include <fstream>
+#include <nlohmann/json.hpp>
+#include <string>
 
-Character::Character(const std::string &spriteName, int x, int y, int w, int h,
-                     const char *spritesheetPath, SDL_Rect spriteRect, int totalFrames)
-  : Sprite(spriteName, x, y, w, h, spritesheetPath, spriteRect), // from base class
-    currentState(AnimationState::IDLE), idleState(AnimationState::IDLE), currentFrame(0), lastUpdate(0), speed(2) {
-
-  animations = {
-    {AnimationState::INTRO,             {1,0,0,0,0,400,1,0}},
-    {AnimationState::INTRO_A,           {1,0,0,0,10,400,1,0}},
-    {AnimationState::INTRO_B,           {1,0,0,0,10,400,1,0}},
-    {AnimationState::TURN,              {1,0,0,0,3,400,1,0}},
-    {AnimationState::INTRO_KOISHI,      {1,0,0,0,0,400,1,0}},
-    {AnimationState::IDLE,              {1,648,192,192,15,400,1,0}},
-    {AnimationState::MOVE_FORWARD,      {1,882,224,192,5,400,1,0}},
-    {AnimationState::MOVE_BACK,         {1,1309,192,224,13,400,1,0}},
-    {AnimationState::DASH_FORWARD,      {1,0,0,0,0,400,1,0}},
-    {AnimationState::DASH_BACKWARD,     {1,0,0,0,0,400,1,0}},
-    {AnimationState::MOVE_DOWN_UP,      {1,0,0,0,0,400,1,0}},
-    {AnimationState::ATTACK_A,          {1,0,0,0,8,400,1,0}},
-    {AnimationState::DASH_ATTACK_A,     {1,0,0,0,11,400,1,0}},
-    {AnimationState::ATTACK_B,          {1,3553,352,320,8,400,1,0}},
-    {AnimationState::DASH_ATTACK_B,     {1,0,0,0,14,400,1,0}},
-    {AnimationState::ATTACK_UP_B,       {1,4344,288,320,11,400,1,0}},
-    {AnimationState::ATTACK_FORWARD_B,  {1,0,0,0,7,400,1,0}},
-    {AnimationState::ATTACK_DOWN_B,     {1,0,0,0,11,400,1,0}},
-    {AnimationState::MAGIC_ATTACK_A,    {1,0,0,0,7,400,1,0}},
-    {AnimationState::MAGIC_ATTACK_B,    {1,0,0,0,13,400,1,0}},
-    {AnimationState::SPECIAL_ATTACK_A,  {1,0,0,0,0,400,1,0}},
-    {AnimationState::SPECIAL_ATTACK_B,  {1,0,0,0,0,400,1,0}},
-    {AnimationState::SPECIAL_ATTACK_C,  {1,0,0,0,9,400,1,0}},
-    {AnimationState::SPECIAL_ATTACK_D,  {1,0,0,0,14,400,1,0}},
-    {AnimationState::SPECIAL_ATTACK_E,  {1,0,0,0,0,400,1,0}},
-    {AnimationState::SPECIAL_ATTACK_F,  {1,0,0,0,12,400,1,0}},
-    {AnimationState::GRAB,							{1,0,0,0,1,400,1,0}},
-    {AnimationState::MISS,							{1,0,0,0,4,400,1,0}},
-    {AnimationState::HIT,								{1,0,0,0,1,400,1,0}},
-    {AnimationState::SPELL_CALL,				{1,0,0,0,8,400,1,0}},
-    {AnimationState::SPELL_A,						{1,0,0,0,16,400,1,0}},
-    {AnimationState::SPELL_B,						{1,0,0,0,8,400,1,0}},
-    {AnimationState::SPELL_B2,					{1,0,0,0,8,400,1,0}},
-    {AnimationState::SPELL_B3,					{1,0,0,0,1,400,1,0}},
-    {AnimationState::LAST_WORD,					{1,0,0,0,12,400,1,0}},
-    {AnimationState::LAST_WORD_B,				{1,0,0,0,1,400,1,0}},
-    {AnimationState::GUARD,							{1,0,0,0,4,400,1,0}},
-    {AnimationState::MAGIC_GUARD,				{1,0,0,0,5,400,1,0}},
-    {AnimationState::GUARD_BREAK,				{1,0,0,0,8,400,1,0}},
-    {AnimationState::DIZZY,							{1,0,0,0,6,400,1,0}},
-    {AnimationState::HIT_LOW,						{1,0,0,0,5,400,1,0}},
-    {AnimationState::HIT_HIGH,					{1,0,0,0,5,400,1,0}},
-    {AnimationState::WALL_BOUNCE,				{1,0,0,0,5,400,1,0}},
-    {AnimationState::SPINNING,					{1,0,0,0,4,400,1,0}},
-    {AnimationState::DOWNED,						{1,0,0,0,19,400,1,0}},
-    {AnimationState::WIN_POSE_A,				{1,0,0,0,13,400,1,0}},
-    {AnimationState::WIN_POSE_B,				{1,0,0,0,11,400,1,0}},
-    {AnimationState::TIME_OVER,					{1,0,0,0,13,400,1,0}},
+static AnimationState stringToAnimationState(const std::string &key)
+{
+  static const std::unordered_map<std::string, AnimationState> lookuptable = {
+    {"none", AnimationState::NONE},
+    {"idle", AnimationState::IDLE},
+    {"intro_koishi", AnimationState::INTRO_KOISHI},
+    {"move_back", AnimationState::MOVE_BACK},
+    {"move_forward", AnimationState::MOVE_FORWARD},
+    {"attack_b", AnimationState::ATTACK_B},
+    {"attack_up_b", AnimationState::ATTACK_UP_B},
+    {"time_over", AnimationState::TIME_OVER},
+    {"downed", AnimationState::DOWNED},
+    // TODO .. add rest of the keys from json
   };
-
-  //Convert spritesheet to 32bpp
-  
-  if (spritesheet) {
-    SDL_Surface* optimizedSurface = SDL_ConvertSurfaceFormat(spritesheet, SDL_PIXELFORMAT_RGBA32, 0);
-    if (!optimizedSurface) {
-      //24bpp images dont have an Amask
-      SDL_Log("Failed to convert spritesheet to 32-bit format: %s", SDL_GetError());
-    } else {
-      SDL_FreeSurface(spritesheet);
-      spritesheet = optimizedSurface;
-      SDL_Log("Successfully converted spritesheet to 32-bit format.");
-    }
-  }
-  
-
-  //DEBUG: Verify the conversion worked
-  SDL_Log("Spritesheet BPP: %d", spritesheet->format->BitsPerPixel);
-  SDL_Log("Spritesheet Pixel Format: Rmask: 0x%X, Gmask: 0x%X, Bmask: 0x%X, Amask: 0x%X",
-          spritesheet->format->Rmask,
-          spritesheet->format->Gmask,
-          spritesheet->format->Bmask,
-          spritesheet->format->Amask);
-
-  //Set colorkey (before any blitting happens!)
-  if (SDL_SetColorKey(spritesheet, SDL_TRUE, SDL_MapRGB(spritesheet->format, 147, 187, 236)) != 0) {
-      SDL_Log("Failed to set colorkey: %s", SDL_GetError());
-  } else {
-      SDL_Log("Colorkey applied successfully.");
-  }
-
-
-  //DEBUG: Verify colorkey was set
-  Uint32 key;
-  if (SDL_GetColorKey(spritesheet, &key) == 0) {
-      SDL_Log("Verified Colorkey: 0x%X", key);
-  } else {
-      SDL_Log("Colorkey verification failed: %s", SDL_GetError());
-  }
-
-  /*
-  //DEBUG: Analyze sprite pixels
-  SDL_LockSurface(spritesheet);
-  Uint32* pixels = (Uint32*)spritesheet->pixels;
-  int pitch = spritesheet->pitch / 4; // 4 bytes per pixel for 32-bit
-  
-  std::unordered_map<Uint32, int> colorCount;
-  bool foundColorkey = false;
-  
-  for (int y = 0; y < spritesheet->h; ++y) {
-      for (int x = 0; x < spritesheet->w; ++x) {
-          Uint32 pixel = pixels[y * pitch + x];
-          
-          // Count occurrences of each color
-          colorCount[pixel]++;
-          
-          // Check if pixel matches colorkey
-          if (pixel == key && !foundColorkey) {
-              SDL_Log("Colorkey found at (%d, %d)", x, y);
-              foundColorkey = true;
-          }
-      }
-  }
-  
-  if (!foundColorkey) {
-      SDL_Log("No pixels match the colorkey!");
-  }
-  
-  //Inspect first 10 pixels for format information
-  for (int i = 0; i < std::min(10, spritesheet->w * spritesheet->h); ++i) {
-      Uint32 pixel = pixels[i];
-      Uint8 r, g, b;
-      SDL_GetRGB(pixel, spritesheet->format, &r, &g, &b);
-      SDL_Log("Pixel %d: R=%d, G=%d, B=%d, Hex: 0x%X", i, r, g, b, pixel);
-  }
-  
-  SDL_UnlockSurface(spritesheet);
-  
-  //Find the most common color ie. background
-  Uint32 mostCommonColor = 0;
-  int maxCount = 0;
-  for (const auto& pair : colorCount) {
-      if (pair.second > maxCount) {
-          maxCount = pair.second;
-          mostCommonColor = pair.first;
-      }
-  }
-  
-  Uint8 r, g, b;
-  SDL_GetRGB(mostCommonColor, spritesheet->format, &r, &g, &b);
-  SDL_Log("Most common color (likely background): R=%d, G=%d, B=%d, Hex: 0x%X", r, g, b, mostCommonColor);
-  */
-
-  // DEBUG: iterate over the unordered_map animation states and print keys of each state
-  /*
-  for (const auto &pair : animations) {
-      std::cout << "State: " << static_cast<int>(pair.first)
-                << ", Speed: " << pair.second.animationSpeed
-                << ", FrameCount: " << pair.second.frameCount
-                << std::endl;
-  }
-  */
+  auto iterator = lookuptable.find(key);
+  return (iterator != lookuptable.end()) ? iterator->second : AnimationState::NONE; // fallback
 }
 
-void Character::update(double deltaTime){
+Character::AnimMap Character::loadAnimationConfig(const std::string &filename, const std::string &characterName)
+{
+    nlohmann::json cfg;
+    std::ifstream f(filename);
+    if (!f) {
+      SDL_Log("Cannot open %s", filename.c_str());
+      return {};
+    }
+    f >> cfg;
+
+    AnimMap result;
+
+    if (!cfg.contains(characterName) || !cfg[characterName].is_object()) {
+        SDL_Log("Animation config: character '%s' not found or invalid", characterName.c_str());
+
+        SDL_Log("Available character keys:");
+        for (auto it = cfg.begin(); it != cfg.end(); ++it)
+            SDL_Log("  '%s'", it.key().c_str());
+        return result;
+    }else{
+        SDL_Log("Animation config: character '%s' found", characterName.c_str());
+    }
+
+    const auto &charJson = cfg[characterName];
+    if (!charJson.is_object()) {
+      SDL_Log("Character '%s' is not a valid object", characterName.c_str());
+      return result;
+    }
+
+    if (!charJson.contains("spritesheetPath") || charJson["spritesheetPath"].is_null()) {
+      SDL_Log("Character '%s' is missing 'spritesheetPath'", characterName.c_str());
+      SDL_Log("charJson dump: %s", charJson.dump(2).c_str());
+      return result;
+    }
+
+    // common field
+    const std::string sheet = charJson.at("spritesheetPath").get<std::string>();
+
+    for (const auto &[key, val] : charJson.items()) {
+      if (key == "spritesheetPath") continue; // skip metedata
+      AnimationState st = stringToAnimationState(key);
+      AnimationData d{};
+      d.spritesheetPath = sheet;
+      d.frameWidth     = val.at("frameWidth").get<int>();
+      d.frameHeight    = val.at("frameHeight").get<int>();
+      d.frameCount     = val.at("frameCount").get<int>();
+      d.framePadding   = val.value("framePadding",      0);   // use 0 as default if missing
+      d.animationSpeed = val.value("animationSpeed",    400); // 400 default if missing
+      d.transient      = val.value("transient",         0);   // 0 default if missing
+      d.speed          = val.value("speed",             2);   // 1 default if missing
+      d.startX         = val.value("startX",            0);
+      d.startY         = val.value("startY",            0);
+      result[st] = d;   // map enum -> data
+    }
+    return result;
+
+}
+
+Character::Character(const std::string &spriteName, int x, int y, const AnimMap &anims)
+  : Sprite(spriteName, x, y,
+            anims.at(AnimationState::IDLE).frameWidth,
+            anims.at(AnimationState::IDLE).frameHeight,
+            anims.at(AnimationState::IDLE).spritesheetPath.c_str(),
+            SDL_Rect{ anims.at(AnimationState::IDLE).startX,
+                      anims.at(AnimationState::IDLE).startY,
+                      anims.at(AnimationState::IDLE).frameWidth,
+                      anims.at(AnimationState::IDLE).frameHeight })
+    , animations(anims)
+    , currentState(AnimationState::IDLE)
+    , idleState(AnimationState::IDLE)
+    , lastState(AnimationState::NONE)
+    , currentFrame(0)
+    , lastUpdate(0)
+    , animationPlaying(false)
+    , animationTimer(0)
+{
+  //Convert spritesheet to 32bpp (for consistency)
+  if (spritesheet) {
+    SDL_Surface* optimizedSurface = SDL_ConvertSurfaceFormat(
+                                      spritesheet, SDL_PIXELFORMAT_RGBA32, 0);
+    if (optimizedSurface) {
+      SDL_FreeSurface(spritesheet);
+      spritesheet = optimizedSurface;
+    } else {
+      //24bpp images dont have an Amask
+      SDL_Log("Failed to convert spritesheet to 32-bit format.");
+    }
+
+    //Set colorkey (before any blitting happens!)
+    if (SDL_SetColorKey(spritesheet, SDL_TRUE, SDL_MapRGB(spritesheet->format, 147, 187, 236)) != 0) {
+        SDL_Log("Failed to set colorkey: %s", SDL_GetError());
+    } else {
+        SDL_Log("Colorkey applied successfully.");
+    }
+  }
+}
+
+void Character::update(double deltaTime)
+{
   AnimationData &anim = animations[currentState];
+
+  //SDL_Log("Player dstRect: w=%d h=%d x=%d y=%d", dRectSprite.w, dRectSprite.h, dRectSprite.x, dRectSprite.y);
+  //SDL_Log("Animation: %d, frame: %d, src.x: %d, src.y: %d", currentState, currentFrame, srcRect.x, srcRect.y);
 
   // Check if the animation state has changed from previous frame
   if (currentState != lastState){
@@ -175,16 +138,15 @@ void Character::update(double deltaTime){
     dRectSprite.x -= deltaW / 2;
     dRectSprite.y -= deltaH / 2;
 
+    srcRect.x = anim.startX;
     srcRect.y = anim.startY;
     srcRect.w = anim.frameWidth;
     srcRect.h = anim.frameHeight;
 
-    std::cout << "dRect: " << dRectSprite.w << ", " << dRectSprite.h << std::endl;
     dRectSprite.w = anim.frameWidth;
     dRectSprite.h = anim.frameHeight;
 
-    //BUG why is below resetting needed, it still works without it no?
-    //BUG might be causing random unsynced frames without it
+    // TODO why is below resetting needed, it still works without it no? is this causing the random block frames?
     //currentFrame = 0;          // Reset the frame to 0 when animation changes
 
     lastState = currentState;  // change lastState back for future comparisons
@@ -204,27 +166,42 @@ void Character::update(double deltaTime){
       }
   }
 
-  //Animation frame logic, ensure no division by zero
+  //Animation Frame Logic, ensure no division by zero
   if (lastUpdate >= anim.animationSpeed && anim.frameCount > 0){
       //loop through frames
       currentFrame = (currentFrame + 1) % anim.frameCount;
       lastUpdate = 0; //reset the timer
   }
 
-  // TODO AFTER implementing anchoring does moving the below still create unsynch problems?
-  // TODO WHAT: if this is inside above "Animation Frame Logic" loop and before lastUpdate=0; the frames become "unsynchronized", why(?)
-  // TODO WHY: why do so many docs have the below inside above Animation Frame Logic loop(?)
-  //
-  //Compute srcRect.x based on the current frame, taking padding(s) into account so animation doesnt become unsynchronized.
-  srcRect.x = (anim.frameWidth * currentFrame) + (anim.framePadding * (currentFrame + 1));
+  // TODO Test AFTER implementing anchoring if below method (old) still creates desync
+  // TODO frames desync if this is inside above "Animation Frame Logic" loop and before lastUpdate=0; the frames become "unsynchronized"
+  // TODO why do so many docs have the below inside above Animation Frame Logic loop(?)
+
+  // OLD METHOD
+  //Compute srcRect.x based on the current frame, taking padding(s) into account so animation doesnt desync
+  //srcRect.x = (anim.frameWidth * currentFrame) + (anim.framePadding * (currentFrame + 1));
+
+  // NEW METHOD
+  //Compute srcRect.x based on the current frame, taking between-frame padding(s) into account so animation doesnt desync
+  /* @param anim.startX, add to keep the horizontal offset
+   * @param anim.frameWidth, multiply by elapsed frame amount
+   * @param anim.framePadding, add multiples of frames
+   */
+  srcRect.x = anim.startX // TODO this term fixes racer but leads to marisa padding desync
+                          // because racer doesnt have leftPadding?
+            + anim.frameWidth  *  currentFrame
+            + (anim.framePadding * (currentFrame + 1));
 }
 
-void Character::move(int dx, int dy){
-  dRectSprite.x += dx * speed;
-  dRectSprite.y += dy * speed;
+void Character::move(int dx, int dy)
+{
+  AnimationData &anim = animations[currentState];
+  dRectSprite.x += dx * anim.speed;
+  dRectSprite.y += dy * anim.speed;
 }
 
-void Character::playAnimation(AnimationState newState, int durationMs){
+void Character::playAnimation(AnimationState newState, int durationMs)
+{
   //if below is true Character::Update starts animation playback logic
   if (currentState != newState) {
       currentState = newState;
@@ -233,7 +210,8 @@ void Character::playAnimation(AnimationState newState, int durationMs){
   }
 }
 
-void Character::Draw(SDL_Surface *gScreen){
-  if (!spritesheet || !gScreen) return;
-  SDL_BlitSurface(spritesheet, &srcRect, gScreen, &dRectSprite);
+void Character::Draw(AppContext gApp)
+{
+  if (!spritesheet || !gApp.screen) return;
+  SDL_BlitSurface(spritesheet, &srcRect, gApp.screen, &dRectSprite);
 }

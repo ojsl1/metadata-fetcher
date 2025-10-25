@@ -1,32 +1,32 @@
 #ifndef RENDER_H
 #define RENDER_H
+#pragma once // temp fix pp_including_mainfile_in_preamble for input.h including this file
 
 #include "main.h" // sdl
 
-#include "input.h"  // forward declare Mouse class for Render()
-#include "sprite.h" // forward declare Sprite class for Render()
-#include "font.h"   // forward declare Font class for Render()
+#include "sprite.h"     //Forward declare class for Render(...)
+#include "input.h"      // ''
+#include "font.h"       // ''
+#include "character.h"  // ''
 
-class Font;
-class Mouse;
 class Sprite;
+class Mouse;
+class Font;
 class Character;
 
 class RendererBase{
 public:
     void initVideo(int window_width, int window_height);
-    void initColors(SDL_Surface *gScreen);
+    void initColors(AppContext gApp);
     void Clear();
     void Render(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
          Sprite &spriteDrop, Sprite &spriteMute, Sprite &spritePause,
          Sprite &spriteBorder, Sprite &spriteFrame, Sprite &spriteBg,
-         Font &arial, Character &player
+         Sprite &spritePlaceholder,
+         Font &arial, Character &player, Character &player2
          );
-    void DrawTests();
     void Update();
-    void Shutdown(SDL_Window *gWindow, WindowDimensions dims);
-
-    bool main = true;
+    void Shutdown(AppContext gApp);
 };
 
 #endif // RENDER_H
