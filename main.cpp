@@ -6,6 +6,7 @@
 #include "include/audio.h"
 #include "font.h"
 #include "png.h"
+#include "menu.h"
 
 #include <fstream>
 #include <stdexcept>
@@ -25,13 +26,6 @@ Mix_Music *bgm;
 // infoframe 200x295
 // window size see main() 320x480
 
-/**
- * @brief Sprite(spriteName, x, y, w, h, spritesheetPath, spriteRect)
- *        Only DrawScaled() can use the drawing size values
- * @param x,y: drawing coordinates
- *        w,h: drawing size
- *        spriteRect: coordinates and size on the spritesheetPath(x,y,w,h)
- */
 Sprite spritePlaceholder("Placeholder", 0, 0, 1009, 697, "assets/race-placeholder.png", {0,0,1009,697});
 Sprite spriteBg("Background", 0, 0, 320, 480, "assets/spritesheet.png", {0,280,480,320});
 Sprite spriteBorder("Border", 0, 0, 320, 480, "assets/spritesheet.png", {480,280,480,320});
@@ -48,7 +42,27 @@ auto animsdef2 = Character::loadAnimationConfig("assets/data-racer.json", "Racer
 Character player("Marisa", 0, 240, animsdef1);
 Character player2("Racer", 0, 240, animsdef2);
 
-void initSprites()
+MainMenuAssets mainmenuAssets{
+    spriteExit,
+    spriteTests,
+    spriteDrop,
+    spriteMute,
+    spritePause,
+    spriteBorder,
+    spriteFrame,
+    spriteBg,
+    arial,
+    player
+};
+
+MinigameAssets minigameAssets{
+  spritePause,
+  spritePlaceholder,
+  arial,
+  player2
+};
+
+void setupSpriteCallbacks()
 {
   spriteMute.SetToggleCallback([](bool toggled){
       if(toggled){
@@ -163,7 +177,8 @@ PNGDisplayInfo ExtractPNGInfo(const char* filename)
     return out;
 }
 
-void ReadTextChunks(png_structp png, png_infop info){
+void ReadTextChunks(png_structp png, png_infop info)
+{
   int num_text = 0;
   png_textp text_data = nullptr;
   
@@ -199,12 +214,11 @@ void ReadTextChunks(png_structp png, png_infop info){
   }
 }
 
-/* @brief
- *
- * @comment std::ifstream automatically closes the file when it goes out of scope.
+/* @note std::ifstream automatically closes the file when it goes out of scope.
  * So no need to fclose(file) repeatedly.
  */
-void PrintPNGInfo(const char* filename){
+void PrintPNGInfo(const char* filename)
+{
   // Open the PNG file using std::ifstream
   std::ifstream file(filename, std::ios::binary);
   if (!file){
@@ -284,7 +298,15 @@ void DetectCollisions(Mouse &mouse)
   }
 }
 
-void UpdateCollisions(Mouse &mouse)
+void UpdateCollisionsMainMenu(Mouse &mouse)
+{
+  mouse.GetXY();
+
+  // Update collisions between sprite-mouse
+  DetectCollisions(mouse);
+}
+
+void UpdateCollisionsMinigame(Mouse &mouse)
 {
   mouse.GetXY();
 
@@ -292,32 +314,51 @@ void UpdateCollisions(Mouse &mouse)
   DetectCollisions(mouse);
 
   // Update collisions between player-enemy
-  //DetectCollisions(player, enemy); //TODO DetectCollisions is still hardcoded for mouse
+  //DetectCollisions(player2, enemy); //TODO DetectCollisions is still hardcoded for mouse
 }
 
-void renderMenus(RendererBase &ren, Mouse &mouse)
+/* @brief Frame sequence pipeline
+ * @comment In SDL-style double buffering the canonical frame sequence is:
+ * 1. Handle input 2. Update gamestate (physics, collisions, etc.)
+ * 3. Clear render target(s) 4. Draw everything 5. Present (swap buffers)
+ * @warning The order "UpdateCollisons->Clear->Update->Render" only shows the recently Cleared buffer.
+ */
+void updateAndRenderMainMenu(RendererBase &ren,
+                             Mouse &mouse,
+                             const MainMenuAssets &mainmenuAssets)
 {
-  UpdateCollisions(mouse);
+  UpdateCollisionsMainMenu(mouse);
   ren.Clear();
-  ren.Render(mouse,spriteExit,spriteTests,spriteDrop,spriteMute,
-           spritePause,spriteBorder,spriteFrame,
-           spriteBg,spritePlaceholder,arial,player,player2);
+  ren.RenderMainMenu(mouse,mainmenuAssets);
   ren.Update();
 }
 
-void renderState(RendererBase &ren, Mouse &mouse)
+void updateAndRenderMinigame(RendererBase &ren,
+                             Mouse &mouse,
+                             const MinigameAssets &minigameAssets)
+{
+  UpdateCollisionsMinigame(mouse);
+  ren.Clear();
+  ren.RenderMinigame(mouse,minigameAssets);
+  ren.Update();
+}
+
+void renderAppFrame(RendererBase &ren,
+                    Mouse &mouse,
+                    const MainMenuAssets &mainmenuAssets,
+                    const MinigameAssets &minigameAssets)
 {
   switch (gApp.mode) {
     case AppState::MAIN_MENU:
-        renderMenus(ren,mouse);
+        updateAndRenderMainMenu(ren,mouse,mainmenuAssets);
         break;
     case AppState::MINIGAME:
-        renderMenus(ren,mouse);
+        updateAndRenderMinigame(ren,mouse,minigameAssets);
         break;
     case AppState::EXIT:
         break;
     default:
-        throw std::invalid_argument("Undefined AppState from renderState()!");
+        throw std::runtime_error("Undefined AppState from updateAndRenderAppState()!");
         break;
   }
 }
@@ -329,13 +370,13 @@ void EventHandlerMainMenu(RendererBase &ren, Mouse &mouse, const SDL_Event &e)
     case SDL_MOUSEBUTTONUP:
       switch (e.button.button){
         case SDL_BUTTON_LEFT:
-          if (spriteExit.hascollisions){
+          if (spriteExit.hasCollisions){
             gApp.mode = AppState::EXIT;
-          } else if (spriteMute.hascollisions){
+          } else if (spriteMute.hasCollisions){
               spriteMute.Toggle();
-          } else if (spritePause.hascollisions){
+          } else if (spritePause.hasCollisions){
               spritePause.Toggle();
-          } else if (spriteTests.hascollisions){
+          } else if (spriteTests.hasCollisions){
               std::cout << "unimplemented" << '\n';
               gApp.mode = AppState::MINIGAME;
           }break;
@@ -483,8 +524,8 @@ int main (int argc, char *argv[])
   Audio audio;
   audio.initMixer();
 
-  std::cerr << "Initializing sprite states..." << std::endl;
-  initSprites();
+  std::cerr << "Initializing sprite callbacks..." << std::endl;
+  setupSpriteCallbacks();
 
   std::cerr << "Loading media..." << std::endl;
   arial.Load("assets/arial.ttf", 24);
@@ -495,6 +536,11 @@ int main (int argc, char *argv[])
 
   //Main loop flag
   gApp.mode = AppState::MAIN_MENU;
+  
+  std::cerr << "WIP Initializing menus..." << std::endl;
+  MainMenuState mainMenu(RendererBase *ren, Mouse *mouse);
+  //mainMenu.setBackground(&spriteBg);
+  //mainMenu.setFrame(&spriteFrame);
 
   //Event handler
   SDL_Event e;
@@ -524,16 +570,15 @@ int main (int argc, char *argv[])
     }
 
     handleRealtimeInput(player,player2); //use sdl_getkeyboardstate
-    player.update(deltaTime);
-    player2.update(deltaTime);
+    player.Update(deltaTime);
+    player2.Update(deltaTime);
     
     //DEBUG RECT:
     //std::cout << "Racer pos: " << player2.srcRect.x << ", " << player2.srcRect.y << std::endl;
 
     calc_framerate(lastTime,frameCount,gApp);
 
-    //Order: UpdateCollisions->Clear->Render->Update
-    renderState(ren,mouse);
+    renderAppFrame(ren,mouse,mainmenuAssets,minigameAssets);
 
     cap_framerate(currentTime);
   }

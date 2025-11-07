@@ -118,7 +118,7 @@ Character::Character(const std::string &spriteName, int x, int y, const AnimMap 
   }
 }
 
-void Character::update(double deltaTime)
+void Character::Update(double deltaTime)
 {
   AnimationData &anim = animations[currentState];
 
@@ -155,14 +155,17 @@ void Character::update(double deltaTime)
   // Update the animation timer
   lastUpdate += deltaTime;
 
-  //Animation playback logic
-  //TODO couldnt this be in Character::playAnimation or do we have to check for it every frame(?)
+  /*
+  / @brief Reset animation state after its done
+  / @comment entry: playAnimation()
+  / @TODO the example has `static_cast<int>(deltaTime);` instead, why
+  */
   if (animationPlaying){
-      // TODO the example has `static_cast<int>(deltaTime);` instead, why
-      animationTimer -= deltaTime; //countdown timer for playing a temporary animation
+      animationTimer -= deltaTime; // countdown for ending the animation
+      // Reset the animation:
       if (animationTimer <= 0){
-          currentState = idleState; //revert to idle state
-          animationPlaying = false; //end temporary animation
+          currentState = idleState;
+          animationPlaying = false;
       }
   }
 

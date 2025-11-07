@@ -12,18 +12,46 @@ class Sprite
 public:
   SDL_Rect srcRect;
   SDL_Surface *spritesheet;
-  // x,y coords; w,h size; filepath;
+/** @param
+ * - std::string - identifier
+ * - x,y = drawing coordinates
+ * - w,h = drawing size
+ * - {x,y,w,h} coordinates and size on the spriteRect of the source spritesheetPath
+ *  @warning Only DrawScaled() can use the drawing size values
+ */
   Sprite(const std::string &spriteName, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect);
   ~Sprite();
   
+/** @brief Draw sprites
+ *  @details Uses SDL_BlitSurface()
+ *  @note Performs a terniary check against alternateSprite for buttons
+ *  @deprecated Every draw call should use DrawScaled()
+ */
   void virtual Draw(AppContext gApp);
+/** @brief Draw scaled sprites
+ *  @details Uses SDL_BlitScaled()->SDL_BlitSurface()
+ */
   void DrawScaled(AppContext gApp);
+/* @brief Toggle between states.
+ */
   void Toggle();
   void DetectCollisions(Mouse &mouse);
+/**
+ * @brief Set a callback for toggle actions.
+ */
   void SetToggleCallback(std::function<void(bool)> callback);
+/**
+  * @brief Set the alternate surface.
+  */
   void SetAlternateSprite(SDL_Surface *alternate);
 
-  bool hascollisions; // WIP cant privatize main.cpp reads from this via playSprite.hasCollision
+
+/**
+  * @brief Track sprites that have collisions
+  * @todo cant privatize as main.cpp reads from this via playSprite.hasCollisions()
+  */
+  bool hasCollisions;
+
   bool toggled; // Current toggled state
   
   int getX() const { return dRectSprite.x; }

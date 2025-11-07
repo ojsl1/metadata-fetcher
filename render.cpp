@@ -4,7 +4,6 @@
 
 void RendererBase::initColors(AppContext gApp)
 {
-    // Init these elsewhere outside of render
     gApp.pink = SDL_MapRGB(gApp.screen->format, 232, 111, 148);
     gApp.red = SDL_MapRGB(gApp.screen->format, 250, 0, 0);
     gApp.beige = SDL_MapRGB(gApp.screen->format, 255, 255, 115);
@@ -32,7 +31,6 @@ void RendererBase::initVideo( int window_width, int window_height )
       return;
     }
 
-    // Create the window
     gApp.windowHandle = SDL_CreateWindow( "Metadata fetcher",
                                 SDL_WINDOWPOS_UNDEFINED,
                                 SDL_WINDOWPOS_UNDEFINED,
@@ -48,7 +46,6 @@ void RendererBase::initVideo( int window_width, int window_height )
       return;
     }
 
-    //Note: this disables SDL_WINDOW_FULLSCREEN_DESKTOP
     SDL_SetWindowBordered(gApp.windowHandle, SDL_TRUE);
     
     gApp.screen = SDL_GetWindowSurface(gApp.windowHandle);
@@ -63,63 +60,61 @@ void RendererBase::initVideo( int window_width, int window_height )
 void RendererBase::Clear()
 {
   if (!gApp.screen){
-    std::cout << "gApp.screen invalid during ren.Clear, unable to clear." << std::endl;
+    std::cout << "gApp.screen invalid during Clear, unable to clear." << std::endl;
   }
   SDL_FillRect(gApp.screen, nullptr, SDL_MapRGB(gApp.screen->format, 255, 50, 255));
 }
 
-void RendererBase::Render(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
-     Sprite &spriteDrop, Sprite &spriteMute, Sprite &spritePause,
-     Sprite &spriteBorder, Sprite &spriteFrame, Sprite &spriteBg,
-     Sprite &spritePlaceholder,
-     Font &arial, Character &player, Character &player2)
+void RendererBase::RenderMainMenu(Mouse &mouse, const MainMenuAssets &assets)
 {
-  if (gApp.mode == AppState::MAIN_MENU){
-      spriteBg.DrawScaled(gApp);
-      spriteBorder.DrawScaled(gApp);
-      spriteFrame.DrawScaled(gApp);
-      spriteDrop.DrawScaled(gApp);
-      spriteMute.Draw(gApp);
-      spritePause.Draw(gApp);
-      spriteTests.Draw(gApp);
-      spriteExit.Draw(gApp);
+  assets.spriteBg.DrawScaled(gApp);
+  assets.spriteBorder.DrawScaled(gApp);
+  assets.spriteFrame.DrawScaled(gApp);
+  assets.spriteDrop.DrawScaled(gApp);
+  assets.spriteMute.Draw(gApp);
+  assets.spritePause.Draw(gApp);
+  assets.spriteTests.Draw(gApp);
+  assets.spriteExit.Draw(gApp);
 
-      arial.Draw(gApp,80,200, "Drop Image Here", {0,0,0});
-      
-      player.Draw(gApp);
-  }
+  assets.arial.Draw(gApp,80,200, "Drop Image Here", {0,0,0});
+  assets.player.Draw(gApp);
 
-  if (gApp.mode == AppState::MINIGAME){
-      spritePlaceholder.DrawScaled(gApp);
-
-      player2.Draw(gApp);
-
-      int x1 = 50;
-      int y1 = 70;
-
-      arial.Draw(gApp,x1,y1, "RACE (1978)", {0,0,0});
-      arial.Draw(gApp,x1,y1+30, "UNIMPLEMENTED", {10,0,0});
+  //Render droppedfile metadata
+  int x = 50, y = 70;
+  for (const std::string& line : gApp.pngInfo.lines){
+    assets.arial.Draw(gApp, x, y, line, {0,0,0});
+    y+= 25;
   }
 
   //Render FPS counter
   std::ostringstream fpsText;
   fpsText << "FPS: " << static_cast<float>(gApp.fps);
-  arial.Draw(gApp,10,10, fpsText.str(), {0,0,0});
+  assets.arial.Draw(gApp,10,10, fpsText.str(), {0,0,0});
 
-  //Render droppedfile metadata
-  int x = 50;
-  int y = 70;
-  for (const std::string& line : gApp.pngInfo.lines) {
-    arial.Draw(gApp, x, y, line, {0,0,0});
-    y+= 25;
-  }
+  mouse.Draw(gApp);
+}
 
-  mouse.Draw(gApp); // draw mouse last so it's always on top
+void RendererBase::RenderMinigame(Mouse &mouse, const MinigameAssets &assets)
+{
+      assets.spritePlaceholder.DrawScaled(gApp);
+      assets.spritePause.Draw(gApp);
+      assets.player2.Draw(gApp);
+
+      int x1 = 50;
+      int y1 = 70;
+      assets.arial.Draw(gApp,x1,y1, "RACE (1978)", {0,0,0});
+      assets.arial.Draw(gApp,x1,y1+30, "UNIMPLEMENTED", {10,0,0});
+
+  //Render FPS counter
+  std::ostringstream fpsText;
+  fpsText << "FPS: " << static_cast<float>(gApp.fps);
+  assets.arial.Draw(gApp,10,10, fpsText.str(), {0,0,0});
+  
+  mouse.Draw(gApp);
 }
 
 void RendererBase::Update()
 {
-  // Present the frame/update the new frame, same as SDL_RenderPresent()
   SDL_UpdateWindowSurface(gApp.windowHandle);
 }
 

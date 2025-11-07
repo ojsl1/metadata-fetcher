@@ -79,7 +79,7 @@ public:
 
   Character(const std::string &spriteName, int x, int y, const AnimMap &anims);
 
-  void update(double deltaTime);
+  void Update(double deltaTime);
   void move(int dx, int dy);
   void playAnimation(AnimationState, int);
   void Draw(AppContext gApp) override;

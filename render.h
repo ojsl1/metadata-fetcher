@@ -14,17 +14,47 @@ class Mouse;
 class Font;
 class Character;
 
+struct MainMenuAssets{
+    Sprite &spriteExit;
+    Sprite &spriteTests;
+    Sprite &spriteDrop;
+    Sprite &spriteMute;
+    Sprite &spritePause;
+    Sprite &spriteBorder;
+    Sprite &spriteFrame;
+    Sprite &spriteBg;
+    Font &arial;
+    Character &player;
+};
+
+struct MinigameAssets{
+    Sprite& spritePause;
+    Sprite& spritePlaceholder;
+    Font& arial;
+    Character &player2;
+};
+
 class RendererBase{
 public:
+   /* @brief Initialize everything.
+    * @details Uses SDL_INIT_EVERYTHING()
+    * @warning Sets SDL_SetWindowBordered() which disables SDL_WINDOW_FULLSCREEN_DESKTOP
+    */
     void initVideo(int window_width, int window_height);
+   /* @todo move this outta render.h
+    */
     void initColors(AppContext gApp);
+   /* @brief Clear the screen.
+    * @details Uses SDL_FillRect() to fill with 255,50,255 ie. hotpink
+    */
     void Clear();
-    void Render(Mouse &mouse, Sprite &spriteExit, Sprite &spriteTests,
-         Sprite &spriteDrop, Sprite &spriteMute, Sprite &spritePause,
-         Sprite &spriteBorder, Sprite &spriteFrame, Sprite &spriteBg,
-         Sprite &spritePlaceholder,
-         Font &arial, Character &player, Character &player2
-         );
+    void RenderMainMenu( Mouse &mouse, const MainMenuAssets &assets );
+    void RenderMinigame( Mouse &mouse, const MinigameAssets &assets );
+
+   /* @brief Present the new frame.
+    * @details Uses SDL_UpdateWindowSurface()
+    * @deprecated should be refactored to use SDL_RenderPresent()
+    */
     void Update();
     void Shutdown(AppContext gApp);
 };

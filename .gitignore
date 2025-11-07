@@ -14,6 +14,7 @@ sounds/
 resources/
 assets/
 tests/
+include/unused
 
 *.png
 *.txt

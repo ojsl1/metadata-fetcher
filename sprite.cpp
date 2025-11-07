@@ -2,7 +2,7 @@
 #include "input.h" // Sprite::DetectClicks and Sprite::DetectCollisions depend on mouse class
 
 Sprite::Sprite(const std::string &spriteName, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect)
-  : srcRect(spriteRect), hascollisions(false), toggled(false), rawSprite(nullptr), alternateSprite(nullptr), dRectSprite{x,y,w,h},
+  : srcRect(spriteRect), hasCollisions(false), toggled(false), rawSprite(nullptr), alternateSprite(nullptr), dRectSprite{x,y,w,h},
     x(x), y(y), name(spriteName)
 {
   if (!spritesheetPath){
@@ -69,9 +69,6 @@ Sprite::~Sprite(){
   }
 }
 
-/**
- * @brief Toggle between states.
- */
 void Sprite::Toggle(){
   toggled = !toggled;
   if (toggleCallback){
@@ -79,23 +76,16 @@ void Sprite::Toggle(){
   }
 }
 
-/**
- * @brief Set the alternate surface.
- */
 void Sprite::SetAlternateSprite(SDL_Surface *alternate){
   alternateSprite = alternate;
 }
 
-/**
- * @brief Set a callback for toggle actions.
- * @param TODO
- */
 void Sprite::SetToggleCallback(std::function<void(bool)> callback){
   toggleCallback = callback;
 }
 
 void Sprite::DetectCollisions(Mouse &mouse){
-  hascollisions = SDL_HasIntersection(&dRectSprite, &mouse.point);
+  hasCollisions = SDL_HasIntersection(&dRectSprite, &mouse.point);
 }
 
 void Sprite::Draw(AppContext gApp){

@@ -3,7 +3,7 @@ This is a GUI tool for quickly fetching text metadata from PNG images, just drag
 
 ## Building and running
 
-You need at least: `sdl2`, `sdl2_image`, `sdl2_mixer`, `sdl2_ttf`.
+You need at least: `sdl2`, `sdl2_image`, `sdl2_mixer`, `sdl2_ttf`, `nlohmann-json`.
 
 ```
 $ git clone https://github.com/ojsl1/metadata-fetcher.git
@@ -14,9 +14,9 @@ $ make
 <details>
   <summary>Todos</summary>
 
-- Rewrite using SDL_Renderer and SDL_Texture.
-- Render with OpenGL instead of SDL
-- SDL2 -> SDL3
+- Use SDL_Renderer and SDL_Textures.
+- Use OpenGL instead of SDL
+- Add arm64 libs for sdl and nloh for termux dev
 - Image gallery with a scrollable mosaic, compare:
     - imagemagick montage
     - yfszzx/stable-diffusion-webui-images-browser
