@@ -13,14 +13,17 @@ run: game leanclean
 	./game
 	rm -f game
 
-game: main.o render.o menu.o input.o sprite.o character.o font.o
-	$(CC) main.o render.o menu.o input.o sprite.o character.o font.o -o game $(LDFLAGS)
+game: main.o render.o util.o menu.o input.o sprite.o character.o font.o
+	$(CC) main.o render.o util.o menu.o input.o sprite.o character.o font.o -o game $(LDFLAGS)
 
 main.o: main.cpp main.h
 	$(CC) $(CXXFLAGS) main.cpp $(shell pkg-config --cflags sdl2)
    
 render.o: render.cpp render.h
 	$(CC) $(CXXFLAGS) render.cpp $(shell pkg-config --cflags sdl2)
+
+util.o: util.cpp util.h
+	$(CC) $(CXXFLAGS) util.cpp $(shell pkg-config --cflags sdl2)
 
 menu.o: menu.cpp menu.h
 	$(CC) $(CXXFLAGS) menu.cpp $(shell pkg-config --cflags sdl2)

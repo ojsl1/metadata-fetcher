@@ -1,5 +1,6 @@
 #include "main.h" // sdl
 #include "render.h"
+#include "util.h"
 #include <sstream> // for fpsText
 
 void RendererBase::initColors(AppContext gApp)
@@ -81,7 +82,7 @@ void RendererBase::RenderMainMenu(Mouse &mouse, const MainMenuAssets &assets)
 
   //Render droppedfile metadata
   int x = 50, y = 70;
-  for (const std::string& line : gApp.pngInfo.lines){
+  for (const std::string& line : pngInfo.lines){
     assets.arial.Draw(gApp, x, y, line, {0,0,0});
     y+= 25;
   }

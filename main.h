@@ -6,12 +6,7 @@
 #include <SDL_image.h>
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
-
-#include <iostream>
-
-// Locals
-#include <vector> // struct PNGDisplayInfo
-#include <string> // struct PNGDisplayInfo
+#include <iostream> // for printf debugging
 
 #define FPSCAP 60
 #define DEBUG 0
@@ -21,14 +16,6 @@ enum class AppState
   MAIN_MENU,
   MINIGAME,
   EXIT,
-};
-
-struct PNGDisplayInfo
-{
-  uint32_t height;
-  uint32_t width;
-  int bitDepth;
-  std::vector<std::string> lines;
 };
 
 struct WindowDimensions
@@ -41,9 +28,6 @@ struct AppContext
 {
     // runtime mode
     AppState mode = AppState::MAIN_MENU;
-
-    // last-dropped png metadata 
-    PNGDisplayInfo pngInfo;
 
     // sdl handles (store pointers; ownership is elsewhere until using below smart pointers)
     SDL_Window *windowHandle = nullptr;
