@@ -7,17 +7,23 @@
 #include <optional>
 #include <algorithm>
 
-MainMenuState::MainMenuState(RendererBase &ren, Mouse &mouse)
-  : renderer_(&ren), mouse_(&mouse)
+Menu::Menu(IRenderer &ren, Mouse &mouse, bool visible)
+  : renderer_(&ren), mouse_(&mouse), visible_(false)
 {
   assert(renderer_);
   assert(mouse_);
 }
 
-void MainMenuState::setBackground(Sprite* bg) { background_ = bg; }
-void MainMenuState::setFrame(Sprite* frame) { frame_ = frame; }
+void Menu::setBackground(Sprite &background)
+{
+  background_ = &background;
+}
+void Menu::setFrame(Sprite &frame)
+{
+  frame_ = &frame;
+}
 
-void MainMenuState::addItem(const std::string& id,
+void Menu::addItem(const std::string &id,
                             Sprite* sprite,
                             std::function<void()> onActivate,
                             bool selectable)
@@ -35,7 +41,7 @@ void MainMenuState::addItem(const std::string& id,
 }
 
 // TODO read std::move and push_back
-Sprite* MainMenuState::addItemByValue(const std::string& id,
+Sprite* Menu::addItemByValue(const std::string& id,
                                       const Sprite& sprite,
                                       std::function<void()> onActivate,
                                       bool selectable)
@@ -47,7 +53,7 @@ Sprite* MainMenuState::addItemByValue(const std::string& id,
 }
 
 // TODO
-bool MainMenuState::setSelectedById(const std::string& id)
+bool Menu::setSelectedById(const std::string& id)
 {
   for (int i = 0; i < static_cast<int>(items_.size()); ++i) {
     if (items_[i].selectable && items_[i].id == id){
@@ -59,14 +65,14 @@ bool MainMenuState::setSelectedById(const std::string& id)
 }
 
 // TODO std::nullopt and std::optional
-std::optional<std::string> MainMenuState::selectedId() const
+std::optional<std::string> Menu::selectedId() const
 {
   if (selected_ >= 0 && selected_ < static_cast<int>(items_.size()))
     return items_[selected_].id;
   return std::nullopt;
 }
 
-void MainMenuState::handleEvent(const SDL_Event& e)
+void Menu::handleEvent(const SDL_Event& e)
 {
     if (!visible_) return;
 
@@ -118,7 +124,7 @@ void MainMenuState::handleEvent(const SDL_Event& e)
     }
 }
 
-void MainMenuState::update(float /*deltatime*/)
+void Menu::update(float /*deltatime*/)
 {
   if (!visible_) return;
 
@@ -127,16 +133,22 @@ void MainMenuState::update(float /*deltatime*/)
   // This allows hover-follow even without events (e.g., when events are throttled).
 }
 
-void MainMenuState::render()
+void Menu::Render()
 {
-  if (!visible_) return;
+  if (!visible_){
+    //SDL_Log("Not drawing menu, visible set to null");
+    return;
+  };
 
   if (background_) {
+      //std::cout << background_ << " background_ from Menu::render()" << '\n';
       background_->DrawScaled(gApp);
-  }
+  }else{ SDL_Log("background_ was null"); };
+
   if (frame_) {
+      //std::cout << frame_ << " frame_ from Menu::render()" << '\n';
       frame_->DrawScaled(gApp);
-  }
+  }else{ SDL_Log("frame_ was null"); };
 
   // TODO read continue
   // Draw by iterating
@@ -147,7 +159,7 @@ void MainMenuState::render()
   }
 }
 
-void MainMenuState::selectNext(int dir)
+void Menu::selectNext(int dir)
 {
   if (items_.empty()) {
       selected_ = -1;
@@ -182,7 +194,7 @@ void MainMenuState::selectNext(int dir)
   }
 }
 
-void MainMenuState::activateSelected()
+void Menu::activateSelected()
 {
   if (selected_ < 0 || selected_ >= static_cast<int>(items_.size())) return;
   Item& it = items_[selected_];
@@ -190,7 +202,7 @@ void MainMenuState::activateSelected()
   if (it.onActivate) it.onActivate();
 }
 
-void MainMenuState::updateMouseSelection(int mouseX, int mouseY)
+void Menu::updateMouseSelection(int mouseX, int mouseY)
 {
   // TODO Adapt to class Sprite/Mouse DetectCollisions
   // pseu: if (DetectCollisions(mouse_, *it.sprite)) { selected_ = i; }
@@ -205,13 +217,13 @@ void MainMenuState::updateMouseSelection(int mouseX, int mouseY)
   }
 }
 
-bool MainMenuState::isInside(const Sprite& s, int x, int y) const
+bool Menu::isInside(const Sprite& s, int x, int y) const
 {
   SDL_Rect r = spriteRect(s);
   return x >= r.x && x < (r.x + r.w) && y >= r.y && y < (r.y + r.h);
 }
 
-SDL_Rect MainMenuState::spriteRect(const Sprite& s) const
+SDL_Rect Menu::spriteRect(const Sprite& s) const
 {
   // TODO Adapt to class Sprite
   // use dstRect from class Sprite or TODO the x/y/w/h accessors

@@ -42,8 +42,6 @@ Mouse::Mouse(int w, int h, const char* mouseImagePath)
 
     // Scale the rawMouse on the scaledMouse surface
     SDL_BlitScaled(rawMouse, nullptr, scaledMouse, &dRectMouse);
-    
-    SDL_ShowCursor(SDL_DISABLE);
 }
 
 void Mouse::Draw(AppContext gApp) const {

@@ -12,6 +12,7 @@ class Sprite
 public:
   SDL_Rect srcRect;
   SDL_Surface *spritesheet;
+
 /** @param
  * - std::string - identifier
  * - x,y = drawing coordinates
@@ -19,7 +20,7 @@ public:
  * - {x,y,w,h} coordinates and size on the spriteRect of the source spritesheetPath
  *  @warning Only DrawScaled() can use the drawing size values
  */
-  Sprite(const std::string &spriteName, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect);
+  Sprite(const std::string &id, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect);
   ~Sprite();
   
 /** @brief Draw sprites

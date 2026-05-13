@@ -1,9 +1,9 @@
 #include "sprite.h"
 #include "input.h" // Sprite::DetectClicks and Sprite::DetectCollisions depend on mouse class
 
-Sprite::Sprite(const std::string &spriteName, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect)
+Sprite::Sprite(const std::string &id, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect)
   : srcRect(spriteRect), hasCollisions(false), toggled(false), rawSprite(nullptr), alternateSprite(nullptr), dRectSprite{x,y,w,h},
-    x(x), y(y), name(spriteName)
+    x(x), y(y), name(id)
 {
   if (!spritesheetPath){
     spritesheetPath = "assets/texture-error.png";

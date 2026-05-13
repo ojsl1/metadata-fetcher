@@ -2,13 +2,13 @@
 #define MAIN_H // MAIN.H "GLOBALS.H"
 
 // Globals
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_mixer.h>
-#include <SDL_ttf.h>
-#include <iostream> // for printf debugging
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
+#include <iostream> // for global debugging
 
-#define FPSCAP 60
+#define FPSCAP 60.0
 #define DEBUG 0
 
 enum class AppState
@@ -30,8 +30,9 @@ struct AppContext
     AppState mode = AppState::MAIN_MENU;
 
     // sdl handles (store pointers; ownership is elsewhere until using below smart pointers)
-    SDL_Window *windowHandle = nullptr;
+    SDL_Window *win = nullptr;
     SDL_Surface *screen = nullptr;
+    SDL_Renderer *renderer = nullptr;
 
     // TODO wrap both handles with smart pointers
     //before struct: `using WindowPtr = std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>;`

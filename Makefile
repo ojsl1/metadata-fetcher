@@ -4,6 +4,11 @@ LDFLAGS=$(shell pkg-config --libs sdl2) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lp
 
 INCLUDES=-Iinclude
 
+#-I/usr/include/SDL3 \
+#-I/usr/include/SDL3/SDL3_image \
+#-I/usr/include/SDL3/SDL3_mixer \
+#-I/usr/include/SDL3/SDL3_ttf
+
 ifeq ($(strip $(LDFLAGS)),)
 	# fallback if pkg-config is not available or does not provide flags
 	LDFLAGS=-lSDL2 # provide alternative linker flags
@@ -20,7 +25,7 @@ main.o: main.cpp main.h
 	$(CC) $(CXXFLAGS) main.cpp $(shell pkg-config --cflags sdl2)
    
 render.o: render.cpp render.h
-	$(CC) $(CXXFLAGS) render.cpp $(shell pkg-config --cflags sdl2)
+	$(CC) $(CXXFLAGS) render.cpp $(shell pkg-config --cflags sdl)
 
 util.o: util.cpp util.h
 	$(CC) $(CXXFLAGS) util.cpp $(shell pkg-config --cflags sdl2)

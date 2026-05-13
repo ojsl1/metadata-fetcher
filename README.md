@@ -14,8 +14,6 @@ $ make
 <details>
   <summary>Todos</summary>
 
-- Use SDL_Renderer and SDL_Textures.
-- Use OpenGL instead of SDL
 - Add arm64 libs for sdl and nloh for termux dev
 - Image gallery with a scrollable mosaic, compare:
     - imagemagick montage

@@ -65,7 +65,7 @@ public:
     int frameHeight;
     int frameCount;
     int framePadding;
-    Uint32 animationSpeed;
+    double animationSpeed;
     double speed; // pixels/second
     int startX;
     int startY;
@@ -75,11 +75,11 @@ public:
 
   using AnimMap = std::unordered_map<AnimationState, AnimationData>;
 
-  static AnimMap loadAnimationConfig(const std::string &fileName, const std::string &characterName);
+  static AnimMap loadAnimationConfig(const std::string &id, const std::string &fileName);
 
-  Character(const std::string &spriteName, int x, int y, const AnimMap &anims);
+  Character(const std::string &id, int x, int y, const AnimMap &anims);
 
-  void Update(double deltaTime);
+  void Update(double deltaTime, const char* debugName);
   void move(int dx, int dy);
   void playAnimation(AnimationState, int);
   void Draw(AppContext gApp) override;
@@ -90,7 +90,7 @@ private:
   AnimationState currentState = AnimationState::IDLE;
   AnimationState idleState, newState, lastState;
   int currentFrame;             // Current animation frame
-  Uint32 lastUpdate;            // time since last frame update
+  double lastUpdate;            // time since last frame update
   bool animationPlaying = false;
   int animationTimer = 0;
 };

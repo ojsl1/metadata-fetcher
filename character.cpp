@@ -15,13 +15,13 @@ static AnimationState stringToAnimationState(const std::string &key)
     {"attack_up_b", AnimationState::ATTACK_UP_B},
     {"time_over", AnimationState::TIME_OVER},
     {"downed", AnimationState::DOWNED},
-    // TODO .. add rest of the keys from json
+    // TODO .. add rest of the keys from json when they become relevant
   };
   auto iterator = lookuptable.find(key);
   return (iterator != lookuptable.end()) ? iterator->second : AnimationState::NONE; // fallback
 }
 
-Character::AnimMap Character::loadAnimationConfig(const std::string &filename, const std::string &characterName)
+Character::AnimMap Character::loadAnimationConfig(const std::string &id, const std::string &filename)
 {
     nlohmann::json cfg;
     std::ifstream f(filename);
@@ -33,25 +33,25 @@ Character::AnimMap Character::loadAnimationConfig(const std::string &filename, c
 
     AnimMap result;
 
-    if (!cfg.contains(characterName) || !cfg[characterName].is_object()) {
-        SDL_Log("Animation config: character '%s' not found or invalid", characterName.c_str());
+    if (!cfg.contains(id) || !cfg[id].is_object()) {
+        SDL_Log("Animation config: character '%s' not found or invalid", id.c_str());
 
         SDL_Log("Available character keys:");
         for (auto it = cfg.begin(); it != cfg.end(); ++it)
             SDL_Log("  '%s'", it.key().c_str());
         return result;
     }else{
-        SDL_Log("Animation config: character '%s' found", characterName.c_str());
+        SDL_Log("Animation config: character '%s' found", id.c_str());
     }
 
-    const auto &charJson = cfg[characterName];
+    const auto &charJson = cfg[id];
     if (!charJson.is_object()) {
-      SDL_Log("Character '%s' is not a valid object", characterName.c_str());
+      SDL_Log("Character '%s' is not a valid object", id.c_str());
       return result;
     }
 
     if (!charJson.contains("spritesheetPath") || charJson["spritesheetPath"].is_null()) {
-      SDL_Log("Character '%s' is missing 'spritesheetPath'", characterName.c_str());
+      SDL_Log("Character '%s' is missing 'spritesheetPath'", id.c_str());
       SDL_Log("charJson dump: %s", charJson.dump(2).c_str());
       return result;
     }
@@ -68,7 +68,7 @@ Character::AnimMap Character::loadAnimationConfig(const std::string &filename, c
       d.frameHeight    = val.at("frameHeight").get<int>();
       d.frameCount     = val.at("frameCount").get<int>();
       d.framePadding   = val.value("framePadding",      0);   // use 0 as default if missing
-      d.animationSpeed = val.value("animationSpeed",    400); // 400 default if missing
+      d.animationSpeed = val.value("animationSpeed",    0.1); // 0.1 default if missing
       d.transient      = val.value("transient",         0);   // 0 default if missing
       d.speed          = val.value("speed",             2);   // 1 default if missing
       d.startX         = val.value("startX",            0);
@@ -79,8 +79,8 @@ Character::AnimMap Character::loadAnimationConfig(const std::string &filename, c
 
 }
 
-Character::Character(const std::string &spriteName, int x, int y, const AnimMap &anims)
-  : Sprite(spriteName, x, y,
+Character::Character(const std::string &id, int x, int y, const AnimMap &anims)
+  : Sprite(id, x, y,
             anims.at(AnimationState::IDLE).frameWidth,
             anims.at(AnimationState::IDLE).frameHeight,
             anims.at(AnimationState::IDLE).spritesheetPath.c_str(),
@@ -118,7 +118,7 @@ Character::Character(const std::string &spriteName, int x, int y, const AnimMap 
   }
 }
 
-void Character::Update(double deltaTime)
+void Character::Update(double deltaTime, const char* debugName)
 {
   AnimationData &anim = animations[currentState];
 
@@ -151,14 +151,13 @@ void Character::Update(double deltaTime)
 
     lastState = currentState;  // change lastState back for future comparisons
   }
-  
+
   // Update the animation timer
   lastUpdate += deltaTime;
-
+ 
   /*
   / @brief Reset animation state after its done
   / @comment entry: playAnimation()
-  / @TODO the example has `static_cast<int>(deltaTime);` instead, why
   */
   if (animationPlaying){
       animationTimer -= deltaTime; // countdown for ending the animation
@@ -190,8 +189,8 @@ void Character::Update(double deltaTime)
    * @param anim.frameWidth, multiply by elapsed frame amount
    * @param anim.framePadding, add multiples of frames
    */
-  srcRect.x = anim.startX // TODO this term fixes racer but leads to marisa padding desync
-                          // because racer doesnt have leftPadding?
+  srcRect.x = /* anim.startX */ // TODO this term fixes racer-spritesheet but leads to marisa padding desync
+                          // because racer-spritesheet doesnt have leftPadding?
             + anim.frameWidth  *  currentFrame
             + (anim.framePadding * (currentFrame + 1));
 }
