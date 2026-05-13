@@ -10,6 +10,7 @@
 #include "util.h"
 
 #include <cstring>
+#include <memory>
 #include <stdexcept>
 
 AppContext gApp;
@@ -394,9 +395,11 @@ int main (int argc, char *argv[])
   */
 
   std::cerr << "Initializing subsystems..." << std::endl;
-  SurfaceRenderer ren;
-  ren.initSubsystems(320,480);
-  ren.setColors(gApp);
+
+  std::unique_ptr<IRenderer> ren =
+    std::make_unique<SurfaceRenderer>();
+  ren->initSubsystems(320,480);
+  ren->setColors(gApp);
 
   std::cerr << "Initializing mixer..." << std::endl;
   Audio audio;
@@ -409,7 +412,7 @@ int main (int argc, char *argv[])
   arial.Load("assets/arial.ttf", 24);
 
   std::cerr << "Setting up menus..." << std::endl;
-  Menu mainMenu(ren,mouse,false);
+  Menu mainMenu(*ren,mouse,false);
   audio.playMusic();
   spritePause.Toggle();
   SDL_ShowCursor(SDL_DISABLE);
@@ -417,11 +420,11 @@ int main (int argc, char *argv[])
   gApp.mode = AppState::MAIN_MENU;
   SDL_Event e;
   while (gApp.mode != AppState::EXIT){
-    loopdyLoop(ren, mouse, mainMenu, e);
+    loopdyLoop(*ren, mouse, mainMenu, e);
   }
 
   arial.Shutdown();
   audio.Shutdown(bell, bgm);
-  ren.Shutdown(gApp);
+  ren->Shutdown(gApp);
   return 0;
 }
