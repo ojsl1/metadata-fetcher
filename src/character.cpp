@@ -15,7 +15,7 @@ static AnimationState stringToAnimationState(const std::string &key)
     {"attack_up_b", AnimationState::ATTACK_UP_B},
     {"time_over", AnimationState::TIME_OVER},
     {"downed", AnimationState::DOWNED},
-    // TODO .. add rest of the keys from json when they become relevant
+    // WIP: add rest of the keys from json when they become relevant
   };
   auto iterator = lookuptable.find(key);
   return (iterator != lookuptable.end()) ? iterator->second : AnimationState::NONE; // fallback
@@ -60,7 +60,7 @@ Character::AnimMap Character::loadAnimationConfig(const std::string &id, const s
     const std::string sheet = charJson.at("spritesheetPath").get<std::string>();
 
     for (const auto &[key, val] : charJson.items()) {
-      if (key == "spritesheetPath") continue; // skip metedata
+      if (key == "spritesheetPath") continue; // skip metadata
       AnimationState st = stringToAnimationState(key);
       AnimationData d{};
       d.spritesheetPath = sheet;
@@ -80,7 +80,7 @@ Character::AnimMap Character::loadAnimationConfig(const std::string &id, const s
 }
 
 Character::Character(const std::string &id, int x, int y, const AnimMap &anims)
-  : Sprite(id, x, y,
+  : SurfaceSprite(id, x, y,
             anims.at(AnimationState::IDLE).frameWidth,
             anims.at(AnimationState::IDLE).frameHeight,
             anims.at(AnimationState::IDLE).spritesheetPath.c_str(),
@@ -134,7 +134,7 @@ void Character::Update(double deltaTime, const char* debugName)
     // shift half the difference (Assuming spritesheet uses center anchor)
     // BUG 1. before updating dRectSprite.w/h = anim.frameWidth/Height, the w/h values get clipped when playAnimation() is called out of bounds
     // BUG 2. the values getting clipped when out of bounds also affect below shifting leading to below
-    // BUG 3. every sequential playAnimation() moves the sprite towards the origo untill the sprite is completely within bounds, ie. when the w/h values are what they originally were
+    // BUG 3. every sequential playAnimation() moves the sprite towards the origo until the sprite is completely within bounds, i.e. when the w/h values are what they originally were
     dRectSprite.x -= deltaW / 2;
     dRectSprite.y -= deltaH / 2;
 
@@ -156,7 +156,7 @@ void Character::Update(double deltaTime, const char* debugName)
   lastUpdate += deltaTime;
  
   /*
-  / @brief Reset animation state after its done
+  / @brief Reset animation state after it's done
   / @comment entry: playAnimation()
   */
   if (animationPlaying){
@@ -175,16 +175,16 @@ void Character::Update(double deltaTime, const char* debugName)
       lastUpdate = 0; //reset the timer
   }
 
-  // TODO Test AFTER implementing anchoring if below method (old) still creates desync
-  // TODO frames desync if this is inside above "Animation Frame Logic" loop and before lastUpdate=0; the frames become "unsynchronized"
+  // TODO frames desync if this is inside above "Animation Frame Logic" loop and before lastUpdate=0; the frames become "un-synchronized"
   // TODO why do so many docs have the below inside above Animation Frame Logic loop(?)
+  // TODO Test AFTER implementing anchoring if below method (old) still creates desync
 
   // OLD METHOD
-  //Compute srcRect.x based on the current frame, taking padding(s) into account so animation doesnt desync
+  //Compute srcRect.x based on the current frame, taking padding(s) into account so animation doesn't desync
   //srcRect.x = (anim.frameWidth * currentFrame) + (anim.framePadding * (currentFrame + 1));
 
   // NEW METHOD
-  //Compute srcRect.x based on the current frame, taking between-frame padding(s) into account so animation doesnt desync
+  //Compute srcRect.x based on the current frame, taking between-frame padding(s) into account so animation doesn't desync
   /* @param anim.startX, add to keep the horizontal offset
    * @param anim.frameWidth, multiply by elapsed frame amount
    * @param anim.framePadding, add multiples of frames
@@ -212,7 +212,7 @@ void Character::playAnimation(AnimationState newState, int durationMs)
   }
 }
 
-void Character::Draw(AppContext gApp)
+void Character::DrawPlayer(AppContext gApp)
 {
   if (!spritesheet || !gApp.screen) return;
   SDL_BlitSurface(spritesheet, &srcRect, gApp.screen, &dRectSprite);

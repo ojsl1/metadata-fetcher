@@ -1,4 +1,5 @@
 # Make and debug files
+build/
 .cache/
 *.log
 *.o
@@ -6,6 +7,7 @@
 vgcore.*
 
 # Editor files
+.clangd
 *.json
 *.qss
 

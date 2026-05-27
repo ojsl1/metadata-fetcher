@@ -1,15 +1,15 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
-#include "SDL_mixer.h"
+#include <SDL_mixer.h>
 
 class Audio{
 public:
     void initMixer();
-    void playMusic();
+    void playMusic() const;
     void Shutdown(Mix_Chunk* bell, Mix_Music* bgm);
-    Mix_Chunk *bell = NULL;
-    Mix_Music *bgm = NULL;
+    Mix_Chunk *bell = nullptr;
+    Mix_Music *bgm = nullptr;
 };
 
 inline void Audio::initMixer(){
@@ -24,7 +24,8 @@ inline void Audio::initMixer(){
     //SDL_Delay(1700);
 }
 
-inline void Audio::playMusic(){
+inline void Audio::playMusic() const
+{
     Mix_PlayMusic( bgm, -1 );
     Mix_VolumeMusic( 30 );
     //Mix_FadeInMusic( music1, 0, 5000 );

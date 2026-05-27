@@ -14,17 +14,17 @@ Menu::Menu(IRenderer &ren, Mouse &mouse, bool visible)
   assert(mouse_);
 }
 
-void Menu::setBackground(Sprite &background)
+void Menu::setBackground(SurfaceSprite &background)
 {
   background_ = &background;
 }
-void Menu::setFrame(Sprite &frame)
+void Menu::setFrame(SurfaceSprite &frame)
 {
   frame_ = &frame;
 }
 
 void Menu::addItem(const std::string &id,
-                            Sprite* sprite,
+                            SurfaceSprite* sprite,
                             std::function<void()> onActivate,
                             bool selectable)
 {
@@ -40,19 +40,18 @@ void Menu::addItem(const std::string &id,
   }
 }
 
-// TODO read std::move and push_back
-Sprite* Menu::addItemByValue(const std::string& id,
-                                      const Sprite& sprite,
+// WIP read std::move and push_back
+SurfaceSprite* Menu::addItemByValue(const std::string& id,
+                                      const SurfaceSprite& sprite,
                                       std::function<void()> onActivate,
                                       bool selectable)
 {
   ownedStorage_.push_back(sprite);
-  Sprite* p = &ownedStorage_.back();
+  SurfaceSprite* p = &ownedStorage_.back();
   addItem(id, p, std::move(onActivate), selectable);
   return p;
 }
 
-// TODO
 bool Menu::setSelectedById(const std::string& id)
 {
   for (int i = 0; i < static_cast<int>(items_.size()); ++i) {
@@ -64,7 +63,7 @@ bool Menu::setSelectedById(const std::string& id)
   return false;
 }
 
-// TODO std::nullopt and std::optional
+// WIP std::nullopt and std::optional
 std::optional<std::string> Menu::selectedId() const
 {
   if (selected_ >= 0 && selected_ < static_cast<int>(items_.size()))
@@ -90,8 +89,6 @@ void Menu::handleEvent(const SDL_Event& e)
                     break;
                 case SDL_SCANCODE_RETURN:
                 case SDL_SCANCODE_SPACE:
-                    activateSelected();
-                    break;
                 case SDL_SCANCODE_ESCAPE:
                     // pseu: if (!setSelectedById("back") && !setSelectedById("exit")){
                     // no-op if neither exists}
@@ -124,7 +121,7 @@ void Menu::handleEvent(const SDL_Event& e)
     }
 }
 
-void Menu::update(float /*deltatime*/)
+void Menu::update(float /*deltatime*/) const
 {
   if (!visible_) return;
 
@@ -142,20 +139,19 @@ void Menu::Render()
 
   if (background_) {
       //std::cout << background_ << " background_ from Menu::render()" << '\n';
-      background_->DrawScaled(gApp);
+      renderer_->Draw(*background_, gApp);
   }else{ SDL_Log("background_ was null"); };
 
   if (frame_) {
       //std::cout << frame_ << " frame_ from Menu::render()" << '\n';
-      frame_->DrawScaled(gApp);
+      renderer_->Draw(*frame_, gApp);
   }else{ SDL_Log("frame_ was null"); };
 
-  // TODO read continue
   // Draw by iterating
   for (int i = 0; i < static_cast<int>(items_.size()); ++i) {
       Item& it = items_[i];
       if (!it.sprite) continue;
-      it.sprite->Draw(gApp);
+      renderer_->Draw(*it.sprite, gApp);
   }
 }
 
@@ -217,16 +213,16 @@ void Menu::updateMouseSelection(int mouseX, int mouseY)
   }
 }
 
-bool Menu::isInside(const Sprite& s, int x, int y) const
+bool Menu::isInside(const SurfaceSprite& s, int x, int y) const
 {
   SDL_Rect r = spriteRect(s);
   return x >= r.x && x < (r.x + r.w) && y >= r.y && y < (r.y + r.h);
 }
 
-SDL_Rect Menu::spriteRect(const Sprite& s) const
+SDL_Rect Menu::spriteRect(const SurfaceSprite& s) const
 {
   // TODO Adapt to class Sprite
-  // use dstRect from class Sprite or TODO the x/y/w/h accessors
+  // use dstRect from class Sprite or the WIP x/y/w/h accessors
   // pseu:
   SDL_Rect r{};
   // r.x = s.GetX();

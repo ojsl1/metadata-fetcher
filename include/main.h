@@ -24,6 +24,10 @@ struct WindowDimensions
     int x, y; // position
 };
 
+/**
+ * @brief Runtime application context.
+ * @var fps Current calculated fps.
+ */
 struct AppContext
 {
     // runtime mode

@@ -57,8 +57,7 @@ enum class AnimationState {
   TIME_OVER,
 };
 
-class Character : public Sprite
-{
+class Character : public SurfaceSprite{
 public:
   struct AnimationData {
     int frameWidth;
@@ -82,7 +81,7 @@ public:
   void Update(double deltaTime, const char* debugName);
   void move(int dx, int dy);
   void playAnimation(AnimationState, int);
-  void Draw(AppContext gApp) override;
+  void DrawPlayer(AppContext gApp);
 
 private:
   AnimMap animations;
