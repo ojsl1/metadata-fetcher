@@ -12,7 +12,7 @@ public:
   void Draw(AppContext ctx) const override;
   void GetXY() override;
 
-  ~Mouse();
+  ~Mouse() override;
 
   SDL_Rect point;
 

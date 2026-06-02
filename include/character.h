@@ -78,18 +78,21 @@ public:
 
   Character(const std::string &id, int x, int y, const AnimMap &anims);
 
-  void Update(double deltaTime, const char* debugName);
+  void Update(double deltaTime, const char *debugName);
+
   void move(int dx, int dy);
+
   void playAnimation(AnimationState, int);
+
   void DrawPlayer(AppContext gApp);
 
 private:
   AnimMap animations;
-  AnimationData anim;// is this OLD pre-AnimMap CRUFT still needed?
+  AnimationData anim; // is this OLD pre-AnimMap CRUFT still needed?
   AnimationState currentState = AnimationState::IDLE;
   AnimationState idleState, newState, lastState;
-  int currentFrame;             // Current animation frame
-  double lastUpdate;            // time since last frame update
+  int currentFrame; // Current animation frame
+  double lastUpdate; // time since last frame update
   bool animationPlaying = false;
   int animationTimer = 0;
 };

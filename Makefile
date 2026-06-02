@@ -25,8 +25,9 @@ ifeq ($(strip $(LDFLAGS)),)
 	LDFLAGS=-lSDL2 # provide alternative linker flags
 endif
 
-run: $(BUILD_DIR) all leanclean
+remake: $(BUILD_DIR) all
 	./game
+	rm -rf $(BUILD_DIR)
 
 all: $(BUILD_DIR) $(OBJS)
 	$(CC) $(OBJS) -o game $(LDFLAGS)
@@ -75,7 +76,7 @@ leanclean:
 
 install:
 	mkdir -p /tmp/first-sdl-game/
-	cp game /tmp/first-sdl-game/game
+	cp -v game /tmp/first-sdl-game/game
 
 uninstall:
 	rm -rfv /tmp/first-sdl-game/

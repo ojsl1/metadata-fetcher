@@ -2,7 +2,12 @@
 #include "input.h" // Sprite::DetectClicks and Sprite::DetectCollisions depend on mouse class
 
 SurfaceSprite::SurfaceSprite(const std::string &id, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect)
-  : srcRect(spriteRect), hasCollisions(false), toggled(false), rawSprite(nullptr), alternateSprite(nullptr), dRectSprite{x,y,w,h},
+  : srcRect(spriteRect),
+    hasCollisions(false),
+    toggled(false),
+    rawSprite(nullptr),
+    alternateSprite(nullptr),
+    dRectSprite{x, y, w > 0 ? w: spriteRect.w, h > 0 ? h: spriteRect.h},
     x(x), y(y), name(id)
 {
   if (!spritesheetPath){

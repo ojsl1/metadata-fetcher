@@ -15,8 +15,8 @@
 
 AppContext gApp;
 Font arial;
-Mix_Chunk *bell;
-Mix_Music *bgm;
+Mix_Chunk *gBell;
+Mix_Music *gBgm;
 
 //Time tracking
 Uint32 gLastFpsTime = 0; //fps measurement timing
@@ -30,59 +30,84 @@ Uint32 gFrameCount = 0;
 // infoframe 200x295
 // window size see main() 320x480
 
-Mouse gMouse(24, 24, "assets/mouse.png");
-SurfaceSprite spritePlaceholder("Placeholder", 0, 0, 1009, 697, "assets/race-placeholder.png", {0,0,1009,697});
-SurfaceSprite spriteBg("Background", 0, 0, 320, 480, "assets/spritesheet.png", {0,280,480,320});
-SurfaceSprite spriteBorder("Border", 0, 0, 320, 480, "assets/spritesheet.png", {480,280,480,320});
-SurfaceSprite spriteFrame("Frame", 10, 10, 300, 410, "assets/spritesheet.png", {960,280,200,295});
-SurfaceSprite spriteDrop("Drop", 120, 180, 80, 140, "assets/spritesheet.png", {0,80,120,198});
+//TODO externalize to game_world.h, gamestate.h, or main.h
+//  N.B world object currently shadows itself, fix AFTER externalizing
+//if also creating a GameWorld/GameState class add fn to initialize world:
+//  e.g. GameWorld world = createGameWorld();
+// codex: $openai-docs <question> & /status
+struct GameWorld
+{
+  Mouse mouse;
 
-SurfaceSprite spritePause("Pause", 10, 430, 0, 0, "assets/spritesheet.png", {60,0,60,40});
-SurfaceSprite spriteMute("Mute", 90, 430, 0, 0, "assets/spritesheet.png", {0,0,60,40});
-SurfaceSprite spriteTests("Tests", 170, 430, 0, 0, "assets/spritesheet.png", {180,0,60,40});
-SurfaceSprite spriteExit("Exit", 250, 430, 0, 0, "assets/spritesheet.png", {120,0,60,40});
+  SurfaceSprite spritePlaceholder;
+  SurfaceSprite spriteBg;
+  SurfaceSprite spriteBorder;
+  SurfaceSprite spriteFrame;
+  SurfaceSprite spriteDrop;
 
-auto animsdef1 = Character::loadAnimationConfig("Marisa", "assets/data-marisa-antinomy.json");
-auto animsdef2 = Character::loadAnimationConfig("Racer", "assets/data-racer.json");
-Character gPlayer("Marisa", 0, 240, animsdef1);
-Character gPlayer2("Racer", 0, 240, animsdef2);
+  SurfaceSprite spritePause;
+  SurfaceSprite spriteMute;
+  SurfaceSprite spriteTests;
+  SurfaceSprite spriteExit;
+
+  Character player;
+  Character player2;
+};
+
+GameWorld world{
+  Mouse(24, 24, "assets/mouse.png"),
+
+  SurfaceSprite("Placeholder", 0, 0, 1009, 697, "assets/race-placeholder.png", {0,0,1009,697}),
+  SurfaceSprite("Background", 0, 0, 320, 480, "assets/spritesheet.png", {0,280,480,320}),
+  SurfaceSprite("Border", 0, 0, 320, 480, "assets/spritesheet.png", {480,280,480,320}),
+  SurfaceSprite("Frame", 10, 10, 300, 410, "assets/spritesheet.png", {960,280,200,295}),
+  SurfaceSprite("Drop", 120, 180, 80, 140, "assets/spritesheet.png", {0,80,120,198}),
+
+  SurfaceSprite("Pause", 10, 430, 0, 0, "assets/spritesheet.png", {60,0,60,40}),
+  SurfaceSprite("Mute", 90, 430, 0, 0, "assets/spritesheet.png", {0,0,60,40}),
+  SurfaceSprite("Tests", 170, 430, 0, 0, "assets/spritesheet.png", {180,0,60,40}),
+  SurfaceSprite("Exit", 250, 430, 0, 0, "assets/spritesheet.png", {120,0,60,40}),
+
+  Character("Marisa", 0, 240, Character::loadAnimationConfig("Marisa", "assets/data-marisa-antinomy.json")),
+  Character("Racer", 0, 240, Character::loadAnimationConfig("Racer", "assets/data-racer.json"))
+};
 
 MainMenuAssets mainmenuAssets {
-    &spriteExit,
-    &spriteTests,
-    &spriteDrop,
-    &spriteMute,
-    &spritePause,
-    &spriteBorder,
-    &spriteFrame,
-    &spriteBg,
+    &world.spriteExit,
+    &world.spriteTests,
+    &world.spriteDrop,
+    &world.spriteMute,
+    &world.spritePause,
+    &world.spriteBorder,
+    &world.spriteFrame,
+    &world.spriteBg,
     &arial,
-    &gPlayer
+    &world.player
 };
 
 MinigameAssets minigameAssets {
-  &spritePause,
-  &spritePlaceholder,
+  &world.spritePause,
+  &world.spritePlaceholder,
   &arial,
-  &gPlayer2
+  &world.player2
 };
 
 void setupSpriteCallbacks()
 {
-  spriteMute.SetToggleCallback([](bool toggled){
+  world.spriteMute.SetToggleCallback([](bool toggled){
       if(toggled){
         Mix_VolumeMusic(0);
         std::cout << "Mixer muted." << std::endl;
-        //std::cout << "mouse clicked at xy pos: " << mouse.point.x << "," << mouse.point.y
-        //          << " toggled was: " << spriteMute.toggled << std::endl;
-        //std::cout << "got spriteMute wh bounds as: " << spriteMute.w << "," << spriteMute.h << std::endl;
+        // std::cout << "mouse clicked at xy pos: " << world.mouse.point.x << "," << world.mouse.point.y
+        //           << " toggled was: " << spriteMute.toggled << std::endl;
+        // std::cout << "got spriteMute wh bounds as: " << world.spriteMute.w << "," << world.spriteMute.h << std::endl;
       } else {
         Mix_VolumeMusic(20);
         std::cout << "Mixer unmuted." << std::endl;
       }
   });
   
-  spritePause.SetToggleCallback([](bool toggled){
+  world.spritePause.SetToggleCallback([](bool toggled){
       if(toggled){
         Mix_PauseMusic();
         std::cout << "Mixer paused." << std::endl;
@@ -93,7 +118,7 @@ void setupSpriteCallbacks()
   });
 }
 
-void DetectCollisions(Mouse &mouse)
+void DetectCollisions(GameWorld &w)
 {
   // --- Interactable sprites need this ---
   // These are AppState-specific collisions, but sprites themselves are/act
@@ -103,10 +128,10 @@ void DetectCollisions(Mouse &mouse)
   // so the collision pairs are also defined on construction.
   switch (gApp.mode){
     case AppState::MAIN_MENU:
-      spriteMute.DetectCollisions(mouse);
-      spritePause.DetectCollisions(mouse);
-      spriteTests.DetectCollisions(mouse);
-      spriteExit.DetectCollisions(mouse);
+      w.spriteMute.DetectCollisions(w.mouse);
+      w.spritePause.DetectCollisions(w.mouse);
+      w.spriteTests.DetectCollisions(w.mouse);
+      w.spriteExit.DetectCollisions(w.mouse);
       break;
     case AppState::MINIGAME:
       //player2.DetectCollisions(player, enemy);
@@ -115,55 +140,41 @@ void DetectCollisions(Mouse &mouse)
   }
 }
 
-void UpdateCommonCollisions(Mouse &mouse)
+void UpdateCollisions(GameWorld &w)
 {
-  mouse.GetXY();
+  w.mouse.GetXY();
+
   // Update collisions between sprite-mouse
-  DetectCollisions(mouse);
+  DetectCollisions(w);
 }
 
-void UpdateCollisions(Mouse &mouse)
-{
-  switch(gApp.mode)
-  {
-    case AppState::MAIN_MENU:
-    case AppState::MINIGAME:
-      UpdateCommonCollisions(mouse);
-      //Update collisions between player-enemy
-      //DetectCollisions(player2, enemy); //TODO DetectCollisions is still hardcoded for mouse
-      break;
-
-    case AppState::EXIT:
-      break;
-    default: throw std::invalid_argument("Undefined appstate from UpdateCollisions()");
-  }
-}
-
-void ListenMainMenuEvents(IRenderer &ren, Mouse &mouse, const SDL_Event &e)
+void ListenMainMenuEvents(const SDL_Event &e)
 {
   switch(e.type)
   {
     case SDL_MOUSEBUTTONUP:
-      switch (e.button.button){
+      switch (e.button.button) {
         case SDL_BUTTON_LEFT:
-          if (spriteExit.hasCollisions){
+          if (world.spriteExit.hasCollisions) {
             gApp.mode = AppState::EXIT;
-          } else if (spriteMute.hasCollisions){
-              spriteMute.Toggle();
-          } else if (spritePause.hasCollisions){
-              spritePause.Toggle();
-          } else if (spriteTests.hasCollisions){
-              gApp.mode = AppState::MINIGAME;
-          }break;
+          } else if (world.spriteMute.hasCollisions) {
+            world.spriteMute.Toggle();
+          } else if (world.spritePause.hasCollisions) {
+            world.spritePause.Toggle();
+          } else if (world.spriteTests.hasCollisions) {
+            gApp.mode = AppState::MINIGAME;
+          }
+          break;
         default: throw std::invalid_argument("Undefined SDL_MOUSEBUTTONUP event!");
-      }break;
+      }
+      break;
 
     case SDL_DROPFILE:{
       char* droppedfile = e.drop.file;
       if (droppedfile && droppedfile[0] != '\0') {
           std::cout << "File dropped: " << droppedfile << std::endl;
-          PrintPNGInfo(droppedfile); SDL_Log("printpnginfo success"); 
-          pngInfo = ExtractPNGInfo(droppedfile); SDL_Log("extractpnginfo success"); 
+          PrintPNGInfo(droppedfile); SDL_Log("printpnginfo success");
+          pngInfo = ExtractPNGInfo(droppedfile); SDL_Log("extractpnginfo success");
           SDL_free(droppedfile);
       }else{
           std::cerr << "Error: Dropped file was null or empty." << std::endl; }
@@ -173,45 +184,46 @@ void ListenMainMenuEvents(IRenderer &ren, Mouse &mouse, const SDL_Event &e)
   }
 }
 
-void ListenGlobalKeys(IRenderer &ren, Mouse &mouse, const SDL_Event &e)
+void ListenGlobalKeys(IRenderer &ren, GameWorld& w, const SDL_Event &e)
 {
   //Reacquire window surface if it becomes invalid
-  if (e.window.event == SDL_WINDOWEVENT_RESIZED){
+  if (e.window.event == SDL_WINDOWEVENT_RESIZED) {
     gApp.screen = SDL_GetWindowSurface(gApp.win);
-    if (!gApp.screen){ std::cerr << "SDL_GetWindowSurface failed durig resize: "
-                             << SDL_GetError() << std::endl;
+    if (!gApp.screen) {
+      std::cerr << "SDL_GetWindowSurface failed during resize: "
+          << SDL_GetError() << std::endl;
     }
   }
 
   // X
-  if (e.type == SDL_QUIT){
+  if (e.type == SDL_QUIT) {
     gApp.mode = AppState::EXIT;
     return;
   }
 
-  if (e.type == SDL_KEYUP){
+  if (e.type == SDL_KEYUP) {
     // Ctrl+q
-    if ((e.key.keysym.sym == SDLK_q) && (e.key.keysym.mod & KMOD_CTRL)){
-        gApp.mode = AppState::EXIT;
-        return;
+    if ((e.key.keysym.sym == SDLK_q) && (e.key.keysym.mod & KMOD_CTRL)) {
+      gApp.mode = AppState::EXIT;
+      return;
     }
     // Esc
-    if (e.key.keysym.sym == SDLK_ESCAPE){
-        gApp.mode = AppState::EXIT;
-        return;
+    if (e.key.keysym.sym == SDLK_ESCAPE) {
+      gApp.mode = AppState::EXIT;
+      return;
     }
     // m
-    if (e.key.keysym.sym == SDLK_m){
-        Mix_VolumeMusic(0);
-        //TODO: Set mainmenu MUTE sprite to UNMUTE
-        std::cerr << "Mixer muted via m." << std::endl;
+    if (e.key.keysym.sym == SDLK_m) {
+      Mix_VolumeMusic(0);
+      //TODO: Set mainmenu MUTE sprite to UNMUTE
+      std::cerr << "Mixer muted via m." << std::endl;
     }
   }
 
   switch (gApp.mode)
   {
     case AppState::MAIN_MENU:
-        ListenMainMenuEvents(ren,mouse,e);
+        ListenMainMenuEvents(e);
         break;
     case AppState::MINIGAME:
     case AppState::EXIT:
@@ -220,24 +232,24 @@ void ListenGlobalKeys(IRenderer &ren, Mouse &mouse, const SDL_Event &e)
   }
 }
 
-void ListenGameKeys(Character &player, Character &player2)
+void ListenGameKeys(GameWorld &w)
 {
   // Player movement and continuous controls
-  // TODO playAnimation shouldnt be called when player is racer
+  // TODO playAnimation shouldn't be called when player is racer
   const Uint8* keys = SDL_GetKeyboardState(nullptr);
 
-  if (keys[SDL_SCANCODE_W]) player.move(0, -1);
-  if (keys[SDL_SCANCODE_S]) player.move(0, 1);
-  if (keys[SDL_SCANCODE_A]) { player.move(-2, 0); player.playAnimation(AnimationState::MOVE_BACK, 10); };
-  if (keys[SDL_SCANCODE_D]) { player.move(2, 0); player.playAnimation(AnimationState::MOVE_FORWARD, 10); };
-  if (keys[SDL_SCANCODE_Q]) /*{player.attack_up_b(?)};*/ player.playAnimation(AnimationState::ATTACK_UP_B, 50);
-  if (keys[SDL_SCANCODE_E]) /*{player.attack_b(?)};*/player.playAnimation(AnimationState::ATTACK_B, 50);
-  if (keys[SDL_SCANCODE_1]) /*{player.cleanse_state(?)};*/player.playAnimation(AnimationState::IDLE, 0);
+  if (keys[SDL_SCANCODE_W]) w.player.move(0, -1);
+  if (keys[SDL_SCANCODE_S]) w.player.move(0, 1);
+  if (keys[SDL_SCANCODE_A]) { w.player.move(-2, 0); w.player.playAnimation(AnimationState::MOVE_BACK, 10); };
+  if (keys[SDL_SCANCODE_D]) { w.player.move(2, 0); w.player.playAnimation(AnimationState::MOVE_FORWARD, 10); };
+  if (keys[SDL_SCANCODE_Q]) /*{player.attack_up_b(?)};*/ w.player.playAnimation(AnimationState::ATTACK_UP_B, 50);
+  if (keys[SDL_SCANCODE_E]) /*{player.attack_b(?)};*/w.player.playAnimation(AnimationState::ATTACK_B, 50);
+  if (keys[SDL_SCANCODE_1]) /*{player.cleanse_state(?)};*/w.player.playAnimation(AnimationState::IDLE, 0);
 
-  if (keys[SDL_SCANCODE_UP]) player2.move(0, -1);;
-  if (keys[SDL_SCANCODE_DOWN]) player2.move(0, 1);;
-  if (keys[SDL_SCANCODE_LEFT]) player2.move(-2, 0);;
-  if (keys[SDL_SCANCODE_RIGHT]) player2.move(2, 0);;
+  if (keys[SDL_SCANCODE_UP]) w.player2.move(0, -1);;
+  if (keys[SDL_SCANCODE_DOWN]) w.player2.move(0, 1);;
+  if (keys[SDL_SCANCODE_LEFT]) w.player2.move(-2, 0);;
+  if (keys[SDL_SCANCODE_RIGHT]) w.player2.move(2, 0);;
 }
 
 /**
@@ -296,26 +308,25 @@ void cap_framerate(double frameStart)
   }
 }
 
-void loopdyLoop(IRenderer &ren, Mouse &mouse, Menu &mainMenu, SDL_Event &e){
+void loopdyLoop(IRenderer &ren, Menu &mainMenu, SDL_Event &e){
+  // -- Frame sequence --
+  // In SDL-style double buffering the canonical frame sequence is:
+  // 1. Handle input 2. Update gamestate (physics, collisions, etc.)
+  // 3. Clear render target(s) 4. Draw everything 5. Present (swap buffers)
+  // WARN: The order "UpdateCollisons->Clear->Update->Render" only shows the recently Cleared buffer.
+
   gFrameCount++;
   double currentTime = SDL_GetTicks64(); // current loop iteration time (ms)
   
-  //Calculate deltatime ie.tickrate for animations:
-  //ie. how long it took for last loop iter to reach this iter
+  //Calculate deltatime i.e. tickrate for animations:
+  //i.e. how long it took for last loop iter to reach this iter
   double deltaTime = ( currentTime - gLastDeltaTime) / 1000.0;
 
   gLastDeltaTime = currentTime;
 
   while (SDL_PollEvent(&e)){
-      ListenGlobalKeys(ren,mouse,e);
+      ListenGlobalKeys(ren,world,e);
   }
-
-    /* @brief Frame sequence pipeline
-   * @comment In SDL-style double buffering the canonical frame sequence is:
-   * 1. Handle input 2. Update gamestate (physics, collisions, etc.)
-   * 3. Clear render target(s) 4. Draw everything 5. Present (swap buffers)
-   * @warning The order "UpdateCollisons->Clear->Update->Render" only shows the recently Cleared buffer.
-   */
 
   calc_framerate(gLastFpsTime,gFrameCount,gApp);
 
@@ -323,19 +334,17 @@ void loopdyLoop(IRenderer &ren, Mouse &mouse, Menu &mainMenu, SDL_Event &e){
   switch(gApp.mode)
   {
     case AppState::MAIN_MENU:
-      UpdateCollisions(mouse);
-      ListenGameKeys(gPlayer,gPlayer2); //use sdl_getkeyboardstate
-      gPlayer.Update(deltaTime,"p1");
-      gPlayer2.Update(deltaTime,"p2");
+      UpdateCollisions(world);
+      ListenGameKeys(world); //use SDL_GetKeyBoardState
+      world.player.Update(deltaTime,"p1");
       //DEBUG RECT:
       //std::cout << "Racer pos: " << player2.srcRect.x << ", " << player2.srcRect.y << std::endl;
       break;
     
     case AppState::MINIGAME:
-      UpdateCollisions(mouse);
-      ListenGameKeys(gPlayer,gPlayer2); //use sdl_getkeyboardstate
-      gPlayer.Update(deltaTime,"p1");
-      gPlayer2.Update(deltaTime,"p2");
+      UpdateCollisions(world);
+      ListenGameKeys(world); //use sdl_SDL_GetKeyBoardState
+      world.player2.Update(deltaTime,"p2");
       break;
 
     case AppState::EXIT:
@@ -350,7 +359,7 @@ void loopdyLoop(IRenderer &ren, Mouse &mouse, Menu &mainMenu, SDL_Event &e){
   switch(gApp.mode)
   {
     case AppState::MAIN_MENU:
-      ren.RenderMainMenu(mouse,mainmenuAssets);
+      ren.RenderMainMenu(world.mouse,mainmenuAssets);
       mainMenu.setBackground(*mainmenuAssets.spriteBg);
       mainMenu.setFrame(*mainmenuAssets.spriteFrame);
       mainMenu.setVisible(false);
@@ -358,7 +367,7 @@ void loopdyLoop(IRenderer &ren, Mouse &mouse, Menu &mainMenu, SDL_Event &e){
       break;
     
     case AppState::MINIGAME:
-      ren.RenderMinigame(mouse,minigameAssets);
+      ren.RenderMinigame(world.mouse,minigameAssets);
       break;
 
     case AppState::EXIT:
@@ -375,31 +384,32 @@ void loopdyLoop(IRenderer &ren, Mouse &mouse, Menu &mainMenu, SDL_Event &e){
 int main (int argc, char *argv[])
 {
   std::cerr << "FPSCAP: " << FPSCAP << std::endl;
-  /*
-  for (int i; i < argc; i++){
-    if (strcmp(argv[1], "-sdl") == 0) {
-        renderer = renderer_surface;
-        break;
-        }
-    if (strcmp(argv[1], "-sdl") == 0) {
-        renderer = renderer_texture;
-        break;
-        }
-    if (strcmp(argv[1], "-opengl") == 0) {
-        renderer = renderer_opengl;
-        break;
-        }
-    if (strcmp(argv[1], "-vulkan") == 0) {
-        renderer = renderer_vulkan;
-        break;
-        }
+
+  for (int i = 1; i < argc; i++){
+    if (strcmp(argv[i], "--sdl-cpu") == 0) {
+      //renderer = renderer_surface;
+      std::cout << "Using SDL surface renderer" << std::endl;
+      break;
+      }
+    if (strcmp(argv[i], "--sdl-gpu") == 0) {
+      //renderer = renderer_texture;
+      std::cout << "SDL texture renderer not implemented; Using SDL surface renderer" << std::endl;
+      break;
+      }
+    if (strcmp(argv[i], "--opengl") == 0) {
+      std::cout << "OpenGL renderer not implemented; Using SDL surface renderer" << std::endl;
+      //renderer = renderer_opengl;
+      break;
+      }
+    if (strcmp(argv[i], "--vulkan") == 0) {
+      std::cout << "Vulkan renderer not implemented; Using SDL surface renderer" << std::endl;
+      //renderer = renderer_vulkan;
+      break;
+      }
   }
-  */
 
   std::cerr << "Initializing subsystems..." << std::endl;
-
-  std::unique_ptr<IRenderer> ren =
-    std::make_unique<SurfaceRenderer>();
+  std::unique_ptr<IRenderer> ren = std::make_unique<SurfaceRenderer>();
   ren->initSubsystems(320,480);
   ren->setColors(gApp);
 
@@ -414,19 +424,19 @@ int main (int argc, char *argv[])
   arial.Load("assets/arial.ttf", 24);
 
   std::cerr << "Setting up menus..." << std::endl;
-  Menu mainMenu(*ren,gMouse,false);
+  Menu mainMenu(*ren,world.mouse,false);
   audio.playMusic();
-  spritePause.Toggle();
+  world.spritePause.Toggle();
   SDL_ShowCursor(SDL_DISABLE);
 
   gApp.mode = AppState::MAIN_MENU;
   SDL_Event e;
   while (gApp.mode != AppState::EXIT){
-    loopdyLoop(*ren, gMouse, mainMenu, e);
+    loopdyLoop(*ren, mainMenu, e);
   }
 
   arial.Shutdown();
-  audio.Shutdown(bell, bgm);
+  audio.Shutdown(audio.bell, audio.bgm);
   ren->Shutdown(gApp);
   return 0;
 }

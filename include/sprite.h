@@ -24,7 +24,6 @@ public:
   SDL_Rect srcRect;
   SDL_Surface *spritesheet;
   // @brief Track sprites that have collisions
-  // @todo cant privatize as main.cpp reads from this via playSprite.hasCollisions()
   bool hasCollisions;
   // @brief Current toggled state
   bool toggled;
@@ -55,11 +54,8 @@ public:
   // @brief Set the alternate surface.
   void SetAlternateSprite(SDL_Surface *alternate);
 
-  
-protected:
   int x, y; // origo topleft
 
-private:
   std::string name;
   std::function<void(bool)> toggleCallback; // Callback for toggle action
 };
