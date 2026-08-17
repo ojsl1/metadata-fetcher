@@ -3,10 +3,26 @@
 
 #include "render.h"
 #include <optional>
-//#include <functional>
-//#include <string>
-//#include <vector>
-//#include <optional>
+
+struct MainMenuAssets {
+  SurfaceSprite *spriteExit;
+  SurfaceSprite *spriteTests;
+  SurfaceSprite *spriteDrop;
+  SurfaceSprite *spriteMute;
+  SurfaceSprite *spritePause;
+  SurfaceSprite *spriteBorder;
+  SurfaceSprite *spriteFrame;
+  SurfaceSprite *spriteBg;
+  Font *arial;
+  Character *player;
+};
+
+struct MinigameAssets {
+  SurfaceSprite *spritePause;
+  SurfaceSprite *spritePlaceholder;
+  Font *arial;
+  Character *player2;
+};
 
 class Menu {
 public:
@@ -65,6 +81,16 @@ private:
   void updateMouseSelection(int mouseX, int mouseY);
   bool isInside(const SurfaceSprite &s, int x, int y) const; // fallback when not using Mouse::DetectCollisions
   SDL_Rect spriteRect(const SurfaceSprite &s) const;         // TODO adapt for old sprite class
+};
+
+class SceneComposer {
+public:
+  //void composeScene( Mouse &mouse, struct &assets, IRenderer &ren );
+  static void composeMainMenu( Mouse &mouse, const MainMenuAssets &assets, IRenderer &ren );
+  static void composeMinigame( Mouse &mouse, const MinigameAssets &assets, IRenderer &ren );
+
+  SceneComposer() = default;
+  ~SceneComposer() = default;
 
 };
 

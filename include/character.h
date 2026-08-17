@@ -84,17 +84,18 @@ public:
 
   void playAnimation(AnimationState, int);
 
-  void DrawPlayer(AppContext gApp);
+  SDL_Surface *GetDrawSurface() const override { return spritesheet; }
+  const SDL_Rect *GetSourceRect() const override { return &srcRect; }
 
 private:
   AnimMap animations;
   AnimationData anim; // is this OLD pre-AnimMap CRUFT still needed?
-  AnimationState currentState = AnimationState::IDLE;
+  AnimationState currentState;
   AnimationState idleState, newState, lastState;
   int currentFrame; // Current animation frame
   double lastUpdate; // time since last frame update
-  bool animationPlaying = false;
-  int animationTimer = 0;
+  bool animationPlaying;
+  int animationTimer;
 };
 
 #endif // CHARACTER_H

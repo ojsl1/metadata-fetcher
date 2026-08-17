@@ -7,6 +7,7 @@ build/
 vgcore.*
 
 # Editor files
+.idea/
 .clangd
 *.json
 *.qss

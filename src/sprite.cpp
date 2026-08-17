@@ -74,6 +74,16 @@ SurfaceSprite::~SurfaceSprite(){
   }
 }
 
+SDL_Surface *SurfaceSprite::GetDrawSurface() const
+{
+  return toggled && alternateSprite ? alternateSprite : rawSprite;
+}
+
+const SDL_Rect *SurfaceSprite::GetSourceRect() const
+{
+  return nullptr;
+}
+
 void SurfaceSprite::Toggle(){
   toggled = !toggled;
   if (toggleCallback){

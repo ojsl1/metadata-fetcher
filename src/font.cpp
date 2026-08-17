@@ -30,7 +30,6 @@ bool Font::Load(const char *filePath, int fontSize){
   font_ = TTF_OpenFont(filePath, fontSize);
   if(!font_){
     std::cerr << "TTF_OpenFont failed: " << SDL_GetError() << std::endl;
-    SDL_DestroyWindow(gApp.win); // TODO this isn't needed if below are removed
     TTF_Quit(); // TODO quit elsewhere, it doesnt belong here
     SDL_Quit(); // TODO quit elsewhere
     return true;
@@ -82,7 +81,7 @@ void Font::Draw(const AppContext &gApp,
   dstRect.x = x;
   dstRect.y = y;
 
-  if (SDL_BlitSurface(textSurface, nullptr, gApp.screen, &dstRect) < -1){
+  if (SDL_BlitSurface(textSurface, nullptr, gApp.screen, &dstRect) < 0){
       SDL_Log("SDL_BlitSurface failed: %s", SDL_GetError());
   }
 

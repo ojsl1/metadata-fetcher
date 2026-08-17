@@ -33,15 +33,15 @@ Character::AnimMap Character::loadAnimationConfig(const std::string &id, const s
 
     AnimMap result;
 
-    if (!cfg.contains(id) || !cfg[id].is_object()) {
-        SDL_Log("Animation config: character '%s' not found or invalid", id.c_str());
+    SDL_Log("Animation config: character '%s' found", id.c_str());
 
-        SDL_Log("Available character keys:");
-        for (auto it = cfg.begin(); it != cfg.end(); ++it)
-            SDL_Log("  '%s'", it.key().c_str());
-        return result;
-    }else{
-        SDL_Log("Animation config: character '%s' found", id.c_str());
+    if (!cfg.contains(id) || !cfg[id].is_object()) {
+      SDL_Log("Animation config: character '%s' not found or invalid", id.c_str());
+
+      SDL_Log("Available character keys:");
+      for (auto it = cfg.begin(); it != cfg.end(); ++it)
+        SDL_Log("  '%s'", it.key().c_str());
+      return result;
     }
 
     const auto &charJson = cfg[id];
@@ -146,18 +146,19 @@ void Character::Update(double deltaTime, const char* debugName)
     dRectSprite.w = anim.frameWidth;
     dRectSprite.h = anim.frameHeight;
 
-    // TODO why is below resetting needed, it still works without it no? is this causing the random block frames?
-    //currentFrame = 0;          // Reset the frame to 0 when animation changes
+    // TODO why is below reset needed
+    // is this causing the random block frames?
+    /*currentFrame = 0;*/          // Reset the frame to 0 when animation changes
 
     lastState = currentState;  // change lastState back for future comparisons
   }
 
   // Update the animation timer
   lastUpdate += deltaTime;
- 
+
   /*
-  / @brief Reset animation state after it's done
-  / @comment entry: playAnimation()
+  * @brief Reset animation state after it's done
+  * @comment entry via playAnimation()
   */
   if (animationPlaying){
       animationTimer -= deltaTime; // countdown for ending the animation
@@ -175,22 +176,26 @@ void Character::Update(double deltaTime, const char* debugName)
       lastUpdate = 0; //reset the timer
   }
 
-  // TODO frames desync if this is inside above "Animation Frame Logic" loop and before lastUpdate=0; the frames become "un-synchronized"
-  // TODO why do so many docs have the below inside above Animation Frame Logic loop(?)
-  // TODO Test AFTER implementing anchoring if below method (old) still creates desync
+  // TODO frames desync if this is inside above "Animation Frame Logic" loop
+  //  and before lastUpdate=0; the frames become "un-synchronized"
+  // TODO why do so many docs have the below inside above
+  //  Animation Frame Logic loop (?)
+  // TODO Test AFTER implementing anchoring if below method (old)
+  //  still creates desync
 
-  // OLD METHOD
-  //Compute srcRect.x based on the current frame, taking padding(s) into account so animation doesn't desync
-  //srcRect.x = (anim.frameWidth * currentFrame) + (anim.framePadding * (currentFrame + 1));
+  /* OLD METHOD
+   * Compute srcRect.x based on the current frame, taking padding(s) into account so animation doesn't desync
+   * srcRect.x = (anim.frameWidth * currentFrame) + (anim.framePadding * (currentFrame + 1));
+   */
 
-  // NEW METHOD
-  //Compute srcRect.x based on the current frame, taking between-frame padding(s) into account so animation doesn't desync
-  /* @param anim.startX, add to keep the horizontal offset
+  /* @brief Compute srcRect.x based on the current frame
+   * @comment taking between-frame padding(s) into account so animation doesn't desync
+   * @param anim.startX, add to keep the horizontal offset
    * @param anim.frameWidth, multiply by elapsed frame amount
    * @param anim.framePadding, add multiples of frames
    */
-  srcRect.x = /* anim.startX */ // TODO this term fixes racer-spritesheet but leads to marisa padding desync
-                          // because racer-spritesheet doesnt have leftPadding?
+  srcRect.x = /* anim.startX */ // TODO adding left anim.startX fixes racer-spritesheet but leads to
+                                // desync with marisa padding (racer-spritesheet doesnt have leftPadding?)
             + anim.frameWidth  *  currentFrame
             + (anim.framePadding * (currentFrame + 1));
 }
@@ -202,18 +207,14 @@ void Character::move(int dx, int dy)
   dRectSprite.y += dy * anim.speed;
 }
 
+/* @brief if below is true Character::Update starts animation playback logic
+ * TODO move inside Character::Update
+ */
 void Character::playAnimation(AnimationState newState, int durationMs)
 {
-  //if below is true Character::Update starts animation playback logic
   if (currentState != newState) {
       currentState = newState;
       animationTimer = durationMs;
       animationPlaying = true;
   }
-}
-
-void Character::DrawPlayer(AppContext gApp)
-{
-  if (!spritesheet || !gApp.screen) return;
-  SDL_BlitSurface(spritesheet, &srcRect, gApp.screen, &dRectSprite);
 }

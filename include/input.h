@@ -9,7 +9,7 @@ class Mouse : public Element{
 public:
   Mouse(int w, int h, const char* mouseImagePath = nullptr);
   SDL_Rect GetDrawRect() const;
-  void Draw(AppContext ctx) const override;
+  void Draw(const AppContext &ctx) const override;
   void GetXY() override;
 
   ~Mouse() override;
@@ -17,8 +17,8 @@ public:
   SDL_Rect point;
 
 private:
-  SDL_Surface *rawMouse = nullptr;
-  SDL_Surface *scaledMouse = nullptr;
+  SDL_Surface *rawMouse;
+  SDL_Surface *scaledMouse;
   SDL_Rect dRectMouse;
 };
 

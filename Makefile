@@ -1,6 +1,6 @@
 CC=g++
 CXXFLAGS=-g -c -Wall $(INCLUDES)
-LDFLAGS=$(shell pkg-config --libs sdl2) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lpng
+LDFLAGS=$(shell pkg-config --libs sdl2 glew) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lpng
 
 #-I/usr/include/SDL3 \
 #-I/usr/include/SDL3/SDL3_image \
@@ -10,6 +10,7 @@ LDFLAGS=$(shell pkg-config --libs sdl2) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lp
 INCLUDES=-Iinclude
 SRC_DIR=src
 BUILD_DIR=build
+HEADERS=$(wildcard include/*.h)
 
 OBJS = $(BUILD_DIR)/main.o \
        $(BUILD_DIR)/render.o \
@@ -25,36 +26,33 @@ ifeq ($(strip $(LDFLAGS)),)
 	LDFLAGS=-lSDL2 # provide alternative linker flags
 endif
 
-remake: $(BUILD_DIR) all
-	./game
-	rm -rf $(BUILD_DIR)
-
 all: $(BUILD_DIR) $(OBJS)
 	$(CC) $(OBJS) -o game $(LDFLAGS)
+	rm -rfv $(BUILD_DIR)
 
 ## -- compile rules --
-$(BUILD_DIR)/main.o: $(SRC_DIR)/main.cpp
+$(BUILD_DIR)/main.o: $(SRC_DIR)/main.cpp $(HEADERS)
 	$(CC) $(CXXFLAGS) $(SRC_DIR)/main.cpp $(shell pkg-config --cflags sdl2) -o $@
 
-$(BUILD_DIR)/render.o: $(SRC_DIR)/render.cpp
+$(BUILD_DIR)/render.o: $(SRC_DIR)/render.cpp $(HEADERS)
 	$(CC) $(CXXFLAGS) $(SRC_DIR)/render.cpp $(shell pkg-config --cflags sdl2) -o $@
 
-$(BUILD_DIR)/util.o: $(SRC_DIR)/util.cpp
+$(BUILD_DIR)/util.o: $(SRC_DIR)/util.cpp $(HEADERS)
 	$(CC) $(CXXFLAGS) $(SRC_DIR)/util.cpp $(shell pkg-config --cflags sdl2) -o $@
 
-$(BUILD_DIR)/menu.o: $(SRC_DIR)/menu.cpp
+$(BUILD_DIR)/menu.o: $(SRC_DIR)/menu.cpp $(HEADERS)
 	$(CC) $(CXXFLAGS) $(SRC_DIR)/menu.cpp $(shell pkg-config --cflags sdl2) -o $@
 
-$(BUILD_DIR)/input.o: $(SRC_DIR)/input.cpp
+$(BUILD_DIR)/input.o: $(SRC_DIR)/input.cpp $(HEADERS)
 	$(CC) $(CXXFLAGS) $(SRC_DIR)/input.cpp $(shell pkg-config --cflags sdl2) -o $@
 
-$(BUILD_DIR)/sprite.o: $(SRC_DIR)/sprite.cpp
+$(BUILD_DIR)/sprite.o: $(SRC_DIR)/sprite.cpp $(HEADERS)
 	$(CC) $(CXXFLAGS) $(SRC_DIR)/sprite.cpp $(shell pkg-config --cflags sdl2) -o $@
 
-$(BUILD_DIR)/character.o: $(SRC_DIR)/character.cpp
+$(BUILD_DIR)/character.o: $(SRC_DIR)/character.cpp $(HEADERS)
 	$(CC) $(CXXFLAGS) $(SRC_DIR)/character.cpp $(shell pkg-config --cflags sdl2) -o $@
 
-$(BUILD_DIR)/font.o: $(SRC_DIR)/font.cpp
+$(BUILD_DIR)/font.o: $(SRC_DIR)/font.cpp $(HEADERS)
 	$(CC) $(CXXFLAGS) $(SRC_DIR)/font.cpp $(shell pkg-config --cflags sdl2) -o $@
 
 ## -- setup build dir --
@@ -75,8 +73,8 @@ leanclean:
 	rm -rf $(BUILD_DIR)
 
 install:
-	mkdir -p /tmp/first-sdl-game/
-	cp -v game /tmp/first-sdl-game/game
+	mkdir -p /tmp/metadata-fetcher/
+	cp -v game /tmp/metadata-fetcher/game
 
 uninstall:
-	rm -rfv /tmp/first-sdl-game/
+	rm -rfv /tmp/metadata-fetcher/

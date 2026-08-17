@@ -7,6 +7,8 @@
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 #include <iostream> // for global debugging
+#include <memory>
+#include <GL/glew.h>
 
 #define FPSCAP 60.0
 #define DEBUG 0
@@ -24,6 +26,10 @@ struct WindowDimensions
     int x, y; // position
 };
 
+void printProgramLog( GLuint program );
+void printShaderLog( GLuint shader );
+
+using WindowPtr = std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>;
 /**
  * @brief Runtime application context.
  * @var fps Current calculated fps.
@@ -34,15 +40,20 @@ struct AppContext
     AppState mode = AppState::MAIN_MENU;
 
     // sdl handles (store pointers; ownership is elsewhere until using below smart pointers)
-    SDL_Window *win = nullptr;
-    SDL_Surface *screen = nullptr;
-    SDL_Renderer *renderer = nullptr;
+    //SDL_Renderer *renderer = nullptr; WIP for -sdl-gpu
 
     // TODO wrap both handles with smart pointers
-    //before struct: `using WindowPtr = std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>;`
-    // -> WindowPtr windowHandle(nullptr, SDL_DestroyWindow);
-    //before struct: `using SurfacePtr = std::unique_ptr<SDL_Surface, decltype(&SDL_FreeSurface>;`
-    // -> SurfacePtr screen(nullptr, SDL_FreeSurface);
+    WindowPtr win{nullptr, SDL_DestroyWindow};
+    SDL_Surface *screen = nullptr;
+
+  //Shader loading utility programs
+  void printProgramLog( GLuint program );
+  void printShaderLog( GLuint shader );
+  //Graphics program
+  GLuint gProgramID = 0;
+  GLint gVertexPos2DLocation = -1;
+  GLuint gVBO = 0;
+  GLuint gIBO = 0;
 
     // diagnostics
     float fps = 0.0f;

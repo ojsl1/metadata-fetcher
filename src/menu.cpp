@@ -2,10 +2,12 @@
 #include "menu.h"
 #include "input.h"
 #include "sprite.h"
+#include "util.h"
 
 #include <cassert>
 #include <optional>
 #include <algorithm>
+#include <sstream> // for fpsText
 
 Menu::Menu(IRenderer &ren, Mouse &mouse, bool visible)
   : renderer_(&ren), mouse_(&mouse), visible_(false)
@@ -230,4 +232,47 @@ SDL_Rect Menu::spriteRect(const SurfaceSprite& s) const
   // r.w = s.GetW();
   // r.h = s.GetH();
   return r;
+}
+
+void SceneComposer::composeMainMenu(Mouse &mouse, const MainMenuAssets &assets, IRenderer &ren)
+{
+  ren.DrawScaled(*assets.spriteBg, gApp);
+  ren.DrawScaled(*assets.spriteBorder, gApp);
+  ren.DrawScaled(*assets.spriteFrame, gApp);
+  ren.DrawScaled(*assets.spriteDrop, gApp);
+  ren.Draw(*assets.spriteMute, gApp);
+  ren.Draw(*assets.spritePause, gApp);
+  ren.Draw(*assets.spriteTests, gApp);
+  ren.Draw(*assets.spriteExit, gApp);
+
+  ren.DrawText(gApp,80,200, "Drop Image Here", {0,0,0});
+  ren.Draw(*assets.player, gApp);
+
+  //Render droppedfile metadata
+  int x = 50, y = 70;
+  for (const std::string& line : pngInfo.lines){
+    ren.DrawText(gApp, x, y, line, {0,0,0});
+    y+= 25;
+  }
+
+  //Render FPS counter
+  std::ostringstream fpsText;
+  fpsText << "FPS: " << static_cast<float>(gApp.fps);
+  ren.DrawText(gApp,10,10, fpsText.str(), {0,0,0});
+
+  mouse.Draw(gApp);
+}
+
+void SceneComposer::composeMinigame(Mouse &mouse, const MinigameAssets &assets, IRenderer &ren)
+{
+  ren.DrawScaled(*assets.spritePlaceholder, gApp);
+  ren.DrawScaled(*assets.spritePause, gApp);
+  ren.Draw(*assets.player2, gApp);
+
+  int const x1 = 50;
+  int const y1 = 70;
+  ren.DrawText(gApp,x1,y1, "RACE (1978)", {0,0,0});
+  ren.DrawText(gApp,x1,y1+30, "UNIMPLEMENTED", {10,0,0});
+
+  mouse.Draw(gApp);
 }

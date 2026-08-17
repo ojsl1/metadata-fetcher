@@ -39,12 +39,14 @@ public:
    *  @note Only DrawScaled() uses the drawing size values
    */
   SurfaceSprite(const std::string &id, int x, int y, int w, int h, const char* spritesheetPath, SDL_Rect spriteRect);
-  ~SurfaceSprite();
+  ~SurfaceSprite() override;
 
   // @brief getters
   int getX() const override { return dRectSprite.x; }
   int getY() const override { return dRectSprite.y; }
- 
+  virtual SDL_Surface *GetDrawSurface() const;
+  virtual const SDL_Rect *GetSourceRect() const;
+
   /* TODO move these outta here */
   // @brief Toggle between states.
   void Toggle();

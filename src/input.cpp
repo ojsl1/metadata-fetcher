@@ -44,7 +44,7 @@ Mouse::Mouse(int w, int h, const char* mouseImagePath)
     SDL_BlitScaled(rawMouse, nullptr, scaledMouse, &dRectMouse);
 }
 
-void Mouse::Draw(AppContext ctx) const {
+void Mouse::Draw(const AppContext &ctx) const {
     SDL_Rect finalRect = GetDrawRect();
     SDL_BlitSurface(scaledMouse, nullptr, ctx.screen, &finalRect);
 }

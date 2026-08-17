@@ -23,6 +23,9 @@ Uint32 gLastFpsTime = 0; //fps measurement timing
 Uint32 gLastDeltaTime = 0; //simulation timing
 Uint32 gFrameCount = 0;
 
+void printProgramLog(GLuint){ }
+void printShaderLog(GLuint){ }
+
 // edge padding 10px
 // inner padding 5px
 // buttons 60x40
@@ -106,7 +109,7 @@ void setupSpriteCallbacks()
         std::cout << "Mixer unmuted." << std::endl;
       }
   });
-  
+
   world.spritePause.SetToggleCallback([](bool toggled){
       if(toggled){
         Mix_PauseMusic();
@@ -188,7 +191,7 @@ void ListenGlobalKeys(IRenderer &ren, GameWorld& w, const SDL_Event &e)
 {
   //Reacquire window surface if it becomes invalid
   if (e.window.event == SDL_WINDOWEVENT_RESIZED) {
-    gApp.screen = SDL_GetWindowSurface(gApp.win);
+    gApp.screen = SDL_GetWindowSurface(gApp.win.get());
     if (!gApp.screen) {
       std::cerr << "SDL_GetWindowSurface failed during resize: "
           << SDL_GetError() << std::endl;
@@ -203,7 +206,7 @@ void ListenGlobalKeys(IRenderer &ren, GameWorld& w, const SDL_Event &e)
 
   if (e.type == SDL_KEYUP) {
     // Ctrl+q
-    if ((e.key.keysym.sym == SDLK_q) && (e.key.keysym.mod & KMOD_CTRL)) {
+    if (e.key.keysym.sym == SDLK_q && e.key.keysym.mod & KMOD_CTRL) {
       gApp.mode = AppState::EXIT;
       return;
     }
@@ -240,16 +243,16 @@ void ListenGameKeys(GameWorld &w)
 
   if (keys[SDL_SCANCODE_W]) w.player.move(0, -1);
   if (keys[SDL_SCANCODE_S]) w.player.move(0, 1);
-  if (keys[SDL_SCANCODE_A]) { w.player.move(-2, 0); w.player.playAnimation(AnimationState::MOVE_BACK, 10); };
-  if (keys[SDL_SCANCODE_D]) { w.player.move(2, 0); w.player.playAnimation(AnimationState::MOVE_FORWARD, 10); };
+  if (keys[SDL_SCANCODE_A]) { w.player.move(-2, 0); w.player.playAnimation(AnimationState::MOVE_BACK, 10); }
+  if (keys[SDL_SCANCODE_D]) { w.player.move(2, 0); w.player.playAnimation(AnimationState::MOVE_FORWARD, 10); }
   if (keys[SDL_SCANCODE_Q]) /*{player.attack_up_b(?)};*/ w.player.playAnimation(AnimationState::ATTACK_UP_B, 50);
   if (keys[SDL_SCANCODE_E]) /*{player.attack_b(?)};*/w.player.playAnimation(AnimationState::ATTACK_B, 50);
   if (keys[SDL_SCANCODE_1]) /*{player.cleanse_state(?)};*/w.player.playAnimation(AnimationState::IDLE, 0);
 
-  if (keys[SDL_SCANCODE_UP]) w.player2.move(0, -1);;
-  if (keys[SDL_SCANCODE_DOWN]) w.player2.move(0, 1);;
-  if (keys[SDL_SCANCODE_LEFT]) w.player2.move(-2, 0);;
-  if (keys[SDL_SCANCODE_RIGHT]) w.player2.move(2, 0);;
+  if (keys[SDL_SCANCODE_UP]) w.player2.move(0, -1);
+  if (keys[SDL_SCANCODE_DOWN]) w.player2.move(0, 1);
+  if (keys[SDL_SCANCODE_LEFT]) w.player2.move(-2, 0);
+  if (keys[SDL_SCANCODE_RIGHT]) w.player2.move(2, 0);
 }
 
 /**
@@ -308,7 +311,7 @@ void cap_framerate(double frameStart)
   }
 }
 
-void loopdyLoop(IRenderer &ren, Menu &mainMenu, SDL_Event &e){
+void loopdyLoop(IRenderer &ren, Menu &mainMenu, SceneComposer &composer, SDL_Event &e){
   // -- Frame sequence --
   // In SDL-style double buffering the canonical frame sequence is:
   // 1. Handle input 2. Update gamestate (physics, collisions, etc.)
@@ -317,7 +320,7 @@ void loopdyLoop(IRenderer &ren, Menu &mainMenu, SDL_Event &e){
 
   gFrameCount++;
   double currentTime = SDL_GetTicks64(); // current loop iteration time (ms)
-  
+
   //Calculate deltatime i.e. tickrate for animations:
   //i.e. how long it took for last loop iter to reach this iter
   double deltaTime = ( currentTime - gLastDeltaTime) / 1000.0;
@@ -359,7 +362,7 @@ void loopdyLoop(IRenderer &ren, Menu &mainMenu, SDL_Event &e){
   switch(gApp.mode)
   {
     case AppState::MAIN_MENU:
-      ren.RenderMainMenu(world.mouse,mainmenuAssets);
+      composer.composeMainMenu(world.mouse,mainmenuAssets,ren);
       mainMenu.setBackground(*mainmenuAssets.spriteBg);
       mainMenu.setFrame(*mainmenuAssets.spriteFrame);
       mainMenu.setVisible(false);
@@ -367,7 +370,7 @@ void loopdyLoop(IRenderer &ren, Menu &mainMenu, SDL_Event &e){
       break;
     
     case AppState::MINIGAME:
-      ren.RenderMinigame(world.mouse,minigameAssets);
+      composer.composeMinigame(world.mouse,minigameAssets,ren);
       break;
 
     case AppState::EXIT:
@@ -384,33 +387,34 @@ void loopdyLoop(IRenderer &ren, Menu &mainMenu, SDL_Event &e){
 int main (int argc, char *argv[])
 {
   std::cerr << "FPSCAP: " << FPSCAP << std::endl;
+  std::unique_ptr<IRenderer> ren = std::make_unique<SurfaceRenderer>();
+  std::cout << "Defaulting to SDL surface renderer" << std::endl;
 
   for (int i = 1; i < argc; i++){
     if (strcmp(argv[i], "--sdl-cpu") == 0) {
-      //renderer = renderer_surface;
+      ren = std::make_unique<SurfaceRenderer>();
       std::cout << "Using SDL surface renderer" << std::endl;
       break;
       }
     if (strcmp(argv[i], "--sdl-gpu") == 0) {
-      //renderer = renderer_texture;
-      std::cout << "SDL texture renderer not implemented; Using SDL surface renderer" << std::endl;
+      std::cout << "SDL texture is WIP, using default SDL surface renderer;" << std::endl;
+      //ren = std::make_unique<TextureRenderer>();
       break;
       }
     if (strcmp(argv[i], "--opengl") == 0) {
-      std::cout << "OpenGL renderer not implemented; Using SDL surface renderer" << std::endl;
-      //renderer = renderer_opengl;
+      std::cout << "OpenGL is WIP;" << std::endl;
+      ren = std::make_unique<GLRenderer>();
       break;
       }
     if (strcmp(argv[i], "--vulkan") == 0) {
-      std::cout << "Vulkan renderer not implemented; Using SDL surface renderer" << std::endl;
-      //renderer = renderer_vulkan;
+      std::cout << "Vulkan is WIP, using default SDL surface renderer;" << std::endl;
+      //ren = std::make_unique<VkRenderer>();
       break;
       }
   }
 
   std::cerr << "Initializing subsystems..." << std::endl;
-  std::unique_ptr<IRenderer> ren = std::make_unique<SurfaceRenderer>();
-  ren->initSubsystems(320,480);
+  ren->init(320,480);
   ren->setColors(gApp);
 
   std::cerr << "Initializing mixer..." << std::endl;
@@ -421,10 +425,11 @@ int main (int argc, char *argv[])
   setupSpriteCallbacks();
 
   std::cerr << "Loading media..." << std::endl;
-  arial.Load("assets/arial.ttf", 24);
+  ren->LoadFont("assets/arial.ttf", 24);
 
   std::cerr << "Setting up menus..." << std::endl;
   Menu mainMenu(*ren,world.mouse,false);
+  SceneComposer composer;
   audio.playMusic();
   world.spritePause.Toggle();
   SDL_ShowCursor(SDL_DISABLE);
@@ -432,7 +437,7 @@ int main (int argc, char *argv[])
   gApp.mode = AppState::MAIN_MENU;
   SDL_Event e;
   while (gApp.mode != AppState::EXIT){
-    loopdyLoop(*ren, mainMenu, e);
+    loopdyLoop(*ren,mainMenu,composer,e);
   }
 
   arial.Shutdown();
