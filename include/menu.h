@@ -13,14 +13,12 @@ struct MainMenuAssets {
   SurfaceSprite *spriteBorder;
   SurfaceSprite *spriteFrame;
   SurfaceSprite *spriteBg;
-  Font *arial;
   Character *player;
 };
 
 struct MinigameAssets {
   SurfaceSprite *spritePause;
   SurfaceSprite *spritePlaceholder;
-  Font *arial;
   Character *player2;
 };
 

@@ -5,7 +5,6 @@
 #include "sprite.h"
 #include "character.h"
 #include "audio.h"
-#include "font.h"
 #include "menu.h"
 #include "util.h"
 
@@ -14,7 +13,6 @@
 #include <stdexcept>
 
 AppContext gApp;
-Font arial;
 Mix_Chunk *gBell;
 Mix_Music *gBgm;
 
@@ -84,14 +82,12 @@ MainMenuAssets mainmenuAssets {
     &world.spriteBorder,
     &world.spriteFrame,
     &world.spriteBg,
-    &arial,
     &world.player
 };
 
 MinigameAssets minigameAssets {
   &world.spritePause,
   &world.spritePlaceholder,
-  &arial,
   &world.player2
 };
 
@@ -189,8 +185,8 @@ void ListenMainMenuEvents(const SDL_Event &e)
 
 void ListenGlobalKeys(IRenderer &ren, GameWorld& w, const SDL_Event &e)
 {
-  //Reacquire window surface if it becomes invalid
-  if (e.window.event == SDL_WINDOWEVENT_RESIZED) {
+  //Reacquire window surface if it for some reason becomes invalid
+  if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_RESIZED) {
     gApp.screen = SDL_GetWindowSurface(gApp.win.get());
     if (!gApp.screen) {
       std::cerr << "SDL_GetWindowSurface failed during resize: "
@@ -343,7 +339,7 @@ void loopdyLoop(IRenderer &ren, Menu &mainMenu, SceneComposer &composer, SDL_Eve
       //DEBUG RECT:
       //std::cout << "Racer pos: " << player2.srcRect.x << ", " << player2.srcRect.y << std::endl;
       break;
-    
+
     case AppState::MINIGAME:
       UpdateCollisions(world);
       ListenGameKeys(world); //use sdl_SDL_GetKeyBoardState
@@ -351,6 +347,7 @@ void loopdyLoop(IRenderer &ren, Menu &mainMenu, SceneComposer &composer, SDL_Eve
       break;
 
     case AppState::EXIT:
+      return;
       break;
     default: throw std::invalid_argument("Undefined appstate from loopdyloop gamestates!");
   }
@@ -368,12 +365,13 @@ void loopdyLoop(IRenderer &ren, Menu &mainMenu, SceneComposer &composer, SDL_Eve
       mainMenu.setVisible(false);
       mainMenu.Render();
       break;
-    
+
     case AppState::MINIGAME:
       composer.composeMinigame(world.mouse,minigameAssets,ren);
       break;
 
     case AppState::EXIT:
+      std::cerr << "Skipped EXIT earlier, this is a bug!" << std::endl;
       break;
     default: throw std::invalid_argument("Undefined appstate from loopdyloop render!");
   }
@@ -388,15 +386,15 @@ int main (int argc, char *argv[])
 {
   std::cerr << "FPSCAP: " << FPSCAP << std::endl;
   std::unique_ptr<IRenderer> ren = std::make_unique<SurfaceRenderer>();
-  std::cout << "Defaulting to SDL surface renderer" << std::endl;
+  std::cout << "Defaulting to SDL surface hardware renderer" << std::endl;
 
   for (int i = 1; i < argc; i++){
     if (strcmp(argv[i], "--sdl-cpu") == 0) {
       ren = std::make_unique<SurfaceRenderer>();
-      std::cout << "Using SDL surface renderer" << std::endl;
+      std::cout << "Using SDL surface hardware renderer" << std::endl;
       break;
       }
-    if (strcmp(argv[i], "--sdl-gpu") == 0) {
+    if (strcmp(argv[i], "--sdl") == 0) {
       std::cout << "SDL texture is WIP, using default SDL surface renderer;" << std::endl;
       //ren = std::make_unique<TextureRenderer>();
       break;
@@ -440,7 +438,6 @@ int main (int argc, char *argv[])
     loopdyLoop(*ren,mainMenu,composer,e);
   }
 
-  arial.Shutdown();
   audio.Shutdown(audio.bell, audio.bgm);
   ren->Shutdown(gApp);
   return 0;

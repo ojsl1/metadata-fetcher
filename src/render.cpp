@@ -229,7 +229,8 @@ void GLRenderer::DrawText(const AppContext &, int, int, const std::string &, SDL
 }
 
 bool GLRenderer::LoadFont(const char *filePath, int fontSize) {
-  //TODO stub
+  std::cerr << "Loadfont not implemented for GLRenderer" << std::endl;
+  return false;
 }
 
 void GLRenderer::Update() {
@@ -480,9 +481,9 @@ bool SurfaceRenderer::LoadFont(const char *filePath, int fontSize){
   if(!font_){
     std::cerr << "TTF_OpenFont failed: " << SDL_GetError() << std::endl;
     Shutdown(gApp);
-    return true;
+    return false;
   }
-  return false;
+  return true;
 }
 
 void SurfaceRenderer::Update()

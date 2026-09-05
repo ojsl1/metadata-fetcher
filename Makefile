@@ -19,7 +19,6 @@ OBJS = $(BUILD_DIR)/main.o \
        $(BUILD_DIR)/input.o \
        $(BUILD_DIR)/sprite.o \
        $(BUILD_DIR)/character.o \
-       $(BUILD_DIR)/font.o
 
 ifeq ($(strip $(LDFLAGS)),)
 	# fallback if pkg-config is not available or does not provide flags
@@ -29,6 +28,7 @@ endif
 all: $(BUILD_DIR) $(OBJS)
 	$(CC) $(OBJS) -o game $(LDFLAGS)
 	rm -rfv $(BUILD_DIR)
+	./game
 
 ## -- compile rules --
 $(BUILD_DIR)/main.o: $(SRC_DIR)/main.cpp $(HEADERS)
@@ -51,9 +51,6 @@ $(BUILD_DIR)/sprite.o: $(SRC_DIR)/sprite.cpp $(HEADERS)
 
 $(BUILD_DIR)/character.o: $(SRC_DIR)/character.cpp $(HEADERS)
 	$(CC) $(CXXFLAGS) $(SRC_DIR)/character.cpp $(shell pkg-config --cflags sdl2) -o $@
-
-$(BUILD_DIR)/font.o: $(SRC_DIR)/font.cpp $(HEADERS)
-	$(CC) $(CXXFLAGS) $(SRC_DIR)/font.cpp $(shell pkg-config --cflags sdl2) -o $@
 
 ## -- setup build dir --
 $(BUILD_DIR):
